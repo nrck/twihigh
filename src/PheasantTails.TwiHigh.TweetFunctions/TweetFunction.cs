@@ -50,7 +50,7 @@ namespace PheasantTails.TwiHigh.TweetFunctions
                     Id = Guid.NewGuid(),
                     Text = context.Text,
                     ReplyTo = context.ReplyTo,
-                    UserId = user.Id.Value,
+                    UserId = user.Id,
                     UserDisplayId = user.DisplayId,
                     UserDisplayName = user.DisplayName,
                     UserAvatarUrl = user.AvatarUrl,
@@ -71,7 +71,7 @@ namespace PheasantTails.TwiHigh.TweetFunctions
         private async Task InsertMessageAsync(string queueName, string message)
         {
             // Get the connection string from app settings
-            var connectionString = Environment.GetEnvironmentVariable("StorageConnectionString");
+            var connectionString = Environment.GetEnvironmentVariable(QUEUE_STORAGE_CONNECTION_STRINGS_ENV_NAME);
 
             // Instantiate a QueueClient which will be used to create and manipulate the queue
             var queueClient = new QueueClient(connectionString, queueName);
