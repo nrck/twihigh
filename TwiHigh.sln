@@ -1,0 +1,56 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.TweetFunctions", "src\PheasantTails.TwiHigh.TweetFunctions\PheasantTails.TwiHigh.TweetFunctions.csproj", "{476A7BA4-8D04-493D-914C-96E2FADF5730}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Properties", "Properties", "{6C7BCBC6-EA06-4604-BF1F-340EAEFAD917}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PheasantTails.TwiHigh.Extensions", "src\PheasantTails.TwiHigh.HttpRequestExtensions\PheasantTails.TwiHigh.Extensions.csproj", "{125E3B7D-E505-4F97-AEAA-D4D3ECE76146}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PheasantTails.TwiHigh.Model", "src\PheasantTails.TwiHigh.Model\PheasantTails.TwiHigh.Model.csproj", "{DF52845F-AF4F-4581-96AF-4E1E17C51CA6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PheasantTails.TwiHigh.DataStore", "src\PheasantTails.TwiHigh.DataStore\PheasantTails.TwiHigh.DataStore.csproj", "{CC531CB0-1A8A-4392-B5FB-48571978543B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PheasantTails.TwiHigh.TimelinesFunctions", "src\PheasantTails.TwiHigh.TimelinesFunctions\PheasantTails.TwiHigh.TimelinesFunctions.csproj", "{3EF897FD-2AC8-4528-9283-626580E8E3A6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{476A7BA4-8D04-493D-914C-96E2FADF5730}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{476A7BA4-8D04-493D-914C-96E2FADF5730}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{476A7BA4-8D04-493D-914C-96E2FADF5730}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{476A7BA4-8D04-493D-914C-96E2FADF5730}.Release|Any CPU.Build.0 = Release|Any CPU
+		{125E3B7D-E505-4F97-AEAA-D4D3ECE76146}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{125E3B7D-E505-4F97-AEAA-D4D3ECE76146}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{125E3B7D-E505-4F97-AEAA-D4D3ECE76146}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{125E3B7D-E505-4F97-AEAA-D4D3ECE76146}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF52845F-AF4F-4581-96AF-4E1E17C51CA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF52845F-AF4F-4581-96AF-4E1E17C51CA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF52845F-AF4F-4581-96AF-4E1E17C51CA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF52845F-AF4F-4581-96AF-4E1E17C51CA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC531CB0-1A8A-4392-B5FB-48571978543B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC531CB0-1A8A-4392-B5FB-48571978543B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC531CB0-1A8A-4392-B5FB-48571978543B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC531CB0-1A8A-4392-B5FB-48571978543B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3EF897FD-2AC8-4528-9283-626580E8E3A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3EF897FD-2AC8-4528-9283-626580E8E3A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3EF897FD-2AC8-4528-9283-626580E8E3A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3EF897FD-2AC8-4528-9283-626580E8E3A6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0A5F0AC6-A1E7-4971-B1F0-B8C42660EC25}
+	EndGlobalSection
+EndGlobal
