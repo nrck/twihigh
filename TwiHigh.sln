@@ -12,13 +12,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Properties", "Properties", 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PheasantTails.TwiHigh.Extensions", "src\PheasantTails.TwiHigh.HttpRequestExtensions\PheasantTails.TwiHigh.Extensions.csproj", "{125E3B7D-E505-4F97-AEAA-D4D3ECE76146}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.Extensions", "src\PheasantTails.TwiHigh.HttpRequestExtensions\PheasantTails.TwiHigh.Extensions.csproj", "{125E3B7D-E505-4F97-AEAA-D4D3ECE76146}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PheasantTails.TwiHigh.Model", "src\PheasantTails.TwiHigh.Model\PheasantTails.TwiHigh.Model.csproj", "{DF52845F-AF4F-4581-96AF-4E1E17C51CA6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.Model", "src\PheasantTails.TwiHigh.Model\PheasantTails.TwiHigh.Model.csproj", "{DF52845F-AF4F-4581-96AF-4E1E17C51CA6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PheasantTails.TwiHigh.DataStore", "src\PheasantTails.TwiHigh.DataStore\PheasantTails.TwiHigh.DataStore.csproj", "{CC531CB0-1A8A-4392-B5FB-48571978543B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.DataStore", "src\PheasantTails.TwiHigh.DataStore\PheasantTails.TwiHigh.DataStore.csproj", "{CC531CB0-1A8A-4392-B5FB-48571978543B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PheasantTails.TwiHigh.TimelinesFunctions", "src\PheasantTails.TwiHigh.TimelinesFunctions\PheasantTails.TwiHigh.TimelinesFunctions.csproj", "{3EF897FD-2AC8-4528-9283-626580E8E3A6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.TimelinesFunctions", "src\PheasantTails.TwiHigh.TimelinesFunctions\PheasantTails.TwiHigh.TimelinesFunctions.csproj", "{3EF897FD-2AC8-4528-9283-626580E8E3A6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PheasantTails.TwiHigh.FunctionCore", "src\PheasantTails.TwiHigh.FunctionCore\PheasantTails.TwiHigh.FunctionCore.csproj", "{29B38AA6-3699-4086-8A50-523EBA180BFA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,6 +48,10 @@ Global
 		{3EF897FD-2AC8-4528-9283-626580E8E3A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3EF897FD-2AC8-4528-9283-626580E8E3A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3EF897FD-2AC8-4528-9283-626580E8E3A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29B38AA6-3699-4086-8A50-523EBA180BFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29B38AA6-3699-4086-8A50-523EBA180BFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29B38AA6-3699-4086-8A50-523EBA180BFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29B38AA6-3699-4086-8A50-523EBA180BFA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

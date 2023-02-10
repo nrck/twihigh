@@ -1,15 +1,13 @@
 using Microsoft.Azure.Cosmos;
-using Microsoft.Azure.Documents;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using PheasantTails.TwiHigh.DataStore.Entity;
 using PheasantTails.TwiHigh.Model.Timelines;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using static PheasantTails.TwiHigh.FunctionCore.StaticStrings;
 
 namespace PheasantTails.TwiHigh.TimelinesFunctions
 {
@@ -25,7 +23,7 @@ namespace PheasantTails.TwiHigh.TimelinesFunctions
         }
 
         [FunctionName("AddTimeline")]
-        public async Task AddTimelineAsync([QueueTrigger("add-timelines", Connection = "ConnectionString")] string myQueueItem)
+        public async Task AddTimelineAsync([QueueTrigger(AZURE_STORAGE_ADD_TIMELINE_QUEUE_NAME, Connection = "ConnectionString")] string myQueueItem)
         {
             try
             {
@@ -33,11 +31,11 @@ namespace PheasantTails.TwiHigh.TimelinesFunctions
 
                 var que = JsonSerializer.Deserialize<QueAddTimelineContext>(myQueueItem);
                 var tasks = new List<Task>();
-                await _client.GetContainer("TwiHighDB", "Timelines").CreateItemAsync(new Timeline(que.Tweet.UserId, que.Tweet));
+                await _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TIMELINE_CONTAINER_NAME).CreateItemAsync(new Timeline(que.Tweet.UserId, que.Tweet));
 
                 foreach (var user in que.Followers)
                 {
-                    tasks.Add(_client.GetContainer("TwiHighDB", "Timelines").CreateItemAsync(new Timeline(user, que.Tweet)));
+                    tasks.Add(_client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TIMELINE_CONTAINER_NAME).CreateItemAsync(new Timeline(user, que.Tweet)));
                 }
 
                 await Task.WhenAll(tasks);
