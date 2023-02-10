@@ -2,6 +2,8 @@
 {
     public class TwiHighUser
     {
+        public const string PARTITION_KEY = "/id";
+
         public Guid Id { get; set; }
         public string DisplayId { get; set; } = string.Empty;
         public string DisplayName { get; set; } = string.Empty;

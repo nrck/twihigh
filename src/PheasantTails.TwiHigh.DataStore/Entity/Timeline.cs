@@ -2,6 +2,8 @@
 {
     public class Timeline
     {
+        public const string PARTITION_KEY = "/ownerUserId";
+
         public Guid Id { get; set; }
         public Guid OwnerUserId { get; set; }
         public Guid TweetId { get; set; }
@@ -29,17 +31,6 @@
             ReplyTo = tweet.ReplyTo;
             ReplyFrom = tweet.ReplyFrom;
             CreateAt= tweet.CreateAt;
-        }
-
-        public static List<Timeline> TweetsToTimelines(Guid owner, IEnumerable<Tweet> tweets)
-        {
-            var list = new List<Timeline>();
-            foreach (var tweet in tweets)
-            {
-                list.Add(new Timeline(owner, tweet));
-            }
-
-            return list;
         }
     }
 }
