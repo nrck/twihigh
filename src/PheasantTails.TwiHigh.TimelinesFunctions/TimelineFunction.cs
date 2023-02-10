@@ -24,7 +24,7 @@ namespace PheasantTails.TwiHigh.TimelinesFunctions
         }
 
         [FunctionName("AddTimelinesTweetTrigger")]
-        public async Task AddTimelineAsync([QueueTrigger(AZURE_STORAGE_ADD_TIMELINES_TWEET_TRIGGER_QUEUE_NAME, Connection = "ConnectionString")] string myQueueItem)
+        public async Task AddTimelineAsync([QueueTrigger(AZURE_STORAGE_ADD_TIMELINES_TWEET_TRIGGER_QUEUE_NAME, Connection = QUEUE_STORAGE_CONNECTION_STRINGS_ENV_NAME)] string myQueueItem)
         {
             try
             {
@@ -52,7 +52,7 @@ namespace PheasantTails.TwiHigh.TimelinesFunctions
         }
 
         [FunctionName("AddTimelinesFollowTrigger")]
-        public async Task AddTimelinesAsync([QueueTrigger(AZURE_STORAGE_ADD_TIMELINES_FOLLOW_TRIGGER_QUEUE_NAMEs, Connection = "ConnectionString")] string myQueueItem)
+        public async Task AddTimelinesAsync([QueueTrigger(AZURE_STORAGE_ADD_TIMELINES_FOLLOW_TRIGGER_QUEUE_NAMEs, Connection = QUEUE_STORAGE_CONNECTION_STRINGS_ENV_NAME)] string myQueueItem)
         {
             if (myQueueItem == null)
             {
