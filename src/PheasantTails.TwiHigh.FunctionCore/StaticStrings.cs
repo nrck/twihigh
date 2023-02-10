@@ -10,6 +10,6 @@
         public const string QUEUE_STORAGE_CONNECTION_STRINGS_ENV_NAME = "StorageConnectionString";
 
         public const string AZURE_STORAGE_ADD_TIMELINES_TWEET_TRIGGER_QUEUE_NAME = "add-timelines-tweet-trigger";
-        public const string AZURE_STORAGE_ADD_TIMELINES_FOLLOW_TRIGGER_QUEUE_NAMEs = "add-timelines-follow-trigger";
+        public const string AZURE_STORAGE_ADD_TIMELINES_FOLLOW_TRIGGER_QUEUE_NAME = "add-timelines-follow-trigger";
     }
 }
