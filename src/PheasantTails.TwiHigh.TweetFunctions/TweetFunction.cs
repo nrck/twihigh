@@ -1,3 +1,4 @@
+using Azure.Storage.Queues;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos;
@@ -13,7 +14,7 @@ using System.IO;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Azure.Storage.Queues;
+using static PheasantTails.TwiHigh.FunctionCore.StaticStrings;
 
 namespace PheasantTails.TwiHigh.TweetFunctions
 {
@@ -42,7 +43,7 @@ namespace PheasantTails.TwiHigh.TweetFunctions
                     return new UnauthorizedResult();
                 }
 
-                var user = (await _client.GetContainer("TwiHighDB", "Users").ReadItemAsync<TwiHighUser>(id, new PartitionKey(id))).Resource;
+                var user = (await _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_USER_CONTAINER_NAME).ReadItemAsync<TwiHighUser>(id, new PartitionKey(id))).Resource;
                 var context = await req.JsonDeserializeAsync<PostTweetContext>();
                 var tweet = new Tweet
                 {
@@ -56,10 +57,10 @@ namespace PheasantTails.TwiHigh.TweetFunctions
                     CreateAt = DateTimeOffset.UtcNow
                 };
 
-                var res = await _client.GetContainer("TwiHighDB", "Tweets").CreateItemAsync(tweet);
+                var res = await _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TWEET_CONTAINER_NAME).CreateItemAsync(tweet);
                 var stringWritter = new MemoryStream();
                 var queString = JsonSerializer.Serialize(new QueAddTimelineContext(tweet, user.Followers));
-                await InsertMessageAsync("add-timelines", queString);
+                await InsertMessageAsync(AZURE_STORAGE_ADD_TIMELINE_QUEUE_NAME, queString);
                 return new CreatedResult("", res.Resource);
             }
             catch (Exception ex)
