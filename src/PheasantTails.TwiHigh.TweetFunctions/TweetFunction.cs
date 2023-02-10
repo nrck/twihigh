@@ -60,7 +60,7 @@ namespace PheasantTails.TwiHigh.TweetFunctions
                 var res = await _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TWEET_CONTAINER_NAME).CreateItemAsync(tweet);
                 var stringWritter = new MemoryStream();
                 var queString = JsonSerializer.Serialize(new QueAddTimelineContext(tweet, user.Followers));
-                await InsertMessageAsync(AZURE_STORAGE_ADD_TIMELINE_QUEUE_NAME, queString);
+                await InsertMessageAsync(AZURE_STORAGE_ADD_TIMELINES_TWEET_TRIGGER_QUEUE_NAME, queString);
                 return new CreatedResult("", res.Resource);
             }
             catch (Exception ex)
