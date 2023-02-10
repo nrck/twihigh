@@ -1,4 +1,3 @@
-using Azure.Storage.Queues;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos;
@@ -7,12 +6,10 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using PheasantTails.TwiHigh.DataStore.Entity;
 using PheasantTails.TwiHigh.Extensions;
+using PheasantTails.TwiHigh.FunctionCore;
 using PheasantTails.TwiHigh.Model;
 using PheasantTails.TwiHigh.Model.Timelines;
 using System;
-using System.IO;
-using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 using static PheasantTails.TwiHigh.FunctionCore.StaticStrings;
 
@@ -58,32 +55,14 @@ namespace PheasantTails.TwiHigh.TweetFunctions
                 };
 
                 var res = await _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TWEET_CONTAINER_NAME).CreateItemAsync(tweet);
-                var stringWritter = new MemoryStream();
-                var queString = JsonSerializer.Serialize(new QueAddTimelineContext(tweet, user.Followers));
-                await InsertMessageAsync(AZURE_STORAGE_ADD_TIMELINES_TWEET_TRIGGER_QUEUE_NAME, queString);
+                await QueueStorages.InsertMessageAsync(
+                    AZURE_STORAGE_ADD_TIMELINES_TWEET_TRIGGER_QUEUE_NAME,
+                    new QueAddTimelineContext(tweet, user.Followers));
                 return new CreatedResult("", res.Resource);
             }
             catch (Exception ex)
             {
                 throw;
-            }
-        }
-        private async Task InsertMessageAsync(string queueName, string message)
-        {
-            // Get the connection string from app settings
-            var connectionString = Environment.GetEnvironmentVariable(QUEUE_STORAGE_CONNECTION_STRINGS_ENV_NAME);
-
-            // Instantiate a QueueClient which will be used to create and manipulate the queue
-            var queueClient = new QueueClient(connectionString, queueName);
-
-            // Create the queue if it doesn't already exist
-            await queueClient.CreateIfNotExistsAsync();
-
-            if (await queueClient.ExistsAsync())
-            {
-                // Send a message to the queue
-                var base64str = Convert.ToBase64String(Encoding.UTF8.GetBytes(message));
-                await queueClient.SendMessageAsync(base64str);
             }
         }
     }

@@ -6,6 +6,8 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using PheasantTails.TwiHigh.DataStore.Entity;
 using PheasantTails.TwiHigh.Extensions;
+using PheasantTails.TwiHigh.FunctionCore;
+using PheasantTails.TwiHigh.Model.Followers;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -25,7 +27,7 @@ namespace PheasantTails.TwiHigh.FollowsFunctions
         }
         [FunctionName("AddFollow")]
         public async Task<IActionResult> AddFollow(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "/{followeeUserId}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "{followeeUserId}")] HttpRequest req,
             string followeeUserId)
         {
             if (!req.TryGetUserId(out var followerUserId))
@@ -52,6 +54,10 @@ namespace PheasantTails.TwiHigh.FollowsFunctions
 
             await users.UpsertItemAsync(followee.Resource);
             await users.UpsertItemAsync(follower.Resource);
+
+            await QueueStorages.InsertMessageAsync(
+                    AZURE_STORAGE_ADD_TIMELINES_FOLLOW_TRIGGER_QUEUE_NAME,
+                    new AddNewFolloweeTweetContext { FolloweeId = followee.Resource.Id, UserId = follower.Resource.Id});
 
             return new OkResult();
         }
