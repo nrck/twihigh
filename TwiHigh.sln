@@ -24,6 +24,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.Funct
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PheasantTails.TwiHigh.FollowsFunctions", "src\PheasantTails.TwiHigh.FollowsFunctions\PheasantTails.TwiHigh.FollowsFunctions.csproj", "{B0FAF80D-2D54-4E16-83D9-C9AF8F266CE6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PheasantTails.TwiHigh.DeveloperTools.CosmosDbCreator", "src\PheasantTails.TwiHigh.DeveloperTools.CosmosDbCreator\PheasantTails.TwiHigh.DeveloperTools.CosmosDbCreator.csproj", "{8ABC01D7-0485-4FAA-B764-F48E124D0357}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,6 +60,10 @@ Global
 		{B0FAF80D-2D54-4E16-83D9-C9AF8F266CE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B0FAF80D-2D54-4E16-83D9-C9AF8F266CE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B0FAF80D-2D54-4E16-83D9-C9AF8F266CE6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8ABC01D7-0485-4FAA-B764-F48E124D0357}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8ABC01D7-0485-4FAA-B764-F48E124D0357}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8ABC01D7-0485-4FAA-B764-F48E124D0357}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8ABC01D7-0485-4FAA-B764-F48E124D0357}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
