@@ -20,6 +20,9 @@
 		<ProjectReference Include="..\PheasantTails.TwiHigh.HttpRequestExtensions\PheasantTails.TwiHigh.Extensions.csproj" />
 	</ItemGroup>
 	<ItemGroup>
+		<None Update="local.settings.json">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 		<None Update="host.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
