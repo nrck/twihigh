@@ -12,12 +12,12 @@ using static PheasantTails.TwiHigh.FunctionCore.StaticStrings;
 
 namespace PheasantTails.TwiHigh.TimelinesFunctions
 {
-    public class Function1
+    public class TimelineFunction
     {
-        private readonly ILogger<Function1> _logger;
+        private readonly ILogger<TimelineFunction> _logger;
         private readonly CosmosClient _client;
 
-        public Function1(CosmosClient client, ILogger<Function1> log)
+        public TimelineFunction(CosmosClient client, ILogger<TimelineFunction> log)
         {
             _logger = log;
             _client = client;
