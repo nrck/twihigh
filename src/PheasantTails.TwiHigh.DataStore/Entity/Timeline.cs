@@ -32,5 +32,23 @@
             ReplyFrom = tweet.ReplyFrom;
             CreateAt= tweet.CreateAt;
         }
+
+        public Tweet ToTweet()
+        {
+            var tweet = new Tweet
+            {
+                Id = TweetId,
+                UserId = UserId,
+                UserDisplayId = UserDisplayId,
+                UserDisplayName = UserDisplayName,
+                UserAvatarUrl = UserAvatarUrl,
+                Text = Text,
+                ReplyTo = ReplyTo,
+                ReplyFrom = ReplyFrom,
+                CreateAt = CreateAt
+            };
+
+            return tweet;
+        }
     }
 }
