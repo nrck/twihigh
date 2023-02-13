@@ -10,7 +10,7 @@
         public string HashedPassword { get; set; } = string.Empty;
         public string Biography { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
-        public DateTimeOffset CreateAt = DateTimeOffset.UtcNow;
+        public DateTimeOffset CreateAt { get; set; } = DateTimeOffset.UtcNow;
         public long Tweets { get; set; }
         public string AvatarUrl { get; set; } = string.Empty;
         public Guid[] Follows { get; set; } = Array.Empty<Guid>();

@@ -22,9 +22,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.Timel
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.FunctionCore", "src\PheasantTails.TwiHigh.FunctionCore\PheasantTails.TwiHigh.FunctionCore.csproj", "{29B38AA6-3699-4086-8A50-523EBA180BFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PheasantTails.TwiHigh.FollowsFunctions", "src\PheasantTails.TwiHigh.FollowsFunctions\PheasantTails.TwiHigh.FollowsFunctions.csproj", "{B0FAF80D-2D54-4E16-83D9-C9AF8F266CE6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.FollowsFunctions", "src\PheasantTails.TwiHigh.FollowsFunctions\PheasantTails.TwiHigh.FollowsFunctions.csproj", "{B0FAF80D-2D54-4E16-83D9-C9AF8F266CE6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PheasantTails.TwiHigh.DeveloperTools.CosmosDbCreator", "src\PheasantTails.TwiHigh.DeveloperTools.CosmosDbCreator\PheasantTails.TwiHigh.DeveloperTools.CosmosDbCreator.csproj", "{8ABC01D7-0485-4FAA-B764-F48E124D0357}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.DeveloperTools.CosmosDbCreator", "src\PheasantTails.TwiHigh.DeveloperTools.CosmosDbCreator\PheasantTails.TwiHigh.DeveloperTools.CosmosDbCreator.csproj", "{8ABC01D7-0485-4FAA-B764-F48E124D0357}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PheasantTails.TwiHigh.AppUserFunctions", "src\PheasantTails.TwiHigh.AppUserFunctions\PheasantTails.TwiHigh.AppUserFunctions.csproj", "{63D660A7-69BB-4CCE-9196-B5AE2D8B3D7C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -64,6 +66,10 @@ Global
 		{8ABC01D7-0485-4FAA-B764-F48E124D0357}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8ABC01D7-0485-4FAA-B764-F48E124D0357}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8ABC01D7-0485-4FAA-B764-F48E124D0357}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63D660A7-69BB-4CCE-9196-B5AE2D8B3D7C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63D660A7-69BB-4CCE-9196-B5AE2D8B3D7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63D660A7-69BB-4CCE-9196-B5AE2D8B3D7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63D660A7-69BB-4CCE-9196-B5AE2D8B3D7C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
