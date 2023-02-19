@@ -1,0 +1,74 @@
+﻿.tweet-article {
+    display: flex;
+    padding-top: 12px;
+    padding-right: 12px;
+    padding-bottom: 12px;
+    padding-left: 12px;
+    width: 100%;
+    border-bottom-width: 0.8px;
+    border-bottom-style: solid;
+    border-bottom-color: rgb(239,243,244);
+}
+
+.tweet-article-left {
+    width: 48px;
+    margin-right: 12px;
+}
+
+.tweet-article-right {
+    width: calc(100% - 12px - 48px);
+}
+
+.tweet-article-right-header {
+    display: flex;
+    max-width: 100%;
+}
+
+.user-display-name {
+    padding-right: 4px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    min-width: 0;
+}
+
+    .user-display-name span {
+        color: rgb(15,20,25);
+        font-size: 15px;
+        font-weight: 700;
+    }
+
+.user-display-id {
+    padding-right: 16px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    min-width: 0;
+}
+
+    .user-display-id span {
+        color: rgb(83,100,113);
+        font-size: 15px;
+        font-weight: 400;
+    }
+
+.user-display-createat {
+    margin-left: auto;
+}
+
+    .user-display-createat span {
+        color: rgb(83,100,113);
+        font-size: 15px;
+        font-weight: 400;
+        white-space: nowrap;
+    }
+
+.user-tweet-text {
+}
+
+    .user-tweet-text span {
+        color: rgb(15,20,25);
+        line-height: 20px;
+        font-size: 15px;
+        font-weight: 400;
+    }

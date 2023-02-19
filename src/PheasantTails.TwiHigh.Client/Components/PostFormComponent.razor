@@ -1,0 +1,16 @@
+﻿@*
+    ツイート投稿欄
+*@
+<article class="post-article">
+    <div class="post-article-left">
+        <AvatarComponent UserAvatarUrl="@UserAvatarUrl" />
+    </div>
+    <div class="tweet-post-form">
+        <div class="tweet-post-textarea">
+            <textarea @bind="PostTweetContext.Text" placeholder="いまどうしてる？" />
+        </div>
+        <div class="tweet-post-submit-button">
+            <button type="button" @onclick="OnSubmit">ツイートする</button>
+        </div>
+    </div>
+</article>

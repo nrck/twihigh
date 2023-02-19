@@ -1,0 +1,38 @@
+﻿@* ツイート外枠 *@
+<article class="tweet-article">
+    @if (Tweet != null)
+    {
+        @* 左 *@
+        <div class="tweet-article-left">
+            @* アイコン *@
+            <AvatarComponent UserAvatarUrl="@Tweet.UserAvatarUrl" />
+        </div>
+        @* 右 *@
+        <div class="tweet-article-right">
+            @* ヘッダー *@
+            <div class="tweet-article-right-header">
+                @* ユーザー名 *@
+                <div class="user-display-name">
+                    <span>@Tweet.UserDisplayName</span>
+                </div>
+                @* ユーザーID *@
+                <div class="user-display-id">
+                    <span>@@@Tweet.UserDisplayId</span>
+                </div>
+                @* 投稿時刻 *@
+                <div class="user-display-createat">
+                    <span>@Tweet.CreateAt.ToLocalTime().ToString("T")</span>
+                </div>
+            </div>
+            @* ボディ*@
+            <div class="tweet-article-right-body">
+                @* テキスト本文 *@
+                <div class="user-tweet-text">
+                    <span>@Tweet.Text</span>
+                </div>
+            </div>
+            <div class="tweet-article-right-footer">
+            </div>
+        </div>
+    }
+</article>
