@@ -1,0 +1,25 @@
+﻿@page "/Home"
+@*
+    ログイン後のページ
+*@
+
+@* タイトル *@
+<PageTitleComponent Title="ホーム" />
+
+@* ツイート欄 *@
+<section>
+    <PostFormComponent UserAvatarUrl="https://pbs.twimg.com/profile_images/1547938967257251840/Y0IVpcxC_400x400.jpg" />
+</section>
+@* タイムライン *@
+<section>
+    @if (Tweets != null)
+    {
+        foreach (var tweet in Tweets)
+        {
+            <TweetComponent Tweet="tweet" />
+            <TweetComponent Tweet="tweet" />
+            <TweetComponent Tweet="tweet" />
+            <TweetComponent Tweet="tweet" />
+        }
+    }
+</section>
