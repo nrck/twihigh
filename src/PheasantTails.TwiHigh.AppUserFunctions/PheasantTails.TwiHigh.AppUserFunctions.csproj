@@ -14,6 +14,10 @@
 		<ProjectReference Include="..\PheasantTails.TwiHigh.Model\PheasantTails.TwiHigh.Model.csproj" />
 	</ItemGroup>
 	<ItemGroup>
+		<FunctionsPreservedDependencies Include="System.IdentityModel.Tokens.Jwt.dll" />
+		<FunctionsPreservedDependencies Include="System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.dll" />
+		<FunctionsPreservedDependencies Include="Microsoft.IdentityModel.Tokens.dll" />
+		<FunctionsPreservedDependencies Include="Microsoft.IdentityModel.Logging.dll" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Update="host.json">
