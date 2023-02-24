@@ -21,7 +21,7 @@
                 </div>
                 @* 投稿時刻 *@
                 <div class="user-display-createat">
-                    <span>@Tweet.CreateAt.ToLocalTime().ToString("T")</span>
+                    <span title="@(Tweet.CreateAt.ToLocalTime().ToString("G"))">@CreateAt</span>
                 </div>
             </div>
             @* ボディ*@
