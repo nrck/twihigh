@@ -1,9 +1,13 @@
-﻿using PheasantTails.TwiHigh.DataStore.Entity;
+﻿using Microsoft.AspNetCore.Components;
+using PheasantTails.TwiHigh.Client.TypedHttpClients;
+using PheasantTails.TwiHigh.DataStore.Entity;
 using PheasantTails.TwiHigh.Model.Timelines;
+using System.Net.Http;
+using System.Net.Http.Json;
 
 namespace PheasantTails.TwiHigh.Client.Pages
 {
-    public partial class Home
+    public partial class Home : IDisposable
     {
         private readonly ResponseTimelineContext TEST = new ResponseTimelineContext
         {
@@ -26,12 +30,44 @@ namespace PheasantTails.TwiHigh.Client.Pages
             }
         };
 
-        private Tweet[] Tweets { get; set; }
+#pragma warning disable CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
+        [Inject]
+        private TimelineHttpClient TimelineHttpClient { get; set; }
+#pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
+
+        private Tweet[] Tweets { get; set; } = Array.Empty<Tweet>();
+
+        private CancellationTokenSource? WorkerCancellationTokenSource { get; set; } = null;
 
         protected override Task OnInitializedAsync()
         {
-            Tweets = TEST.Tweets;
-            return base.OnInitializedAsync();
+            WorkerCancellationTokenSource ??= new CancellationTokenSource();
+
+            return Task.WhenAll(
+                base.OnInitializedAsync(),
+                GetMyTimerlineEvery5secAsync(WorkerCancellationTokenSource.Token)
+            );
+        }
+
+        private async Task GetMyTimerlineEvery5secAsync(CancellationToken cancellationToken = default)
+        {
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                var response = await TimelineHttpClient.GetMyTimelineAsync();
+                if (response != null)
+                {
+                    Tweets = response.Tweets;
+                    StateHasChanged();
+                }
+
+                await Task.Delay(5000, cancellationToken);
+            }
+        }
+
+        public void Dispose()
+        {
+            WorkerCancellationTokenSource?.Cancel();
+            GC.SuppressFinalize(this);
         }
     }
 }
