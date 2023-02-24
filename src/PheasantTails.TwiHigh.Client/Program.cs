@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using PheasantTails.TwiHigh.Client.TypedHttpClients;
 
 namespace PheasantTails.TwiHigh.Client
 {
@@ -11,7 +12,10 @@ namespace PheasantTails.TwiHigh.Client
             builder.RootComponents.Add<App>("#app");
             builder.RootComponents.Add<HeadOutlet>("head::after");
 
-            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+            builder.Services.AddHttpClient<TimelineHttpClient>(client =>
+            {
+                //client.BaseAddress = new Uri("http://localhost:5001/");
+            });
 
             builder.Services.AddOidcAuthentication(options =>
             {
