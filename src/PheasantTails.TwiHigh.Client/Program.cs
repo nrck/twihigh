@@ -12,10 +12,8 @@ namespace PheasantTails.TwiHigh.Client
             builder.RootComponents.Add<App>("#app");
             builder.RootComponents.Add<HeadOutlet>("head::after");
 
-            builder.Services.AddHttpClient<TimelineHttpClient>(client =>
-            {
-                //client.BaseAddress = new Uri("http://localhost:5001/");
-            });
+            builder.Services.AddHttpClient<TimelineHttpClient>();
+            builder.Services.AddHttpClient<AppUserHttpClient>();
 
             builder.Services.AddOidcAuthentication(options =>
             {
