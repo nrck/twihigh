@@ -1,4 +1,5 @@
 ﻿using PheasantTails.TwiHigh.Model.TwiHighUsers;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
 namespace PheasantTails.TwiHigh.Client.TypedHttpClients
@@ -33,7 +34,7 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
             try
             {
                 var mes = new HttpRequestMessage(HttpMethod.Get, API_URL_REFRESH);
-                mes.Headers.Add("Authorization", token);
+                mes.Headers.Authorization = new AuthenticationHeaderValue("bearer", token);
                 var res = await _httpClient.SendAsync(mes);
                 res.EnsureSuccessStatusCode();
 
