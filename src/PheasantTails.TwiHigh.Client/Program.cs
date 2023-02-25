@@ -1,3 +1,5 @@
+using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using PheasantTails.TwiHigh.Client.TypedHttpClients;
@@ -12,8 +14,13 @@ namespace PheasantTails.TwiHigh.Client
             builder.RootComponents.Add<App>("#app");
             builder.RootComponents.Add<HeadOutlet>("head::after");
 
+            // Œ^•t‚«HttpClient
             builder.Services.AddHttpClient<TimelineHttpClient>();
             builder.Services.AddHttpClient<AppUserHttpClient>();
+
+            // ƒ~ƒhƒ‹
+            builder.Services.AddBlazoredLocalStorage();
+            builder.Services.AddScoped<AuthenticationStateProvider, TwiHighAuthenticationStateProvider>();
 
             builder.Services.AddOidcAuthentication(options =>
             {
