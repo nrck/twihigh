@@ -3,3 +3,38 @@
     ログインページ
 *@
 
+<section>
+    <div class="login-form">
+        <h2>TwiHighにログイン</h2>
+        <div class="login-form-group">
+            <label for="user-display-id" class="login-form-user-display-id-label">ユーザ名</label>
+            <input type="text" name="user-display-id" class="login-form-user-display-id-input" @bind-value=PostAuthorizationContext.DisplayId />
+        </div>
+        <div class="login-form-group">
+            <label for="user-password" class="login-form-user-password-label">パスワード</label>
+            <input type="password" name="user-password" class="login-form-user-password-input" @bind-value=PostAuthorizationContext.PlanePassword />
+        </div>
+        <div class="login-form-group">
+            <button type="submit" class="login-form-submit-button" @onclick=OnClickLoginButtonAsync disabled="@IsLoginWorking">
+                @if (IsLoginWorking)
+                {
+                    <span>
+                        少しお待ち下さい...
+                    </span>
+                }
+                else
+                {
+                    <span>
+                        ログインする
+                    </span>
+                }
+            </button>
+        </div>
+        @if (!string.IsNullOrEmpty(ErrorMessage))
+        {
+            <div class="login-form-group">
+                <span class="error-message">@ErrorMessage</span>
+            </div>
+        }
+    </div>
+</section>
