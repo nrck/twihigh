@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using PheasantTails.TwiHigh.Client.TypedHttpClients;
 using PheasantTails.TwiHigh.DataStore.Entity;
 using PheasantTails.TwiHigh.Model.Timelines;
@@ -35,15 +37,22 @@ namespace PheasantTails.TwiHigh.Client.Pages
         private TimelineHttpClient TimelineHttpClient { get; set; }
 #pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
 
+#pragma warning disable CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
+        [Inject]
+        private ILocalStorageService LocalStorage { get; set; }
+#pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
+
         private Tweet[] Tweets { get; set; } = Array.Empty<Tweet>();
 
         private CancellationTokenSource? WorkerCancellationTokenSource { get; set; } = null;
 
-        protected override Task OnInitializedAsync()
+        protected override async Task OnInitializedAsync()
         {
             WorkerCancellationTokenSource ??= new CancellationTokenSource();
+            var token = await LocalStorage.GetItemAsStringAsync("TwiHighJwt");
+            TimelineHttpClient.SetToken(token);
 
-            return Task.WhenAll(
+            await Task.WhenAll(
                 base.OnInitializedAsync(),
                 GetMyTimerlineEvery5secAsync(WorkerCancellationTokenSource.Token)
             );
