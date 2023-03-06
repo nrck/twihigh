@@ -17,10 +17,14 @@ namespace PheasantTails.TwiHigh.Client
             // Œ^•t‚«HttpClient
             builder.Services.AddHttpClient<TimelineHttpClient>();
             builder.Services.AddHttpClient<AppUserHttpClient>();
+            builder.Services.AddHttpClient<TweetHttpClient>();
 
             // ƒ~ƒhƒ‹
             builder.Services.AddBlazoredLocalStorage();
             builder.Services.AddScoped<AuthenticationStateProvider, TwiHighAuthenticationStateProvider>();
+
+            builder.Services.AddOptions();
+            builder.Services.AddAuthorizationCore();
 
             builder.Services.AddOidcAuthentication(options =>
             {

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using PheasantTails.TwiHigh.Client.TypedHttpClients;
 using PheasantTails.TwiHigh.Model.TwiHighUsers;
@@ -10,6 +11,16 @@ namespace PheasantTails.TwiHigh.Client.Pages
 #pragma warning disable CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
         [Inject]
         private AppUserHttpClient AppUserHttpClient { get; set; }
+#pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
+
+#pragma warning disable CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
+        [Inject]
+        private NavigationManager Navigation { get; set; }
+#pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
+
+#pragma warning disable CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
+        [Inject]
+        private AuthenticationStateProvider AuthenticationStateProvider { get; set; }
 #pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
 
         private PostAuthorizationContext PostAuthorizationContext { get; set; } = new PostAuthorizationContext();
@@ -46,6 +57,9 @@ namespace PheasantTails.TwiHigh.Client.Pages
                 ErrorMessage = "ログインできませんでした。ユーザ名とパスワードを確認してください。";
             }
             IsLoginWorking = false;
+            await ((TwiHighAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsAuthenticatedAsync(res?.Token ?? string.Empty);
+
+            Navigation.NavigateTo(DefinePaths.PAGE_PATH_HOME);
             return;
         }
     }

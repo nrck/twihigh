@@ -1,4 +1,5 @@
 ﻿using PheasantTails.TwiHigh.Model.Timelines;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
 namespace PheasantTails.TwiHigh.Client.TypedHttpClients
@@ -11,18 +12,27 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
         public TimelineHttpClient(HttpClient httpClient)
         {
             _httpClient = httpClient;
-            _httpClient.DefaultRequestHeaders.Add("Authorization", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImRlOTJiNGRkLWU3ZDEtNDRkYy1hZDE2LTdkM2Y3OGE3NWYzYSIsImRpc3BsYXlJZCI6Im5yX2NrIiwiZGlzcGxheU5hbWUiOiLjgZEifQ.EsKtX9J5EzQDQ0s4nusU4XG7QBdRqVlztcYwnGfFUDc");
         }
 
-        public Task<ResponseTimelineContext?> GetMyTimelineAsync()
+        public void SetToken(string token)
+        {
+            if (string.IsNullOrEmpty(token))
+            {
+                throw new ArgumentNullException(nameof(token));
+            }
+
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        }
+
+        public async Task<ResponseTimelineContext?> GetMyTimelineAsync()
         {
             try
             {
-                return _httpClient.GetFromJsonAsync<ResponseTimelineContext>(API_URL_TIMELINE);
+                return await _httpClient.GetFromJsonAsync<ResponseTimelineContext>(API_URL_TIMELINE);
             }
             catch (Exception)
             {
-                return Task.FromResult<ResponseTimelineContext?>(new ResponseTimelineContext());
+                return await Task.FromResult<ResponseTimelineContext?>(new ResponseTimelineContext());
             }
         }
     }
