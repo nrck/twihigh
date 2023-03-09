@@ -28,7 +28,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.Devel
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.AppUserFunctions", "src\PheasantTails.TwiHigh.AppUserFunctions\PheasantTails.TwiHigh.AppUserFunctions.csproj", "{63D660A7-69BB-4CCE-9196-B5AE2D8B3D7C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PheasantTails.TwiHigh.Client", "src\PheasantTails.TwiHigh.Client\PheasantTails.TwiHigh.Client.csproj", "{18D0277E-E8D6-4666-9AEB-9495C2A0D459}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.Client", "src\PheasantTails.TwiHigh.Client\PheasantTails.TwiHigh.Client.csproj", "{18D0277E-E8D6-4666-9AEB-9495C2A0D459}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
