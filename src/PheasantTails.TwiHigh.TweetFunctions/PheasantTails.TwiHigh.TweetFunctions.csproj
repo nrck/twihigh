@@ -8,9 +8,6 @@
 		<FunctionsPreservedDependencies Include="System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.dll" />
 		<FunctionsPreservedDependencies Include="Microsoft.IdentityModel.Tokens.dll" />
 		<FunctionsPreservedDependencies Include="Microsoft.IdentityModel.Logging.dll" />
-		<PackageReference Include="Azure.Storage.Queues" Version="12.12.0" />
-		<PackageReference Include="Microsoft.Azure.Cosmos" Version="3.32.0" />
-		<PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.1.0" />
 		<PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.1.3" />
 	</ItemGroup>
 	<ItemGroup>
