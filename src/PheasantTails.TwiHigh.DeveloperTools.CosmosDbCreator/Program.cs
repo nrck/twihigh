@@ -1,7 +1,7 @@
 ﻿using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Fluent;
-using PheasantTails.TwiHigh.DataStore.Entity;
-using static PheasantTails.TwiHigh.FunctionCore.StaticStrings;
+using PheasantTails.TwiHigh.Data.Store.Entity;
+using static PheasantTails.TwiHigh.Functions.Core.StaticStrings;
 
 Console.WriteLine("本アプリケーションは開発環境用のデータベースを作成します。");
 Console.WriteLine();

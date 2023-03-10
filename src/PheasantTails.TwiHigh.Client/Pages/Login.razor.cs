@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using PheasantTails.TwiHigh.Client.TypedHttpClients;
-using PheasantTails.TwiHigh.Model.TwiHighUsers;
+using PheasantTails.TwiHigh.Data.Model.TwiHighUsers;
 
 namespace PheasantTails.TwiHigh.Client.Pages
 {

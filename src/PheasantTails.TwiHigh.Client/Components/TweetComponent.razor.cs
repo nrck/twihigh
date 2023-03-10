@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
-using PheasantTails.TwiHigh.DataStore.Entity;
+using PheasantTails.TwiHigh.Data.Store.Entity;
 
 namespace PheasantTails.TwiHigh.Client.Components
 {

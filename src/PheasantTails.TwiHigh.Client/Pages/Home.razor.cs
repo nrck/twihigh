@@ -1,11 +1,8 @@
 ﻿using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
 using PheasantTails.TwiHigh.Client.TypedHttpClients;
-using PheasantTails.TwiHigh.DataStore.Entity;
-using PheasantTails.TwiHigh.Model.Timelines;
-using System.Net.Http;
-using System.Net.Http.Json;
+using PheasantTails.TwiHigh.Data.Model.Timelines;
+using PheasantTails.TwiHigh.Data.Store.Entity;
 
 namespace PheasantTails.TwiHigh.Client.Pages
 {
