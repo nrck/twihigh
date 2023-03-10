@@ -1,4 +1,4 @@
-﻿using PheasantTails.TwiHigh.Model.Timelines;
+﻿using PheasantTails.TwiHigh.Data.Model.Timelines;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 

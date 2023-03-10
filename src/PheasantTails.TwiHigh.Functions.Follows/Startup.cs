@@ -1,5 +1,5 @@
 ﻿using Microsoft.Azure.Functions.Extensions.DependencyInjection;
-using PheasantTails.TwiHigh.FunctionCore;
+using PheasantTails.TwiHigh.Functions.Core;
 using PheasantTails.TwiHigh.Functions.Follows;
 
 [assembly: FunctionsStartup(typeof(Startup))]

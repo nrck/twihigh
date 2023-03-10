@@ -7,9 +7,9 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using PheasantTails.TwiHigh.DataStore.Entity;
-using PheasantTails.TwiHigh.Extensions;
-using PheasantTails.TwiHigh.Model.TwiHighUsers;
+using PheasantTails.TwiHigh.Data.Model.TwiHighUsers;
+using PheasantTails.TwiHigh.Data.Store.Entity;
+using PheasantTails.TwiHigh.Functions.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -18,7 +18,7 @@ using System.Net;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using static PheasantTails.TwiHigh.FunctionCore.StaticStrings;
+using static PheasantTails.TwiHigh.Functions.Core.StaticStrings;
 
 namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
 {

@@ -4,16 +4,16 @@ using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
-using PheasantTails.TwiHigh.DataStore.Entity;
-using PheasantTails.TwiHigh.Extensions;
-using PheasantTails.TwiHigh.Model.Followers;
-using PheasantTails.TwiHigh.Model.Timelines;
+using PheasantTails.TwiHigh.Data.Model.Followers;
+using PheasantTails.TwiHigh.Data.Model.Timelines;
+using PheasantTails.TwiHigh.Data.Store.Entity;
+using PheasantTails.TwiHigh.Functions.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using static PheasantTails.TwiHigh.FunctionCore.StaticStrings;
+using static PheasantTails.TwiHigh.Functions.Core.StaticStrings;
 
 namespace PheasantTails.TwiHigh.Functions.Timelines
 {

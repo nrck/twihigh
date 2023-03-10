@@ -1,4 +1,4 @@
-﻿using PheasantTails.TwiHigh.Model.TwiHighUsers;
+﻿using PheasantTails.TwiHigh.Data.Model.TwiHighUsers;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 

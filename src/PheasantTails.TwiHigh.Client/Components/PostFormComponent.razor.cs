@@ -1,7 +1,7 @@
 ﻿using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
 using PheasantTails.TwiHigh.Client.TypedHttpClients;
-using PheasantTails.TwiHigh.Model;
+using PheasantTails.TwiHigh.Data.Model;
 
 namespace PheasantTails.TwiHigh.Client.Components
 {

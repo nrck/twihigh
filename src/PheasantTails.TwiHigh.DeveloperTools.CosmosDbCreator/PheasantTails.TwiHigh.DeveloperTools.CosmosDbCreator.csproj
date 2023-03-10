@@ -8,8 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PheasantTails.TwiHigh.DataStore\PheasantTails.TwiHigh.DataStore.csproj" />
-    <ProjectReference Include="..\PheasantTails.TwiHigh.FunctionCore\PheasantTails.TwiHigh.Functions.Core.csproj" />
+    <ProjectReference Include="..\PheasantTails.TwiHigh.Data.Store\PheasantTails.TwiHigh.Data.Store.csproj" />
+    <ProjectReference Include="..\PheasantTails.TwiHigh.Functions.Core\PheasantTails.TwiHigh.Functions.Core.csproj" />
   </ItemGroup>
 
 </Project>
