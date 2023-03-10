@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.TweetFunctions", "src\PheasantTails.TwiHigh.TweetFunctions\PheasantTails.TwiHigh.TweetFunctions.csproj", "{476A7BA4-8D04-493D-914C-96E2FADF5730}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.Functions.Tweets", "src\PheasantTails.TwiHigh.Functions.Tweets\PheasantTails.TwiHigh.Functions.Tweets.csproj", "{476A7BA4-8D04-493D-914C-96E2FADF5730}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Properties", "Properties", "{6C7BCBC6-EA06-4604-BF1F-340EAEFAD917}"
 	ProjectSection(SolutionItems) = preProject
@@ -12,21 +12,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Properties", "Properties", 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.Extensions", "src\PheasantTails.TwiHigh.HttpRequestExtensions\PheasantTails.TwiHigh.Extensions.csproj", "{125E3B7D-E505-4F97-AEAA-D4D3ECE76146}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.Functions.Extensions", "src\PheasantTails.TwiHigh.Functions.Extensions\PheasantTails.TwiHigh.Functions.Extensions.csproj", "{125E3B7D-E505-4F97-AEAA-D4D3ECE76146}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.Model", "src\PheasantTails.TwiHigh.Model\PheasantTails.TwiHigh.Model.csproj", "{DF52845F-AF4F-4581-96AF-4E1E17C51CA6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.Data.Model", "src\PheasantTails.TwiHigh.Data.Model\PheasantTails.TwiHigh.Data.Model.csproj", "{DF52845F-AF4F-4581-96AF-4E1E17C51CA6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.DataStore", "src\PheasantTails.TwiHigh.DataStore\PheasantTails.TwiHigh.DataStore.csproj", "{CC531CB0-1A8A-4392-B5FB-48571978543B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.Data.Store", "src\PheasantTails.TwiHigh.Data.Store\PheasantTails.TwiHigh.Data.Store.csproj", "{CC531CB0-1A8A-4392-B5FB-48571978543B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.TimelinesFunctions", "src\PheasantTails.TwiHigh.TimelinesFunctions\PheasantTails.TwiHigh.TimelinesFunctions.csproj", "{3EF897FD-2AC8-4528-9283-626580E8E3A6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.Functions.Timelines", "src\PheasantTails.TwiHigh.Functions.Timelines\PheasantTails.TwiHigh.Functions.Timelines.csproj", "{3EF897FD-2AC8-4528-9283-626580E8E3A6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.FunctionCore", "src\PheasantTails.TwiHigh.FunctionCore\PheasantTails.TwiHigh.FunctionCore.csproj", "{29B38AA6-3699-4086-8A50-523EBA180BFA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.Functions.Core", "src\PheasantTails.TwiHigh.Functions.Core\PheasantTails.TwiHigh.Functions.Core.csproj", "{29B38AA6-3699-4086-8A50-523EBA180BFA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.FollowsFunctions", "src\PheasantTails.TwiHigh.FollowsFunctions\PheasantTails.TwiHigh.FollowsFunctions.csproj", "{B0FAF80D-2D54-4E16-83D9-C9AF8F266CE6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.Functions.Follows", "src\PheasantTails.TwiHigh.Functions.Follows\PheasantTails.TwiHigh.Functions.Follows.csproj", "{B0FAF80D-2D54-4E16-83D9-C9AF8F266CE6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.DeveloperTools.CosmosDbCreator", "src\PheasantTails.TwiHigh.DeveloperTools.CosmosDbCreator\PheasantTails.TwiHigh.DeveloperTools.CosmosDbCreator.csproj", "{8ABC01D7-0485-4FAA-B764-F48E124D0357}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.AppUserFunctions", "src\PheasantTails.TwiHigh.AppUserFunctions\PheasantTails.TwiHigh.AppUserFunctions.csproj", "{63D660A7-69BB-4CCE-9196-B5AE2D8B3D7C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.Functions.TwiHighUsers", "src\PheasantTails.TwiHigh.Functions.TwiHighUsers\PheasantTails.TwiHigh.Functions.TwiHighUsers.csproj", "{63D660A7-69BB-4CCE-9196-B5AE2D8B3D7C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.Client", "src\PheasantTails.TwiHigh.Client\PheasantTails.TwiHigh.Client.csproj", "{18D0277E-E8D6-4666-9AEB-9495C2A0D459}"
 EndProject
