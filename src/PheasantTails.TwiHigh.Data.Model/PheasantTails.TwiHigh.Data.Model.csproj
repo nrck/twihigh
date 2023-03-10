@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PheasantTails.TwiHigh.DataStore\PheasantTails.TwiHigh.DataStore.csproj" />
+    <ProjectReference Include="..\PheasantTails.TwiHigh.Data.Store\PheasantTails.TwiHigh.Data.Store.csproj" />
   </ItemGroup>
 
 </Project>
