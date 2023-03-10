@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PheasantTails.TwiHigh.DataStore\PheasantTails.TwiHigh.DataStore.csproj" />
-    <ProjectReference Include="..\PheasantTails.TwiHigh.FunctionCore\PheasantTails.TwiHigh.FunctionCore.csproj" />
+    <ProjectReference Include="..\PheasantTails.TwiHigh.FunctionCore\PheasantTails.TwiHigh.Functions.Core.csproj" />
   </ItemGroup>
 
 </Project>

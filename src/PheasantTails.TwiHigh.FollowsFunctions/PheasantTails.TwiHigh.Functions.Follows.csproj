@@ -8,8 +8,8 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\PheasantTails.TwiHigh.DataStore\PheasantTails.TwiHigh.DataStore.csproj" />
-		<ProjectReference Include="..\PheasantTails.TwiHigh.FunctionCore\PheasantTails.TwiHigh.FunctionCore.csproj" />
-		<ProjectReference Include="..\PheasantTails.TwiHigh.HttpRequestExtensions\PheasantTails.TwiHigh.Extensions.csproj" />
+		<ProjectReference Include="..\PheasantTails.TwiHigh.FunctionCore\PheasantTails.TwiHigh.Functions.Core.csproj" />
+		<ProjectReference Include="..\PheasantTails.TwiHigh.HttpRequestExtensions\PheasantTails.TwiHigh.Functions.Extensions.csproj" />
 		<ProjectReference Include="..\PheasantTails.TwiHigh.Model\PheasantTails.TwiHigh.Model.csproj" />
 	</ItemGroup>
 	<ItemGroup>
