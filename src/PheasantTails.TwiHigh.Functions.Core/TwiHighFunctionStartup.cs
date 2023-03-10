@@ -4,7 +4,7 @@ using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace PheasantTails.TwiHigh.FunctionCore
+namespace PheasantTails.TwiHigh.Functions.Core
 {
     public class TwiHighFunctionStartup : FunctionsStartup
     {

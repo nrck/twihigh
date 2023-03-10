@@ -15,7 +15,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using static PheasantTails.TwiHigh.FunctionCore.StaticStrings;
 
-namespace PheasantTails.TwiHigh.TimelinesFunctions
+namespace PheasantTails.TwiHigh.Functions.Timelines
 {
     public class TimelineFunction
     {

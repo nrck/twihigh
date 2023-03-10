@@ -1,4 +1,4 @@
-﻿namespace PheasantTails.TwiHigh.FunctionCore
+﻿namespace PheasantTails.TwiHigh.Functions.Core
 {
     public class StaticStrings
     {

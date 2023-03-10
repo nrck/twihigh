@@ -1,4 +1,4 @@
-﻿namespace PheasantTails.TwiHigh.Model
+﻿namespace PheasantTails.TwiHigh.Data.Model
 {
     public class PostTweetContext
     {

@@ -1,4 +1,4 @@
-﻿namespace PheasantTails.TwiHigh.DataStore.Entity
+﻿namespace PheasantTails.TwiHigh.Data.Store.Entity
 {
     public class Timeline
     {
@@ -24,13 +24,13 @@
             TweetId = tweet.Id;
             OwnerUserId = owner;
             UserId = tweet.UserId;
-            UserDisplayId= tweet.UserDisplayId;
+            UserDisplayId = tweet.UserDisplayId;
             UserDisplayName = tweet.UserDisplayName;
-            UserAvatarUrl= tweet.UserAvatarUrl;
+            UserAvatarUrl = tweet.UserAvatarUrl;
             Text = tweet.Text;
             ReplyTo = tweet.ReplyTo;
             ReplyFrom = tweet.ReplyFrom;
-            CreateAt= tweet.CreateAt;
+            CreateAt = tweet.CreateAt;
         }
 
         public Tweet ToTweet()

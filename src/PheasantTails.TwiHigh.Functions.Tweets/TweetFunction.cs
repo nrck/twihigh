@@ -13,7 +13,7 @@ using System;
 using System.Threading.Tasks;
 using static PheasantTails.TwiHigh.FunctionCore.StaticStrings;
 
-namespace PheasantTails.TwiHigh.TweetFunctions
+namespace PheasantTails.TwiHigh.Functions.Tweets
 {
     public class TweetFunction
     {
