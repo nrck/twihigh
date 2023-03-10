@@ -3,7 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace PheasantTails.TwiHigh.Extensions
+namespace PheasantTails.TwiHigh.Functions.Extensions
 {
     public static class HttpRequestExtensions
     {

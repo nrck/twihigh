@@ -1,4 +1,4 @@
-﻿namespace PheasantTails.TwiHigh.DataStore
+﻿namespace PheasantTails.TwiHigh.Data.Store
 {
     public class Repository
     {

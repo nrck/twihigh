@@ -1,4 +1,4 @@
-﻿namespace PheasantTails.TwiHigh.DataStore.Entity
+﻿namespace PheasantTails.TwiHigh.Data.Store.Entity
 {
     public class Tweet
     {

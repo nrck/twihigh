@@ -1,4 +1,4 @@
-﻿namespace PheasantTails.TwiHigh.Model.TwiHighUsers
+﻿namespace PheasantTails.TwiHigh.Data.Model.TwiHighUsers
 {
     public class PostAuthorizationContext
     {

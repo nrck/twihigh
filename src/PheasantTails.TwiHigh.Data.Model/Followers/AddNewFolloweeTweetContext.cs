@@ -1,4 +1,4 @@
-﻿namespace PheasantTails.TwiHigh.Model.Followers
+﻿namespace PheasantTails.TwiHigh.Data.Model.Followers
 {
     public class AddNewFolloweeTweetContext
     {

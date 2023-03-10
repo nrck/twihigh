@@ -20,7 +20,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static PheasantTails.TwiHigh.FunctionCore.StaticStrings;
 
-namespace PheasantTails.TwiHigh.AppUserFunctions
+namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
 {
     public class TwiHighUserFunction
     {

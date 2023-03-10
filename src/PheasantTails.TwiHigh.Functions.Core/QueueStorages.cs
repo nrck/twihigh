@@ -1,9 +1,9 @@
 ﻿using Azure.Storage.Queues;
 using System.Text;
 using System.Text.Json;
-using static PheasantTails.TwiHigh.FunctionCore.StaticStrings;
+using static PheasantTails.TwiHigh.Functions.Core.StaticStrings;
 
-namespace PheasantTails.TwiHigh.FunctionCore
+namespace PheasantTails.TwiHigh.Functions.Core
 {
     public static class QueueStorages
     {

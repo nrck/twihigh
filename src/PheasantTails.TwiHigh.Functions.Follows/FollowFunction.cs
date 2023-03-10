@@ -13,7 +13,7 @@ using System.Net;
 using System.Threading.Tasks;
 using static PheasantTails.TwiHigh.FunctionCore.StaticStrings;
 
-namespace PheasantTails.TwiHigh.FollowsFunctions
+namespace PheasantTails.TwiHigh.Functions.Follows
 {
     public class FollowFunction
     {
@@ -57,7 +57,7 @@ namespace PheasantTails.TwiHigh.FollowsFunctions
 
             await QueueStorages.InsertMessageAsync(
                     AZURE_STORAGE_ADD_TIMELINES_FOLLOW_TRIGGER_QUEUE_NAME,
-                    new AddNewFolloweeTweetContext { FolloweeId = followee.Resource.Id, UserId = follower.Resource.Id});
+                    new AddNewFolloweeTweetContext { FolloweeId = followee.Resource.Id, UserId = follower.Resource.Id });
 
             return new OkResult();
         }
