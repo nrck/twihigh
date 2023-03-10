@@ -1,8 +1,43 @@
-﻿<h3>Signup</h3>
-
+﻿@page "/SignUp"
 @*
     ユーザ作成
 *@
-@code {
-
-}
+<section>
+    <div class="login-form">
+        <h2>TwiHighの参加する</h2>
+        <div class="login-form-group">
+            <label for="user-display-id" class="login-form-user-display-id-label">メールアドレス</label>
+            <input type="text" name="user-display-id" class="login-form-user-display-id-input" @bind-value=Context.Email />
+        </div>
+        <div class="login-form-group">
+            <label for="user-display-id" class="login-form-user-display-id-label">表示名</label>
+            <input type="text" name="user-display-id" class="login-form-user-display-id-input" @bind-value=Context.DisplayName />
+        </div>
+        <div class="login-form-group">
+            <label for="user-password" class="login-form-user-password-label">パスワード</label>
+            <input type="password" name="user-password" class="login-form-user-password-input" @bind-value=Context.Password />
+        </div>
+        <div class="login-form-group">
+            <button type="submit" class="login-form-submit-button" @onclick=OnClickSignupButtonAsync disabled="@IsWorking">
+                @if (IsWorking)
+                {
+                    <span>
+                        少しお待ち下さい...
+                    </span>
+                }
+                else
+                {
+                    <span>
+                        ログインする
+                    </span>
+                }
+            </button>
+        </div>
+        @if (!string.IsNullOrEmpty(ErrorMessage))
+        {
+            <div class="login-form-group">
+                <span class="error-message">@ErrorMessage</span>
+            </div>
+        }
+    </div>
+</section>
