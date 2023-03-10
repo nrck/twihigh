@@ -1,10 +1,9 @@
 ﻿namespace PheasantTails.TwiHigh.Data.Store.Entity
 {
-    public class Timeline
+    public class Timeline : BaseEntity
     {
         public const string PARTITION_KEY = "/ownerUserId";
 
-        public Guid Id { get; set; }
         public Guid OwnerUserId { get; set; }
         public Guid TweetId { get; set; }
         public Guid UserId { get; set; }
@@ -14,7 +13,6 @@
         public string Text { get; set; } = string.Empty;
         public Guid? ReplyTo { get; set; }
         public Guid[] ReplyFrom { get; set; } = Array.Empty<Guid>();
-        public DateTimeOffset CreateAt { get; set; }
 
         public Timeline() { }
 
