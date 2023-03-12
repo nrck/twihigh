@@ -54,6 +54,10 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
                     tweets.Add(timeline.ToTweet());
                 }
             }
+            if (!tweets.Any())
+            {
+                return new NotFoundResult();
+            }
 
             var latest = tweets.Max(t => t.CreateAt);
             var oldest = tweets.Min(t => t.CreateAt);
