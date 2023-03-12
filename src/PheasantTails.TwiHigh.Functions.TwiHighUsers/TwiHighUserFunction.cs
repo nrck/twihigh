@@ -35,8 +35,8 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
             _configuration = configuration;
         }
 
-        [FunctionName("SignInAppUser")]
-        public async Task<IActionResult> SignInAppUserAsync(
+        [FunctionName("SignUp")]
+        public async Task<IActionResult> SignUpAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req)
         {
             var context = await req.JsonDeserializeAsync<AddTwiHighUserContext>();
@@ -76,7 +76,7 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
                 Followers = Array.Empty<Guid>(),
                 Follows = Array.Empty<Guid>(),
                 CreateAt = DateTimeOffset.UtcNow,
-                AvatarUrl = string.Empty
+                AvatarUrl = "https://twihighdevstorageaccount.blob.core.windows.net/twihigh-images/pengin.jpeg"
             };
             user.HashedPassword = new PasswordHasher<TwiHighUser>().HashPassword(user, context.Password);
 
@@ -125,13 +125,30 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
                 return new BadRequestObjectResult(context);
             }
 
-            var token = GenerateJwt(new Claim[] { new Claim("id", user.Id.ToString()) });
+            var claims = GenerateClaims(user);
+            var token = GenerateJwt(claims);
             var jwt = new ResponseJwtContext
             {
                 Token = new JwtSecurityTokenHandler().WriteToken(token)
             };
 
             return new OkObjectResult(jwt);
+        }
+
+        [FunctionName("TwiHighUser")]
+        public async Task<IActionResult> TwiHighUserAsync(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "TwiHighUser/{id}")] HttpRequest req,
+            string id
+            )
+        {
+            var users = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_USER_CONTAINER_NAME);
+            var res = await users.ReadItemAsync<TwiHighUser>(id, new PartitionKey(id));
+            if (res.StatusCode != HttpStatusCode.OK)
+            {
+                return new NotFoundResult();
+            }
+
+            return new OkObjectResult(new ResponseTwiHighUserContext(res.Resource));
         }
 
         [FunctionName("Refresh")]
@@ -149,8 +166,10 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
             {
                 return new NotFoundResult();
             }
+
             var user = result.Resource;
-            var token = GenerateJwt(new Claim[] { new Claim("id", user.Id.ToString()) });
+            var claims = GenerateClaims(user);
+            var token = GenerateJwt(claims);
             var jwt = new ResponseJwtContext
             {
                 Token = new JwtSecurityTokenHandler().WriteToken(token)
@@ -159,6 +178,18 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
             return new OkObjectResult(jwt);
         }
 
+        private List<Claim> GenerateClaims(TwiHighUser user)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(nameof(ResponseTwiHighUserContext.Id), user.Id.ToString()),
+                new Claim(nameof(ResponseTwiHighUserContext.DisplayId), user.DisplayId),
+                new Claim(nameof(ResponseTwiHighUserContext.DisplayName), user.DisplayName),
+                new Claim(nameof(ResponseTwiHighUserContext.AvatarUrl), user.AvatarUrl)
+            };
+
+            return claims;
+        }
 
         private JwtSecurityToken GenerateJwt(IEnumerable<Claim> claims = null)
         {

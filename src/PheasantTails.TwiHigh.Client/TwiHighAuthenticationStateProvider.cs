@@ -47,6 +47,7 @@ namespace PheasantTails.TwiHigh.Client
                 else
                 {
                     await _localStorage.SetItemAsync(LOCAL_STORAGE_NAME_JWT, newTokenRes.Token);
+                    savedToken = newTokenRes.Token;
                 }
             }
 
@@ -69,24 +70,18 @@ namespace PheasantTails.TwiHigh.Client
             NotifyAuthenticationStateChanged(authState);
         }
 
-        private Claim[] ParseClaimsFromJwt(string jwt)
+        private IEnumerable<Claim> ParseClaimsFromJwt(string jwt)
         {
             var jwtSecurityToken = DefaultJwtSecurityTokenHandler.ReadJwtToken(jwt);
-            if (jwtSecurityToken.Payload.TryGetValue(ClaimTypes.Role, out var roles))
-            {
-                var parsedRoles = JsonSerializer.Deserialize<string[]>(roles.ToString());
-                return parsedRoles?.Select(role => new Claim(ClaimTypes.Role, role)).ToArray() ?? Array.Empty<Claim>();
-            }
-
-            return Array.Empty<Claim>();
+            return jwtSecurityToken.Payload.Claims;
         }
 
         private DateTime? GetUtcExpiryFromJwt(string jwt)
         {
             var jwtSecurityToken = DefaultJwtSecurityTokenHandler.ReadJwtToken(jwt);
-            if (jwtSecurityToken.Payload.TryGetValue("exp", out var exp) && long.TryParse(exp.ToString(), out long unixtime))
+            if (jwtSecurityToken.Payload.Exp.HasValue)
             {
-                return DateTimeOffset.FromUnixTimeSeconds(unixtime).UtcDateTime;
+                return DateTimeOffset.FromUnixTimeSeconds(jwtSecurityToken.Payload.Exp.Value).UtcDateTime;
             }
 
             return null;

@@ -53,7 +53,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
                 IsWorking = false;
                 return;
             }
-            var response = await AppUserHttpClient.SignInAsync(Context);
+            var response = await AppUserHttpClient.SignUpAsync(Context);
 
             if(string.IsNullOrEmpty(response?.Token))
             {

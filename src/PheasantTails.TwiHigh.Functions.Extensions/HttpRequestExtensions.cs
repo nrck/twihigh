@@ -30,23 +30,20 @@ namespace PheasantTails.TwiHigh.Functions.Extensions
 
         public static bool TryGetUserId(this HttpRequest request, out string id)
         {
-            id = string.Empty;
-
             // Authorization ヘッダーの取得
             string authorizationHeader = request.Headers["Authorization"];
-            if (string.IsNullOrEmpty(authorizationHeader)) return false;
+            if (string.IsNullOrEmpty(authorizationHeader))
+            {
+                id = string.Empty;
+                return false;
+            }
 
             // jwtの取得
             var bearerToken = authorizationHeader.Replace("Bearer ", "");
             var jwt = new JwtSecurityTokenHandler().ReadJwtToken(bearerToken);
 
-            if (jwt.Payload.TryGetValue("id", out var payloadId))
-            {
-                id = payloadId.ToString()!;
-                return true;
-            }
-
-            return false;
+            id = jwt.Payload.Claims.FirstOrDefault(c => c.Type == "Id")?.Value ?? string.Empty;
+            return !string.IsNullOrEmpty(id);
         }
     }
 }
