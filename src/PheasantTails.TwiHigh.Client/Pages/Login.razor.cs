@@ -55,6 +55,8 @@ namespace PheasantTails.TwiHigh.Client.Pages
             if (string.IsNullOrEmpty(res?.Token))
             {
                 ErrorMessage = "ログインできませんでした。ユーザ名とパスワードを確認してください。";
+                IsLoginWorking = false;
+                return;
             }
             IsLoginWorking = false;
             await ((TwiHighAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsAuthenticatedAsync(res?.Token ?? string.Empty);
