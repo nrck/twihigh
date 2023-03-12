@@ -13,11 +13,15 @@
 </section>
 @* タイムライン *@
 <section>
-    @if (Tweets != null)
+    @if (Tweets != null && Tweets.Any())
     {
         foreach (var tweet in Tweets)
         {
             <TweetComponent Tweet="tweet" />
         }
+    }
+    else
+    {
+        <p>広大な空白はまるで南極のよう</p>
     }
 </section>
