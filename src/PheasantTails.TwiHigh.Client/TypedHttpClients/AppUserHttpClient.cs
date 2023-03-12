@@ -8,7 +8,8 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
     {
         private const string API_URL_LOGIN = "http://localhost:5002/api/Login";
         private const string API_URL_REFRESH = "http://localhost:5002/api/Refresh";
-        private const string API_URL_SIGNIN = "http://localhost:5002/api/SignInAppUser";
+        private const string API_URL_SIGNIN = "http://localhost:5002/api/SignUp";
+        private const string API_URL_GET_TWIHIGH_USER = "http://localhost:5002/api/TwiHighUser/{0}";
         private readonly HttpClient _httpClient;
 
         public AppUserHttpClient(HttpClient httpClient)
@@ -46,7 +47,7 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
             }
         }
 
-        public async Task<ResponseJwtContext?> SignInAsync(AddTwiHighUserContext context)
+        public async Task<ResponseJwtContext?> SignUpAsync(AddTwiHighUserContext context)
         {
             try
             {
@@ -63,6 +64,19 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
             catch (Exception)
             {
                 return await Task.FromResult<ResponseJwtContext?>(new ResponseJwtContext { Token = string.Empty });
+            }
+        }
+
+        public async Task<ResponseTwiHighUserContext?> GetTwiHighUserAsync(Guid id)
+        {
+            try
+            {
+                var url = string.Format(API_URL_GET_TWIHIGH_USER, id.ToString());
+                return await _httpClient.GetFromJsonAsync<ResponseTwiHighUserContext>(url);
+            }
+            catch (Exception)
+            {
+                return null;
             }
         }
     }
