@@ -1,0 +1,47 @@
+#---------------------------------------------------------------------------------------
+#   deploy-azure-function.yml
+#       refer to https://github.com/Azure/actions-workflow-samples
+#---------------------------------------------------------------------------------------
+on:
+  workflow_call:
+    inputs:
+      function-app-name:
+        required: true
+        type: string
+      function-project-path:
+        required: true
+        type: string
+    secrets:
+      publish-profile:
+        required: true
+
+env:
+  DOTNET_VERSION: '6.0.x'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+    - name: '[ ${{ inputs.function-app-name }} ]Checkout GitHub Action'
+      uses: actions/checkout@v3
+
+    - name: '[ ${{ inputs.function-app-name }} ]Setup DotNet ${{ env.DOTNET_VERSION }} Environment'
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: '[ ${{ inputs.function-app-name }} ]Resolve Project Dependencies Using Dotnet'
+      shell: bash
+      run: |
+        pushd './${{ inputs.function-project-path }}'
+        dotnet build --configuration Release --output ./output
+        popd
+
+    - name: '[ ${{ inputs.function-app-name }} ]Run Azure Functions Action'
+      uses: Azure/functions-action@v1
+      id: fa
+      with:
+        app-name: ${{ inputs.function-app-name }}
+        package: '${{ inputs.function-project-path }}/output'
+        publish-profile: ${{ secrets.publish-profile }}
