@@ -6,7 +6,7 @@ on:
 
 env:
   AZURE_FUNCTIONAPP_NAME: twihigh-dev-func-appusers
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: 'TwiHighUsers'
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: 'src/PheasantTails.TwiHigh.Functions.TwiHighUsers'
   DOTNET_VERSION: '6.0.x'
 
 jobs:
