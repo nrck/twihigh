@@ -6,7 +6,8 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
 {
     public class TimelineHttpClient
     {
-        private const string API_URL_TIMELINE = "http://localhost:5001/api/GetMyTimeline";
+        private const string API_URL_BASE = "https://twihigh-dev-apim.azure-api.net/timelines";
+        private const string API_URL_TIMELINE = $"{API_URL_BASE}/GetMyTimeline";
         private readonly HttpClient _httpClient;
 
         public TimelineHttpClient(HttpClient httpClient)
