@@ -6,7 +6,8 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
 {
     public class TweetHttpClient
     {
-        private const string API_URL_TWEET = "http://localhost:5003/api/Tweets";
+        private const string API_URL_BASE = "https://twihigh-dev-apim.azure-api.net/tweets";
+        private const string API_URL_TWEET = $"{API_URL_BASE}/Tweets";
         private readonly HttpClient _httpClient;
 
         public TweetHttpClient(HttpClient httpClient)

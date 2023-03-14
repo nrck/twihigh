@@ -6,10 +6,11 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
 {
     public class AppUserHttpClient
     {
-        private const string API_URL_LOGIN = "http://localhost:5002/api/Login";
-        private const string API_URL_REFRESH = "http://localhost:5002/api/Refresh";
-        private const string API_URL_SIGNIN = "http://localhost:5002/api/SignUp";
-        private const string API_URL_GET_TWIHIGH_USER = "http://localhost:5002/api/TwiHighUser/{0}";
+        private const string API_URL_BASE = "https://twihigh-dev-apim.azure-api.net/twihighusers";
+        private const string API_URL_LOGIN = $"{API_URL_BASE}/Login";
+        private const string API_URL_REFRESH = $"{API_URL_BASE}/Refresh";
+        private const string API_URL_SIGNIN = $"{API_URL_BASE}/SignUp";
+        private const string API_URL_GET_TWIHIGH_USER = $"{API_URL_BASE}/TwiHighUser/{{0}}";
         private readonly HttpClient _httpClient;
 
         public AppUserHttpClient(HttpClient httpClient)
