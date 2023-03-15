@@ -56,7 +56,7 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
             }
             if (!tweets.Any())
             {
-                return new NotFoundResult();
+                return new NoContentResult();
             }
 
             var latest = tweets.Max(t => t.CreateAt);
