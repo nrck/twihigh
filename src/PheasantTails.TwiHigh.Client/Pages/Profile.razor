@@ -1,7 +1,49 @@
-﻿<h3>Profile</h3>
+﻿@page "/profile/{Id}"
 @*
     ユーザページ
 *@
-@code {
+
+
+@if (User == null)
+{
+    <span>ぐるぐる</span>
+}
+else
+{
+    <section class="px-3">
+        <div class="profile-header">
+            @* アイコン *@
+            <BigAvatarComponent UserAvatarUrl="@User.AvatarUrl" />
+
+            @* フォローボタン *@
+            <FollowButtonComponent IsFollowing=@IsFollowing OnClickFollowButton="OnClickFollowButton" />
+        </div>
+
+        @* プロフィール *@
+        <div class="profile-display-name">
+            @User.DisplayName
+        </div>
+        <div>
+            <span class="profile-display-id">@@@User.DisplayId</span>
+            @if (IsFollowed)
+            {
+                <span class="is-followed">フォローされています</span>
+            }
+        </div>
+        <div class="profile-createdat">
+            <span>@User.CreateAt.ToLocalTime().ToString("d") からTwiHighの住人です</span>
+        </div>
+        <div class="profile-biography">
+            @User.Biography
+        </div>
+        <div class="profile-follow">
+            <span class="number">@User.Follows.Length</span>
+            <span class="text">フォロー中</span>
+            <span class="space"></span>
+            <span class="number">@User.Followers.Length</span>
+            <span class="text">フォロワー</span>
+        </div>
+    </section>
+    @* ツイート *@
 
 }

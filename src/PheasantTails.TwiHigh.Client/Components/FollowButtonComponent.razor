@@ -1,0 +1,12 @@
+﻿<AuthorizeView>
+    <Authorized>
+        @if (IsFollowing)
+        {
+            <button class="button-following">フォロー中</button>
+        }
+        else
+        {
+            <button class="button-follow" @onclick=OnClickFollowButton>フォローする</button>
+        }
+    </Authorized>
+</AuthorizeView>

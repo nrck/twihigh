@@ -12,6 +12,9 @@ namespace PheasantTails.TwiHigh.Data.Model.TwiHighUsers
         public string AvatarUrl { get; set; } = string.Empty;
         public Guid[] Follows { get; set; } = Array.Empty<Guid>();
         public Guid[] Followers { get; set; } = Array.Empty<Guid>();
+        public DateTimeOffset CreateAt { get; set; }
+
+        public ResponseTwiHighUserContext() { }
 
         public ResponseTwiHighUserContext(TwiHighUser user)
         {
@@ -23,6 +26,7 @@ namespace PheasantTails.TwiHigh.Data.Model.TwiHighUsers
             Followers = user.Followers;
             Tweets = user.Tweets;
             AvatarUrl = user.AvatarUrl;
+            CreateAt = user.CreateAt;
         }
     }
 }
