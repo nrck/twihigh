@@ -6,6 +6,7 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
 {
     public class AppUserHttpClient
     {
+        //private const string API_URL_BASE = "http://localhost:5002/api";
         private const string API_URL_BASE = "https://twihigh-dev-apim.azure-api.net/twihighusers";
         private const string API_URL_LOGIN = $"{API_URL_BASE}/Login";
         private const string API_URL_REFRESH = $"{API_URL_BASE}/Refresh";
@@ -68,14 +69,14 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
             }
         }
 
-        public async Task<ResponseTwiHighUserContext?> GetTwiHighUserAsync(Guid id)
+        public async Task<ResponseTwiHighUserContext?> GetTwiHighUserAsync(string id)
         {
             try
             {
-                var url = string.Format(API_URL_GET_TWIHIGH_USER, id.ToString());
+                var url = string.Format(API_URL_GET_TWIHIGH_USER, id);
                 return await _httpClient.GetFromJsonAsync<ResponseTwiHighUserContext>(url);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return null;
             }

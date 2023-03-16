@@ -18,6 +18,7 @@ namespace PheasantTails.TwiHigh.Client
             builder.Services.AddHttpClient<TimelineHttpClient>();
             builder.Services.AddHttpClient<AppUserHttpClient>();
             builder.Services.AddHttpClient<TweetHttpClient>();
+            builder.Services.AddHttpClient<FollowHttpClient>();
 
             // ƒ~ƒhƒ‹
             builder.Services.AddBlazoredLocalStorage();

@@ -141,14 +141,32 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
             string id
             )
         {
+            ResponseTwiHighUserContext user;
             var users = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_USER_CONTAINER_NAME);
-            var res = await users.ReadItemAsync<TwiHighUser>(id, new PartitionKey(id));
-            if (res.StatusCode != HttpStatusCode.OK)
+            if (Guid.TryParse(id, out var _))
             {
-                return new NotFoundResult();
+                var res = await users.ReadItemAsync<TwiHighUser>(id, new PartitionKey(id));
+                if (res.StatusCode != HttpStatusCode.OK)
+                {
+                    return new NotFoundResult();
+                }
+                user = new ResponseTwiHighUserContext(res.Resource);
             }
+            else
+            {
+                // ÉNÉGÉäÇÃçÏê¨
+                var query = new QueryDefinition("SELECT * FROM c WHERE c.displayId = @displayId OFFSET 0 LIMIT 1")
+                    .WithParameter("@displayId", id);
+                var iterator = users.GetItemQueryIterator<TwiHighUser>(query);
+                var res = await iterator.ReadNextAsync();
+                if (res.StatusCode != HttpStatusCode.OK || !res.Any())
+                {
+                    return new NotFoundResult();
+                }
+                user = new ResponseTwiHighUserContext(res.Resource.First());
 
-            return new OkObjectResult(new ResponseTwiHighUserContext(res.Resource));
+            }
+            return new OkObjectResult(user);
         }
 
         [FunctionName("Refresh")]
