@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using PheasantTails.TwiHigh.Client.TypedHttpClients;
+using PheasantTails.TwiHigh.Data.Model.Timelines;
 using PheasantTails.TwiHigh.Data.Model.TwiHighUsers;
 using PheasantTails.TwiHigh.Data.Store.Entity;
+using System.Net;
 
 namespace PheasantTails.TwiHigh.Client.Pages
 {
@@ -16,12 +18,17 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
 #pragma warning disable CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
         [Inject]
-        private AppUserHttpClient AppUserHttpClient { get; set; }
+        private ILocalStorageService LocalStorage { get; set; }
 #pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
 
 #pragma warning disable CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
         [Inject]
-        private ILocalStorageService LocalStorage { get; set; }
+        private NavigationManager Navigation { get; set; }
+#pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
+
+#pragma warning disable CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
+        [Inject]
+        private AuthenticationStateProvider AuthenticationStateProvider { get; set; }
 #pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
 
         [CascadingParameter]
@@ -48,9 +55,26 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
         private async Task GetMyTimerlineEvery5secAsync(CancellationToken cancellationToken = default)
         {
+            ResponseTimelineContext? response = null;
             while (!cancellationToken.IsCancellationRequested)
             {
-                var response = await TimelineHttpClient.GetMyTimelineAsync();
+                try
+                {
+                    response = await TimelineHttpClient.GetMyTimelineAsync();
+                }
+                catch (HttpRequestException ex)
+                {
+                    switch (ex.StatusCode)
+                    {
+                        case HttpStatusCode.Unauthorized:
+                            await ((TwiHighAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsLoggedOutAsync();
+                            Navigation.NavigateTo(DefinePaths.PAGE_PATH_LOGIN);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
                 if (response != null)
                 {
                     Tweets = response.Tweets;

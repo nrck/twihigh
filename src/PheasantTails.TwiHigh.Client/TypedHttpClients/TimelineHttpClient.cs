@@ -27,14 +27,7 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
 
         public async Task<ResponseTimelineContext?> GetMyTimelineAsync()
         {
-            try
-            {
-                return await _httpClient.GetFromJsonAsync<ResponseTimelineContext>(API_URL_TIMELINE);
-            }
-            catch (Exception)
-            {
-                return await Task.FromResult<ResponseTimelineContext?>(new ResponseTimelineContext());
-            }
+            return await _httpClient.GetFromJsonAsync<ResponseTimelineContext>(API_URL_TIMELINE);
         }
     }
 }
