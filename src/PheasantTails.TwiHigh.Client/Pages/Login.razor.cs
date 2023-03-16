@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.IdentityModel.Tokens;
 using PheasantTails.TwiHigh.Client.TypedHttpClients;
 using PheasantTails.TwiHigh.Data.Model.TwiHighUsers;
 
@@ -23,11 +24,28 @@ namespace PheasantTails.TwiHigh.Client.Pages
         private AuthenticationStateProvider AuthenticationStateProvider { get; set; }
 #pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
 
+        [CascadingParameter]
+        private Task<AuthenticationState>? AuthenticationState { get; set; }
+
         private PostAuthorizationContext PostAuthorizationContext { get; set; } = new PostAuthorizationContext();
 
         private string ErrorMessage { get; set; } = string.Empty;
 
         private bool IsLoginWorking { get; set; } = false;
+
+        protected override async Task OnInitializedAsync()
+        {
+            if (AuthenticationState != null)
+            {
+                var isAuthenticated = (await AuthenticationState).User.Identity?.IsAuthenticated ?? false;
+                if (isAuthenticated)
+                {
+                    Navigation.NavigateTo(DefinePaths.PAGE_PATH_HOME);
+                    return;
+                }
+            }
+            await base.OnInitializedAsync();
+        }
 
         private async Task OnClickLoginButtonAsync(MouseEventArgs _)
         {

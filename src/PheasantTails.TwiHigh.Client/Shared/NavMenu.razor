@@ -10,9 +10,24 @@
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
     <nav class="flex-column">
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="home">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
+            <AuthorizeView>
+                <NotAuthorized>
+                    <NavLink class="nav-link" href="signup">
+                        <span class="oi oi-home" aria-hidden="true"></span> Sign up
+                    </NavLink>
+                    <NavLink class="nav-link" href="login">
+                        <span class="oi oi-home" aria-hidden="true"></span> Login
+                    </NavLink>
+                </NotAuthorized>
+                <Authorized>
+                    <NavLink class="nav-link" href="home">
+                        <span class="oi oi-home" aria-hidden="true"></span> Home
+                    </NavLink>
+                    <NavLink class="nav-link" href="logout">
+                        <span class="oi oi-home" aria-hidden="true"></span> Logout
+                    </NavLink>
+                </Authorized>
+            </AuthorizeView>
         </div>
     </nav>
 </div>
