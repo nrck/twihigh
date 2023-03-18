@@ -45,6 +45,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
             WorkerCancellationTokenSource ??= new CancellationTokenSource();
             var token = await LocalStorage.GetItemAsStringAsync("TwiHighJwt");
             AvatarUrl = await GetMyAvatarUrlAsync();
+            StateHasChanged();
             TimelineHttpClient.SetToken(token);
 
             await Task.WhenAll(

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using PheasantTails.TwiHigh.Client.TypedHttpClients;
+using Toolbelt.Blazor.Extensions.DependencyInjection;
 
 namespace PheasantTails.TwiHigh.Client
 {
@@ -25,6 +26,7 @@ namespace PheasantTails.TwiHigh.Client
             // ƒ~ƒhƒ‹
             builder.Services.AddBlazoredLocalStorage();
             builder.Services.AddScoped<AuthenticationStateProvider, TwiHighAuthenticationStateProvider>();
+            builder.Services.AddPWAUpdater();
 
             builder.Services.AddOptions();
             builder.Services.AddAuthorizationCore();
