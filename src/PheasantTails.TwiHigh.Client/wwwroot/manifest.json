@@ -1,6 +1,6 @@
 {
-  "name": "PheasantTails.TwiHigh.Client",
-  "short_name": "PheasantTails.TwiHigh.Client",
+  "name": "TwiHigh - ツイハイ！",
+  "short_name": "TwiHigh",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",
