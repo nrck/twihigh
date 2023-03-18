@@ -141,32 +141,61 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
             string id
             )
         {
-            ResponseTwiHighUserContext user;
-            var users = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_USER_CONTAINER_NAME);
-            if (Guid.TryParse(id, out var _))
+            var user = await GetTwiHighUserByIdOrDisplayIdAsync(id);
+            if(user == null)
             {
-                var res = await users.ReadItemAsync<TwiHighUser>(id, new PartitionKey(id));
-                if (res.StatusCode != HttpStatusCode.OK)
-                {
-                    return new NotFoundResult();
-                }
-                user = new ResponseTwiHighUserContext(res.Resource);
+                return new NotFoundResult();
             }
-            else
-            {
-                // クエリの作成
-                var query = new QueryDefinition("SELECT * FROM c WHERE c.displayId = @displayId OFFSET 0 LIMIT 1")
-                    .WithParameter("@displayId", id);
-                var iterator = users.GetItemQueryIterator<TwiHighUser>(query);
-                var res = await iterator.ReadNextAsync();
-                if (res.StatusCode != HttpStatusCode.OK || !res.Any())
-                {
-                    return new NotFoundResult();
-                }
-                user = new ResponseTwiHighUserContext(res.Resource.First());
+            var response = new ResponseTwiHighUserContext(user);
+            return new OkObjectResult(response);
+        }
 
+        [FunctionName("TwiHighUserFollows")]
+        public async Task<IActionResult> TwiHighUserFollowsAsync(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "TwiHighUser/{id}/Follows")] HttpRequest req,
+            string id
+            )
+        {
+            var user = await GetTwiHighUserByIdOrDisplayIdAsync(id);
+            if(user == null )
+            {
+                return new NotFoundResult();
             }
-            return new OkObjectResult(user);
+
+            if(user.Follows.Length == 0)
+            {
+                return new OkObjectResult(Array.Empty<ResponseTwiHighUserContext>());
+            }
+
+            var follows = (await GetTwiHighUsersAsync(user.Follows))
+                .Select(u => new ResponseTwiHighUserContext(u))
+                .ToArray();
+
+            return new OkObjectResult(follows);
+        }
+
+        [FunctionName("TwiHighUserFollowers")]
+        public async Task<IActionResult> TwiHighUsersAsync(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "TwiHighUser/{id}/Followers")] HttpRequest req,
+            string id
+            )
+        {
+            var user = await GetTwiHighUserByIdOrDisplayIdAsync(id);
+            if (user == null)
+            {
+                return new NotFoundResult();
+            }
+
+            if (user.Followers.Length == 0)
+            {
+                return new OkObjectResult(Array.Empty<ResponseTwiHighUserContext>());
+            }
+
+            var followers = (await GetTwiHighUsersAsync(user.Followers))
+                .Select(u => new ResponseTwiHighUserContext(u))
+                .ToArray();
+
+            return new OkObjectResult(followers);
         }
 
         [FunctionName("Refresh")]
@@ -226,6 +255,45 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
             );
 
             return token;
+        }
+
+        private async Task<TwiHighUser> GetTwiHighUserByIdOrDisplayIdAsync(string id)
+        {
+            TwiHighUser user;
+            var users = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_USER_CONTAINER_NAME);
+            if (Guid.TryParse(id, out var _))
+            {
+                var res = await users.ReadItemAsync<TwiHighUser>(id, new PartitionKey(id));
+                if (res.StatusCode != HttpStatusCode.OK)
+                {
+                    return null;
+                }
+                user = res.Resource;
+            }
+            else
+            {
+                // クエリの作成
+                var query = new QueryDefinition("SELECT * FROM c WHERE c.displayId = @displayId OFFSET 0 LIMIT 1")
+                    .WithParameter("@displayId", id);
+                var iterator = users.GetItemQueryIterator<TwiHighUser>(query);
+                var res = await iterator.ReadNextAsync();
+                if (res.StatusCode != HttpStatusCode.OK || !res.Any())
+                {
+                    return null;
+                }
+                user = res.Resource.First();
+            }
+
+            return user;
+        }
+
+        private async Task<TwiHighUser[]> GetTwiHighUsersAsync(Guid[] ids)
+        {
+            var items = ids.Select(id => (id.ToString(), new PartitionKey(id.ToString()))).ToArray();
+            var users = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_USER_CONTAINER_NAME);
+            var result = await users.ReadManyItemsAsync<TwiHighUser>(items);
+
+            return result.ToArray();
         }
     }
 }
