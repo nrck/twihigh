@@ -1,4 +1,5 @@
-﻿@inherits LayoutComponentBase
+﻿@using Toolbelt.Blazor.PWA.Updater
+@inherits LayoutComponentBase
 
 <div class="page">
     <div class="sidebar">
@@ -11,3 +12,5 @@
         </article>
     </main>
 </div>
+
+<PWAUpdater Text="TwiHighの新しいバージョンがあります！" ButtonCaption="アップデートする" Align="PWAUpdater.Aligns.Buttom" />
