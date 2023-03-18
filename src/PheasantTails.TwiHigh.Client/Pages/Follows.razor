@@ -1,0 +1,20 @@
+﻿@page "/Profile/{Id}/Follows"
+
+<PageTitleComponent Title="@Title" />
+
+<section>
+    @if (UserFollowers == null)
+    {
+    }
+    else if (0 < UserFollowers.Length)
+    {
+        @foreach (var user in UserFollowers)
+        {
+            <TwiHighUserComponent User="user" />
+        }
+    }
+    else
+    {
+        <span>フォロー中のアカウントはありません。</span>
+    }
+</section>

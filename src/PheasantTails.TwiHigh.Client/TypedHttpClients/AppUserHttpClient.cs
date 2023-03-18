@@ -12,6 +12,8 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
         private const string API_URL_REFRESH = $"{API_URL_BASE}/Refresh";
         private const string API_URL_SIGNIN = $"{API_URL_BASE}/SignUp";
         private const string API_URL_GET_TWIHIGH_USER = $"{API_URL_BASE}/TwiHighUser/{{0}}";
+        private const string API_URL_GET_TWIHIGH_USER_FOLLOWS = $"{API_URL_BASE}/TwiHighUser/{{0}}/Follows";
+        private const string API_URL_GET_TWIHIGH_USER_FOLLOWERS = $"{API_URL_BASE}/TwiHighUser/{{0}}/Followers";
         private readonly HttpClient _httpClient;
 
         public AppUserHttpClient(HttpClient httpClient)
@@ -75,6 +77,33 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
             {
                 var url = string.Format(API_URL_GET_TWIHIGH_USER, id);
                 return await _httpClient.GetFromJsonAsync<ResponseTwiHighUserContext>(url);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+
+        public async Task<ResponseTwiHighUserContext[]?> GetTwiHighUserFollowsAsync(string id)
+        {
+            try
+            {
+                var url = string.Format(API_URL_GET_TWIHIGH_USER_FOLLOWS, id);
+                return await _httpClient.GetFromJsonAsync<ResponseTwiHighUserContext[]>(url);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public async Task<ResponseTwiHighUserContext[]?> GetTwiHighUserFollowersAsync(string id)
+        {
+            try
+            {
+                var url = string.Format(API_URL_GET_TWIHIGH_USER_FOLLOWERS, id);
+                return await _httpClient.GetFromJsonAsync<ResponseTwiHighUserContext[]>(url);
             }
             catch (Exception ex)
             {

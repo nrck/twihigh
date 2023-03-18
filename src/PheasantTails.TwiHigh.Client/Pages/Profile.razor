@@ -37,11 +37,15 @@ else
             @User.Biography
         </div>
         <div class="profile-follow">
-            <span class="number">@User.Follows.Length</span>
-            <span class="text">フォロー中</span>
+            <a href="profile/@(Id)/follows" style="text-decoration: none;">
+                <span class="number">@User.Follows.Length</span>
+                <span class="text">フォロー中</span>
+            </a>
             <span class="space"></span>
-            <span class="number">@User.Followers.Length</span>
-            <span class="text">フォロワー</span>
+            <a href="profile/@(Id)/followers" style="text-decoration: none;">
+                <span class="number">@User.Followers.Length</span>
+                <span class="text">フォロワー</span>
+            </a>
         </div>
     </section>
     @* ツイート *@
