@@ -5,7 +5,7 @@
         @* 左 *@
         <div class="tweet-article-left">
             @* アイコン *@
-            <AvatarComponent UserAvatarUrl="@Tweet.UserAvatarUrl" />
+            <AvatarComponent UserAvatarUrl="@Tweet.UserAvatarUrl" OnClick=OnClickAvatar />
         </div>
         @* 右 *@
         <div class="tweet-article-right">
@@ -13,11 +13,11 @@
             <div class="tweet-article-right-header">
                 @* ユーザー名 *@
                 <div class="user-display-name">
-                    <span>@Tweet.UserDisplayName</span>
+                    <span @onclick=OnClickUserDisplayName>@Tweet.UserDisplayName</span>
                 </div>
                 @* ユーザーID *@
                 <div class="user-display-id">
-                    <span>@@@Tweet.UserDisplayId</span>
+                    <span @onclick=OnClickUserDisplayId>@@@Tweet.UserDisplayId</span>
                 </div>
                 @* 投稿時刻 *@
                 <div class="user-display-createat">

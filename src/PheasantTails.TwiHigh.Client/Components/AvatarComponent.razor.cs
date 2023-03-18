@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
+using System.ComponentModel;
 
 namespace PheasantTails.TwiHigh.Client.Components
 {
@@ -6,5 +8,8 @@ namespace PheasantTails.TwiHigh.Client.Components
     {
         [Parameter]
         public string UserAvatarUrl { get; set; } = string.Empty;
+
+        [Parameter]
+        public EventCallback<MouseEventArgs> OnClick { get; set; }
     }
 }
