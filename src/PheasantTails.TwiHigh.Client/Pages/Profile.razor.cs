@@ -33,10 +33,19 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
         private bool IsFollowing { get; set; }
         private bool IsFollowed { get; set; }
+        private string Title { get; set; } = "プロフィール読み込み中";
 
         protected override async Task OnInitializedAsync()
         {
             User = await AppUserHttpClient.GetTwiHighUserAsync(Id);
+            if (User == null)
+            {
+                Title = "プロフィールを読み込めませんでした。";
+            }
+            else
+            {
+                Title = $"{User.DisplayName}（@{User.DisplayId}）";
+            }
             StateHasChanged();
             await SetFollowButtonAsync();
             await base.OnInitializedAsync();
