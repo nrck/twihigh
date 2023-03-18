@@ -38,6 +38,11 @@
         font-weight: 700;
     }
 
+        .user-display-name span:hover {
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
 .user-display-id {
     padding-right: 16px;
     white-space: nowrap;
@@ -51,6 +56,11 @@
         font-size: 15px;
         font-weight: 400;
     }
+
+        .user-display-id span:hover {
+            cursor: pointer;
+            text-decoration: underline;
+        }
 
 .user-display-createat {
     margin-left: auto;
