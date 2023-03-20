@@ -47,20 +47,8 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
                 return new BadRequestObjectResult(context);
             }
 
-            // クエリの作成
-            var query = new QueryDefinition("SELECT VALUE COUNT(1) FROM c WHERE c.displayId = @displayId")
-                .WithParameter("@displayId", context.DisplayId);
-
             // 重複確認
-            var users = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_USER_CONTAINER_NAME);
-            var iterator = users.GetItemQueryIterator<long>(query);
-            long count = 0;
-            while (iterator.HasMoreResults)
-            {
-                var result = await iterator.ReadNextAsync();
-                count += result.Resource.Sum();
-            }
-            if (0 < count)
+            if (await IsExistDisplayIdAsync(context.DisplayId))
             {
                 return new ConflictObjectResult(context);
             }
@@ -70,6 +58,7 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
             {
                 Id = Guid.NewGuid(),
                 DisplayId = context.DisplayId,
+                LowerDisplayId = context.DisplayId.ToLower(),
                 DisplayName = context.DisplayName,
                 Biography = string.Empty,
                 Email = context.Email,
@@ -80,6 +69,7 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
             };
             user.HashedPassword = new PasswordHasher<TwiHighUser>().HashPassword(user, context.Password);
 
+            var users = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_USER_CONTAINER_NAME);
             var created = await users.CreateItemAsync(user);
 
             return new CreatedResult("", created.Resource);
@@ -98,10 +88,9 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
             }
 
             // クエリの作成
-            var query = new QueryDefinition("SELECT * FROM c WHERE c.displayId = @displayId OFFSET 0 LIMIT 1")
-                .WithParameter("@displayId", context.DisplayId);
+            var query = new QueryDefinition("SELECT * FROM c WHERE c.lowerDisplayId = @displayId OFFSET 0 LIMIT 1")
+                .WithParameter("@displayId", context.DisplayId.ToLower());
 
-            // 重複確認
             var users = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_USER_CONTAINER_NAME);
             var iterator = users.GetItemQueryIterator<TwiHighUser>(query);
             FeedResponse<TwiHighUser> result = null;
@@ -142,7 +131,7 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
             )
         {
             var user = await GetTwiHighUserByIdOrDisplayIdAsync(id);
-            if(user == null)
+            if (user == null)
             {
                 return new NotFoundResult();
             }
@@ -157,12 +146,12 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
             )
         {
             var user = await GetTwiHighUserByIdOrDisplayIdAsync(id);
-            if(user == null )
+            if (user == null)
             {
                 return new NotFoundResult();
             }
 
-            if(user.Follows.Length == 0)
+            if (user.Follows.Length == 0)
             {
                 return new OkObjectResult(Array.Empty<ResponseTwiHighUserContext>());
             }
@@ -200,7 +189,7 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
 
         [FunctionName("Refresh")]
         public async Task<IActionResult> RefreshAsync(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req)
         {
             if (req.TryGetUserId(out var id))
             {
@@ -223,6 +212,34 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
             };
 
             return new OkObjectResult(jwt);
+        }
+
+        [FunctionName("PatchTwiHighUser")]
+        public async Task<IActionResult> PatchTwiHighUserAsync(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "TwiHighUser")] HttpRequest req)
+        {
+            if (!req.TryGetUserId(out var id))
+            {
+                return new UnauthorizedResult();
+            }
+
+            var patch = await req.JsonDeserializeAsync<PatchTwiHighUserContext>();
+            var users = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_USER_CONTAINER_NAME);
+            var user = await users.ReadItemAsync<TwiHighUser>(id, new PartitionKey(id));
+            if (!string.IsNullOrWhiteSpace(patch.Password))
+            {
+                patch.Password = new PasswordHasher<TwiHighUser>().HashPassword(user, patch.Password);
+            }
+
+            if (!string.IsNullOrWhiteSpace(patch.DisplayId) && await IsExistDisplayIdAsync(patch.DisplayId))
+            {
+                return new ConflictResult();
+            }
+
+            var operations = GetPatchOperations(patch);
+            var result = await users.PatchItemAsync<TwiHighUser>(id, new PartitionKey(id), operations, requestOptions: new PatchItemRequestOptions { IfMatchEtag = user.ETag });
+
+            return new OkObjectResult(new ResponseTwiHighUserContext(result));
         }
 
         private List<Claim> GenerateClaims(TwiHighUser user)
@@ -273,8 +290,8 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
             else
             {
                 // クエリの作成
-                var query = new QueryDefinition("SELECT * FROM c WHERE c.displayId = @displayId OFFSET 0 LIMIT 1")
-                    .WithParameter("@displayId", id);
+                var query = new QueryDefinition("SELECT * FROM c WHERE c.lowerDisplayId = @displayId OFFSET 0 LIMIT 1")
+                    .WithParameter("@displayId", id.ToLower());
                 var iterator = users.GetItemQueryIterator<TwiHighUser>(query);
                 var res = await iterator.ReadNextAsync();
                 if (res.StatusCode != HttpStatusCode.OK || !res.Any())
@@ -294,6 +311,59 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
             var result = await users.ReadManyItemsAsync<TwiHighUser>(items);
 
             return result.ToArray();
+        }
+
+        private List<PatchOperation> GetPatchOperations(PatchTwiHighUserContext context)
+        {
+            var operations = new List<PatchOperation>();
+            if (!string.IsNullOrWhiteSpace(context.DisplayId))
+            {
+                operations.Add(PatchOperation.Set("/displayId", context.DisplayId));
+                operations.Add(PatchOperation.Set("/lowerDisplayId", context.DisplayId.ToLower()));
+            }
+            if (!string.IsNullOrWhiteSpace(context.DisplayName))
+            {
+                operations.Add(PatchOperation.Set("/displayName", context.DisplayName));
+            }
+            if (!string.IsNullOrWhiteSpace(context.Password))
+            {
+                operations.Add(PatchOperation.Set("/hashedPassword", context.Password));
+            }
+            if (!string.IsNullOrWhiteSpace(context.Email))
+            {
+                operations.Add(PatchOperation.Set("/email", context.Email));
+            }
+            if (!string.IsNullOrEmpty(context.Biography))
+            {
+                operations.Add(PatchOperation.Set("/biography", context.Biography));
+            }
+            if (context.Base64EncodedAvatarImage != null)
+            {
+                // アップロード処理
+                //var url = string.Empty;
+                //operations.Add(PatchOperation.Set("/avatarUrl", url));
+            }
+
+            return operations;
+        }
+
+        private async Task<bool> IsExistDisplayIdAsync(string displayId)
+        {
+            // クエリの作成
+            var query = new QueryDefinition("SELECT VALUE COUNT(1) FROM c WHERE c.lowerDisplayId = @displayId")
+                .WithParameter("@displayId", displayId.ToLower());
+
+            // 重複確認
+            var users = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_USER_CONTAINER_NAME);
+            var iterator = users.GetItemQueryIterator<long>(query);
+            long count = 0;
+            while (iterator.HasMoreResults)
+            {
+                var result = await iterator.ReadNextAsync();
+                count += result.Resource.Sum();
+            }
+
+            return 0 < count;
         }
     }
 }
