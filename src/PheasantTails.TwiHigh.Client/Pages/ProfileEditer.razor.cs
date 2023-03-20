@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 using PheasantTails.TwiHigh.Client.TypedHttpClients;
 using PheasantTails.TwiHigh.Data.Model.TwiHighUsers;
-using System.Net.Mime;
 
 namespace PheasantTails.TwiHigh.Client.Pages
 {
@@ -22,6 +22,11 @@ namespace PheasantTails.TwiHigh.Client.Pages
 #pragma warning disable CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
         [Inject]
         private AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+#pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
+
+#pragma warning disable CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
+        [Inject]
+        private ILocalStorageService LocalStorage { get; set; }
 #pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
 
 #pragma warning disable CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
@@ -49,6 +54,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
                 Navigation.NavigateTo(DefinePaths.PAGE_PATH_LOGIN);
             }
 
+            AppUserHttpClient.SetToken(await LocalStorage.GetItemAsStringAsync("TwiHighJwt"));
             User = await AppUserHttpClient.GetTwiHighUserAsync(id);
             if (User == null)
             {
@@ -56,11 +62,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
                 Navigation.NavigateTo(DefinePaths.PAGE_PATH_LOGIN);
                 return;
             }
-            Title = $"{User.DisplayName}（@{User.DisplayId}）";
-            AvatarUrl = User.AvatarUrl;
-            DisplayId = User.DisplayId;
-            DisplayName = User.DisplayName;
-            Biography = User.Biography;
+            SetDisplayVariables();
             StateHasChanged();
             await base.OnInitializedAsync();
         }
@@ -94,6 +96,9 @@ namespace PheasantTails.TwiHigh.Client.Pages
         {
             AdjustPatchContext();
             // 送信する
+            User = await AppUserHttpClient.PatchTwiHighUserAsync(PatchContext);
+            SetDisplayVariables();
+            StateHasChanged();
         }
 
         private void AdjustPatchContext()
@@ -116,6 +121,15 @@ namespace PheasantTails.TwiHigh.Client.Pages
         {
             PatchContext.Base64EncodedAvatarImage = null;
             AvatarUrl = User!.AvatarUrl;
+        }
+
+        private void SetDisplayVariables()
+        {
+            Title = $"{User!.DisplayName}（@{User.DisplayId}）";
+            AvatarUrl = User.AvatarUrl;
+            DisplayId = User.DisplayId;
+            DisplayName = User.DisplayName;
+            Biography = User.Biography;
         }
     }
 }
