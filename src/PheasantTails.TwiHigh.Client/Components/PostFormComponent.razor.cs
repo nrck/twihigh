@@ -1,6 +1,7 @@
 ﻿using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using PheasantTails.TwiHigh.Client.Pages;
 using PheasantTails.TwiHigh.Client.TypedHttpClients;
 using PheasantTails.TwiHigh.Data.Model;
 
@@ -16,6 +17,11 @@ namespace PheasantTails.TwiHigh.Client.Components
 #pragma warning disable CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
         [Inject]
         private ILocalStorageService LocalStorage { get; set; }
+#pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
+
+#pragma warning disable CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
+        [Inject]
+        private NavigationManager NavigationManager { get; set; }
 #pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
 
         [Parameter]
@@ -66,6 +72,11 @@ namespace PheasantTails.TwiHigh.Client.Components
         private void OnInputTextarea(ChangeEventArgs e)
         {
             TweetText = e.Value?.ToString() ?? string.Empty;
+        }
+
+        private void OnClickMyAvatar()
+        {
+            NavigationManager.NavigateTo(DefinePaths.PAGE_PATH_PROFILE_EDITOR);
         }
     }
 }
