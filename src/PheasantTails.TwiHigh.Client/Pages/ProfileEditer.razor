@@ -1,0 +1,37 @@
+﻿@page "/profile/editor"
+@attribute [Authorize]
+@*
+    プロフィール編集
+*@
+
+<PageTitleComponent Title="@Title" />
+
+@if (User == null)
+{
+}
+else
+{
+    <section class="px-3">
+        <div class="profile-header">
+            @* アイコン *@
+            <div>
+                <BigAvatarComponent UserAvatarUrl="@AvatarUrl" />
+                <InputFile OnChange="LoadFiles" accept="image/png, image/jpeg" />
+                <button @onclick=OnClickAvatarResetButton>アバターのリセット</button>
+            </div>
+        </div>
+
+        @* プロフィール *@
+        <div class="profile-display-name">
+            <input type="text" @bind-value=@DisplayName />
+        </div>
+        <div>
+            <input type="text" @bind-value=@DisplayId />
+        </div>
+        @* Bio *@
+        <div class="profile-biography">
+            <textarea @bind=@Biography />
+        </div>
+        <button @onclick=OnClickSaveButtonAsync>保存する</button>
+    </section>
+}

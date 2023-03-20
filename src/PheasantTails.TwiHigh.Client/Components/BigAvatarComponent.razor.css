@@ -1,5 +1,5 @@
 ﻿.user-avatar-icon {
-    height: auto;
+    aspect-ratio: 1;
     width: 25%;
 }
 
@@ -7,4 +7,5 @@
         height: 100%;
         width: 100%;
         border-radius: 100%;
+        object-fit: cover;
     }
