@@ -5,6 +5,7 @@
         public const string PARTITION_KEY = "/id";
 
         public string DisplayId { get; set; } = string.Empty;
+        public string LowerDisplayId { get; set; } = string.Empty;
         public string DisplayName { get; set; } = string.Empty;
         public string HashedPassword { get; set; } = string.Empty;
         public string Biography { get; set; } = string.Empty;
