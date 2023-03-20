@@ -16,7 +16,14 @@ else
             <BigAvatarComponent UserAvatarUrl="@User.AvatarUrl" />
 
             @* フォローボタン *@
-            <FollowButtonComponent IsFollowing=@IsFollowing OnClickFollowButton="OnClickFollowButton" />
+            @if (IsMyTwiHighUser)
+            {
+
+            }
+            else
+            {
+                <FollowButtonComponent IsFollowing=@IsFollowing OnClickFollowButton="OnClickFollowButton" />
+            }
         </div>
 
         @* プロフィール *@
@@ -30,12 +37,15 @@ else
                 <span class="is-followed">フォローされています</span>
             }
         </div>
+        @* アカウント作成日 *@
         <div class="profile-createdat">
             <span>@User.CreateAt.ToLocalTime().ToString("d") からTwiHighの住人です</span>
         </div>
+        @* Bio *@
         <div class="profile-biography">
             @User.Biography
         </div>
+        @* フォロー人数 *@
         <div class="profile-follow">
             <a href="profile/@(Id)/follows" style="text-decoration: none;">
                 <span class="number">@User.Follows.Length</span>
