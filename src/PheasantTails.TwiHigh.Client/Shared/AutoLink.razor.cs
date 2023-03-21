@@ -6,29 +6,30 @@ namespace PheasantTails.TwiHigh.Client.Shared
     public partial class AutoLink
     {
         [Parameter]
-        public string Text { get; set; }
+        public string Text { get; set; } = string.Empty;
 
         [Parameter]
-        public bool ReplaceDisplayId { get; set; }
+        public bool ReplaceDisplayId { get; set; } = true;
 
-        private RenderFragment RenderFragment { get; set; }
+        [Parameter]
+        public bool ReplaceUrl { get; set; } = true;
 
-        private string Content { get; set; }
+        private string Content { get; set; } = string.Empty;
 
-        protected override void OnInitialized()
+        protected override void OnParametersSet()
         {
-            string text = Text;
+            Content = Text;
             if (ReplaceDisplayId)
             {
-                Content = Regex.Replace(text, "@([a-zA-Z0-9._-]+)", $"<a href=\"profile/$1\" target=\"_blank\">@$1</a>");
+                Content = Regex.Replace(Content, "@([a-zA-Z0-9._-]+)", "<a href=\"profile/$1\">@$1</a>");
             }
-            RenderFragment = builder =>
+            if (ReplaceUrl)
             {
-                builder.OpenElement(0, "div");
-                builder.AddMarkupContent(1, text);
-                builder.CloseElement();
-            };
-            base.OnInitialized();
+                Content = Regex.Replace(Content, "(https?://[\\w/:%#\\$&\\?\\(\\)~\\.=\\+\\-]+)", " <a href=\"$1\" target=\"_blank\">$1</a> ");
+            }
+
+            StateHasChanged();
+            base.OnParametersSet();
         }
     }
 }

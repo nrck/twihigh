@@ -36,7 +36,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
         private bool IsMyTwiHighUser { get; set; }
         private string Title { get; set; } = "プロフィール読み込み中";
 
-        protected override async Task OnInitializedAsync()
+        protected override async Task OnParametersSetAsync()
         {
             User = await AppUserHttpClient.GetTwiHighUserAsync(Id);
             if (User == null)
@@ -49,7 +49,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
             }
             StateHasChanged();
             await SetFollowButtonAsync();
-            await base.OnInitializedAsync();
+            await base.OnParametersSetAsync();
         }
 
         private async Task OnClickFollowButton()
