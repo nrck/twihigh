@@ -23,7 +23,9 @@
             <div class="user-profile-right-body">
                 @* テキスト本文 *@
                 <div class="user-tweet-text">
-                    <span>@User.Biography</span>
+                    <span>
+                        <AutoLink Text="@User.Biography" ReplaceDisplayId="true" />
+                    </span>
                 </div>
             </div>
             <div class="user-profile-right-footer">
