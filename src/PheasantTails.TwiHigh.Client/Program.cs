@@ -37,6 +37,11 @@ namespace PheasantTails.TwiHigh.Client
                 // For more information, see https://aka.ms/blazor-standalone-auth
                 builder.Configuration.Bind("Local", options.ProviderOptions);
             });
+
+#if DEBUG
+            builder.Logging.SetMinimumLevel(LogLevel.Debug);
+#endif
+
             await builder.Build().RunAsync();
         }
     }
