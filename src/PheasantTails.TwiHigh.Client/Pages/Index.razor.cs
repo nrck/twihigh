@@ -5,7 +5,6 @@
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
-
             if (AuthenticationState != null)
             {
                 var isAuthenticated = (await AuthenticationState).User.Identity?.IsAuthenticated ?? false;

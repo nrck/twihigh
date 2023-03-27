@@ -1,28 +1,11 @@
-﻿using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.Web;
+﻿using Microsoft.AspNetCore.Components.Web;
 using PheasantTails.TwiHigh.Client.TypedHttpClients;
 using PheasantTails.TwiHigh.Data.Model.TwiHighUsers;
 
 namespace PheasantTails.TwiHigh.Client.Pages
 {
-    public partial class Signup
+    public partial class Signup : PageBase
     {
-#pragma warning disable CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
-        [Inject]
-        private NavigationManager NavigationManager { get; set; }
-#pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
-
-#pragma warning disable CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
-        [Inject]
-        private AppUserHttpClient AppUserHttpClient { get; set; }
-#pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
-
-#pragma warning disable CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
-        [Inject]
-        private AuthenticationStateProvider AuthenticationStateProvider { get; set; }
-#pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
-
         private AddTwiHighUserContext Context { get; set; } = new AddTwiHighUserContext();
 
         private AddTwiHighUserContextValidator Validator { get; } = new AddTwiHighUserContextValidator();
@@ -30,7 +13,6 @@ namespace PheasantTails.TwiHigh.Client.Pages
         private bool IsWorking { get; set; } = false;
 
         private string ErrorMessage { get; set; } = string.Empty;
-
 
         private async Task OnClickSignupButtonAsync(MouseEventArgs _)
         {
@@ -64,7 +46,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
             await ((TwiHighAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsAuthenticatedAsync(response.Token);
             IsWorking = false;
-            NavigationManager.NavigateTo(DefinePaths.PAGE_PATH_HOME);
+            Navigation.NavigateTo(DefinePaths.PAGE_PATH_HOME);
         }
     }
 }

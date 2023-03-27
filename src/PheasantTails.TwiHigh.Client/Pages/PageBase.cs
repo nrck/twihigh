@@ -1,6 +1,7 @@
 ﻿using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using PheasantTails.TwiHigh.Client.Extensions;
 using PheasantTails.TwiHigh.Client.TypedHttpClients;
 
 namespace PheasantTails.TwiHigh.Client.Pages
@@ -15,6 +16,9 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
         [Inject]
         protected ILocalStorageService LocalStorageService { get; set; }
+
+        [Inject]
+        protected ILogger<PageBase> Logger { get; set; }
 
         [Inject]
         protected AppUserHttpClient AppUserHttpClient { get; set; }
@@ -37,79 +41,116 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
         public void Dispose()
         {
+            Logger.LogStart();
             Dispose(true);
             GC.SuppressFinalize(this);
+            Logger.LogFinish();
         }
 
         public ValueTask DisposeAsync()
         {
+            Logger.LogStart();
             Dispose(true);
             GC.SuppressFinalize(this);
+            Logger.LogFinish();
+
             return ValueTask.CompletedTask;
         }
 
         protected override void OnInitialized()
         {
+            Logger.LogStart();
             LocalStorageService.Changed += OnChangeTwiHighJwt;
             base.OnInitialized();
+            Logger.LogFinish();
         }
 
         protected override async Task OnInitializedAsync()
         {
+            Logger.LogStart();
             await SetTokenToHtmlClient();
             await base.OnInitializedAsync();
+            Logger.LogFinish();
         }
 
         protected override void OnParametersSet()
         {
+            Logger.LogStart();
             base.OnParametersSet();
+            Logger.LogFinish();
         }
 
         protected override Task OnParametersSetAsync()
         {
-            return base.OnParametersSetAsync();
+            Logger.LogStart();
+            var task = base.OnParametersSetAsync();
+            Logger.LogFinish();
+
+            return task;
         }
 
         protected override void OnAfterRender(bool firstRender)
         {
+            Logger.LogStart();
             base.OnAfterRender(firstRender);
+            Logger.LogFinish();
         }
 
         protected override Task OnAfterRenderAsync(bool firstRender)
         {
-            return base.OnAfterRenderAsync(firstRender);
+            Logger.LogStart();
+            var task = base.OnAfterRenderAsync(firstRender);
+            Logger.LogFinish();
+
+            return task;
         }
 
         protected async Task SetTokenToHtmlClient()
         {
+            Logger.LogStart();
             var token = await LocalStorageService.GetItemAsStringAsync(LOCAL_STORAGE_KEY_JWT);
             SetTokenToHtmlClient(token);
+            Logger.LogFinish();
         }
 
         protected virtual void Dispose(bool disposing)
         {
+            Logger.LogStart();
             if (disposing)
             {
                 LocalStorageService.Changed -= OnChangeTwiHighJwt;
             }
+            Logger.LogFinish();
         }
 
         private void OnChangeTwiHighJwt(object? _, ChangedEventArgs e)
         {
-            if(e.Key != LOCAL_STORAGE_KEY_JWT)
+            Logger.LogStart();
+            if (e.Key != LOCAL_STORAGE_KEY_JWT)
             {
+                Logger.LogFinish();
                 return;
             }
             var token = e.NewValue.ToString() ?? string.Empty;
             SetTokenToHtmlClient(token);
+            Logger.LogFinish();
         }
 
         private void SetTokenToHtmlClient(string token)
         {
+            Logger.LogStart();
+            if (string.IsNullOrEmpty(token))
+            {
+                Navigation.NavigateTo(DefinePaths.PAGE_PATH_LOGIN, replace: true);
+                Logger.LogFinish();
+                return;
+            }
+
             AppUserHttpClient.SetToken(token);
             FollowHttpClient.SetToken(token);
             TimelineHttpClient.SetToken(token);
             TweetHttpClient.SetToken(token);
+            Logger.LogFinish();
         }
     }
 }
