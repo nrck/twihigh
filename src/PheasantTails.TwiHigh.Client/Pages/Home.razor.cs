@@ -16,7 +16,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
         /// <summary>
         /// ローカルキャッシュするタイムラインのツイート数
         /// </summary>
-        private const int LOCAL_CACHE_MAXIMUM_SIZE = 1000;
+        private const int LOCAL_CACHE_MAXIMUM_SIZE = 10000;
 
         private Tweet[] Tweets { get; set; } = Array.Empty<Tweet>();
 
@@ -46,39 +46,19 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
         private async Task GetMyTimerlineEvery5secAsync(CancellationToken cancellationToken = default)
         {
-            ResponseTimelineContext? response = null;
             var since = DateTimeOffset.MinValue;
             var until = DateTimeOffset.MaxValue;
             while (!cancellationToken.IsCancellationRequested)
             {
-                try
+                if (Tweets != null && Tweets.Any())
                 {
-                    if (Tweets != null && Tweets.Any())
-                    {
-                        since = Tweets.Max(tweet => tweet.CreateAt);
-                    }
-                    response = await TimelineHttpClient.GetMyTimelineAsync(since, until);
+                    since = Tweets.Max(tweet => tweet.CreateAt);
                 }
-                catch (HttpRequestException ex)
+                else
                 {
-                    switch (ex.StatusCode)
-                    {
-                        case HttpStatusCode.Unauthorized:
-                            await ((TwiHighAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsLoggedOutAsync();
-                            Navigation.NavigateTo(DefinePaths.PAGE_PATH_LOGIN);
-                            break;
-                        default:
-                            break;
-                    }
+                    since = DateTimeOffset.MinValue;
                 }
-
-                if (response != null && response.Tweets.Any())
-                {
-                    MergeTimeline(response.Tweets);
-                    await SaveTimelineToLocalStorageAsync();
-                    StateHasChanged();
-                }
-
+                await GetTweetsAndMergeAsync(since, until);
                 await Task.Delay(5000, cancellationToken);
             }
         }
@@ -105,7 +85,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
         {
             var id = (await AuthenticationState!).User.Claims.FirstOrDefault(c => c.Type == nameof(ResponseTwiHighUserContext.Id))?.Value ?? string.Empty;
             var key = string.Format(LOCAL_STORAGE_KEY_TWEETS, id);
-            await LocalStorageService.SetItemAsync(key, Tweets);
+            await LocalStorageService.SetItemAsync(key, Tweets.Take(LOCAL_CACHE_MAXIMUM_SIZE).ToArray());
         }
 
         private void MergeTimeline(Tweet[] source)
@@ -118,8 +98,57 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
             Tweets = Tweets.UnionBy(source, keySelector: tweet => tweet.Id)
                 .OrderByDescending(tweet => tweet.CreateAt)
-                .Take(LOCAL_CACHE_MAXIMUM_SIZE)
                 .ToArray();
+        }
+
+        private async Task GetTweetsAndMergeAsync(DateTimeOffset since, DateTimeOffset until)
+        {
+            ResponseTimelineContext? response = null;
+
+            try
+            {
+                response = await TimelineHttpClient.GetMyTimelineAsync(since, until);
+            }
+            catch (HttpRequestException ex)
+            {
+                switch (ex.StatusCode)
+                {
+                    case HttpStatusCode.Unauthorized:
+                        await ((TwiHighAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsLoggedOutAsync();
+                        Navigation.NavigateTo(DefinePaths.PAGE_PATH_LOGIN);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            if (response != null && response.Tweets.Any())
+            {
+                MergeTimeline(response.Tweets);
+                if (response.Tweets.Length == 50)
+                {
+                    var tmp = new[] {
+                        // UserId を Guid.Emptyとしてギャップツイート取得用とする
+                        new Tweet
+                        {
+                            Id = Guid.NewGuid(),
+                            UserId = Guid.Empty,
+                            CreateAt = response.Tweets.Min(tweet => tweet.CreateAt)
+                        }
+                    };
+                    MergeTimeline(tmp);
+                }
+                await SaveTimelineToLocalStorageAsync();
+                StateHasChanged();
+            }
+        }
+
+        private async Task OnClickGetGapTweets(int index, DateTimeOffset since, DateTimeOffset until)
+        {
+            var tmp = Tweets.ToList();
+            tmp.RemoveAt(index);
+            Tweets = tmp.ToArray();
+            await GetTweetsAndMergeAsync(since, until);
         }
     }
 }
