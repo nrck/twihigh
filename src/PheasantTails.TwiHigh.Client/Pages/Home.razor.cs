@@ -8,6 +8,16 @@ namespace PheasantTails.TwiHigh.Client.Pages
 {
     public partial class Home : PageBase, IDisposable, IAsyncDisposable
     {
+        /// <summary>
+        /// ローカルストレージキー（タイムライン保存用）
+        /// </summary>
+        private const string LOCAL_STORAGE_KEY_TWEETS = "UserTimelines_{0}";
+
+        /// <summary>
+        /// ローカルキャッシュするタイムラインのツイート数
+        /// </summary>
+        private const int LOCAL_CACHE_MAXIMUM_SIZE = 1000;
+
         private Tweet[] Tweets { get; set; } = Array.Empty<Tweet>();
 
         private CancellationTokenSource? WorkerCancellationTokenSource { get; set; } = null;
@@ -17,6 +27,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
+            await LoadTimelineFromLocalStorageAsync();
             WorkerCancellationTokenSource ??= new CancellationTokenSource();
             AvatarUrl = await GetMyAvatarUrlAsync();
             StateHasChanged();
@@ -24,14 +35,29 @@ namespace PheasantTails.TwiHigh.Client.Pages
             await GetMyTimerlineEvery5secAsync(WorkerCancellationTokenSource.Token);
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                WorkerCancellationTokenSource?.Cancel();
+                base.Dispose(disposing);
+            }
+        }
+
         private async Task GetMyTimerlineEvery5secAsync(CancellationToken cancellationToken = default)
         {
             ResponseTimelineContext? response = null;
+            var since = DateTimeOffset.MinValue;
+            var until = DateTimeOffset.MaxValue;
             while (!cancellationToken.IsCancellationRequested)
             {
                 try
                 {
-                    response = await TimelineHttpClient.GetMyTimelineAsync();
+                    if (Tweets != null && Tweets.Any())
+                    {
+                        since = Tweets.Max(tweet => tweet.CreateAt);
+                    }
+                    response = await TimelineHttpClient.GetMyTimelineAsync(since, until);
                 }
                 catch (HttpRequestException ex)
                 {
@@ -46,9 +72,10 @@ namespace PheasantTails.TwiHigh.Client.Pages
                     }
                 }
 
-                if (response != null)
+                if (response != null && response.Tweets.Any())
                 {
-                    Tweets = response.Tweets;
+                    MergeTimeline(response.Tweets);
+                    await SaveTimelineToLocalStorageAsync();
                     StateHasChanged();
                 }
 
@@ -67,13 +94,32 @@ namespace PheasantTails.TwiHigh.Client.Pages
             return (await AuthenticationState).User.Claims.FirstOrDefault(c => c.Type == nameof(ResponseTwiHighUserContext.AvatarUrl))?.Value ?? string.Empty;
         }
 
-        protected override void Dispose(bool disposing)
+        private async Task LoadTimelineFromLocalStorageAsync()
         {
-            if (disposing)
+            var id = (await AuthenticationState!).User.Claims.FirstOrDefault(c => c.Type == nameof(ResponseTwiHighUserContext.Id))?.Value ?? string.Empty;
+            var key = string.Format(LOCAL_STORAGE_KEY_TWEETS, id);
+            Tweets = await LocalStorageService.GetItemAsync<Tweet[]>(key);
+        }
+
+        private async Task SaveTimelineToLocalStorageAsync()
+        {
+            var id = (await AuthenticationState!).User.Claims.FirstOrDefault(c => c.Type == nameof(ResponseTwiHighUserContext.Id))?.Value ?? string.Empty;
+            var key = string.Format(LOCAL_STORAGE_KEY_TWEETS, id);
+            await LocalStorageService.SetItemAsync(key, Tweets);
+        }
+
+        private void MergeTimeline(Tweet[] source)
+        {
+            if (Tweets == null)
             {
-                WorkerCancellationTokenSource?.Cancel();
-                base.Dispose(disposing);
+                Tweets = source;
+                return;
             }
+
+            Tweets = Tweets.UnionBy(source, keySelector: tweet => tweet.Id)
+                .OrderByDescending(tweet => tweet.CreateAt)
+                .Take(LOCAL_CACHE_MAXIMUM_SIZE)
+                .ToArray();
         }
     }
 }
