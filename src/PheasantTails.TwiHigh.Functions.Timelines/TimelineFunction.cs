@@ -1,3 +1,4 @@
+using Azure.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos;
@@ -40,6 +41,71 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
             var timelines = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TIMELINE_CONTAINER_NAME);
             var iterator = timelines.GetItemQueryIterator<Timeline>(
                 "SELECT * FROM c ORDER BY c.createAt DESC",
+                requestOptions: new QueryRequestOptions
+                {
+                    PartitionKey = new PartitionKey(id)
+                });
+
+            var tweets = new List<Tweet>();
+            while (iterator.HasMoreResults)
+            {
+                var result = await iterator.ReadNextAsync();
+                foreach (var timeline in result.Resource)
+                {
+                    tweets.Add(timeline.ToTweet());
+                }
+            }
+            if (!tweets.Any())
+            {
+                return new NoContentResult();
+            }
+
+            var latest = tweets.Max(t => t.CreateAt);
+            var oldest = tweets.Min(t => t.CreateAt);
+            var response = new ResponseTimelineContext
+            {
+                Latest = latest,
+                Oldest = oldest,
+                Tweets = tweets.OrderByDescending(t => t.CreateAt).ToArray()
+            };
+
+            return new OkObjectResult(response);
+        }
+
+        [FunctionName("GetMyTimelineV2")]
+        public async Task<IActionResult> GetMyTimelineV2Async(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "Get", Route = "timeline")] HttpRequest req)
+        {
+            if (!req.TryGetUserId(out var id))
+            {
+                return new UnauthorizedResult();
+            }
+
+            // åüçıîÕàÕÇê›íË
+            var sinceDatetime = DateTimeOffset.MinValue;
+            var untilDatetime = DateTimeOffset.MaxValue;
+            if (req.Query.TryGetValue("since", out var since) && DateTimeOffset.TryParse(since, out var tmpSinceDatetime))
+            {
+                sinceDatetime = tmpSinceDatetime;
+            }
+            if (req.Query.TryGetValue("until", out var until) && DateTimeOffset.TryParse(until, out var tmpUntilDatetime))
+            {
+                untilDatetime = tmpUntilDatetime;
+            }
+
+            // ÉNÉGÉäÇÃçÏê¨
+            var query = new QueryDefinition(
+                "SELECT TOP 50 * FROM c " +
+                "WHERE c.ownerUserId = @OwnerUserId " +
+                "AND @SinceDatetime < c.createAt " +
+                "AND c.createAt <= @UntilDatetime " +
+                "ORDER BY c.createAt DESC")
+                .WithParameter("@OwnerUserId", id)
+                .WithParameter("@SinceDatetime", sinceDatetime)
+                .WithParameter("@UntilDatetime", untilDatetime);
+
+            var timelines = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TIMELINE_CONTAINER_NAME);
+            var iterator = timelines.GetItemQueryIterator<Timeline>(query,
                 requestOptions: new QueryRequestOptions
                 {
                     PartitionKey = new PartitionKey(id)
