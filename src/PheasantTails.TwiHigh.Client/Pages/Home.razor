@@ -16,9 +16,25 @@
 <section>
     @if (Tweets != null && Tweets.Any())
     {
-        foreach (var tweet in Tweets)
+        for (var index = 0; index < Tweets.Length; index++)
         {
-            <TweetComponent Tweet="tweet" />
+            var tweet = Tweets[index];
+            if (tweet.UserId == Guid.Empty && index + 1 < Tweets.Length)
+            {
+                <GapTweetsLoadButtonComponent Index=index Since=@(Tweets[index + 1].CreateAt) Until=@(tweet.CreateAt) OnClick="OnClickGetGapTweets" />
+            }
+            else if (tweet.UserId == Guid.Empty && Tweets.Length <= index + 1)
+            {
+                <GapTweetsLoadButtonComponent Index=index Since=@(DateTimeOffset.MinValue) Until=@(tweet.CreateAt) OnClick="OnClickGetGapTweets" />
+            }
+            else
+            {
+                <TweetComponent Tweet="tweet" />
+            }
+        }
+        if (Tweets[Tweets.Length - 1].UserId != Guid.Empty)
+        {
+            <GapTweetsLoadButtonComponent Index=@(Tweets.Length - 1) Since=@(DateTimeOffset.MinValue) Until=@(Tweets[Tweets.Length - 1].CreateAt) OnClick=OnClickGetGapTweets />
         }
     }
     else
