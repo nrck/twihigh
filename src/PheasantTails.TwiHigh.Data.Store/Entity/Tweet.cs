@@ -9,6 +9,7 @@
         public string UserDisplayName { get; set; } = string.Empty;
         public string UserAvatarUrl { get; set; } = string.Empty;
         public string Text { get; set; } = string.Empty;
+        public bool IsDeleted { get; set; }
         public Guid? ReplyTo { get; set; }
         public Guid[] ReplyFrom { get; set; } = Array.Empty<Guid>();
     }
