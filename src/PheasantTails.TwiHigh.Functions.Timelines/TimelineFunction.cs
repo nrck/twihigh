@@ -1,4 +1,3 @@
-using Azure.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos;
@@ -6,6 +5,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using PheasantTails.TwiHigh.Data.Model.Followers;
+using PheasantTails.TwiHigh.Data.Model.Queues;
 using PheasantTails.TwiHigh.Data.Model.Timelines;
 using PheasantTails.TwiHigh.Data.Store.Entity;
 using PheasantTails.TwiHigh.Functions.Extensions;
@@ -198,6 +198,64 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
                 }
                 await batch.ExecuteAsync();
             }
+        }
+
+        [FunctionName("DeleteTimelinesTweetTrigger")]
+        public async Task DeleteTimelinesTweetTriggerAsync([QueueTrigger(AZURE_STORAGE_DELETE_TIMELINES_TWEET_TRIGGER_QUEUE_NAME, Connection = QUEUE_STORAGE_CONNECTION_STRINGS_ENV_NAME)] string myQueueItem)
+        {
+            try
+            {
+                if (myQueueItem == null) return;
+
+                var que = JsonSerializer.Deserialize<DeleteTimelineQueue>(myQueueItem);
+                var tasks = new List<Task>();
+                var patch = new[]
+                {
+                    PatchOperation.Set("/text", "This tweet has been deleted."),
+                    PatchOperation.Set("/isDeleted", true),
+                    PatchOperation.Set("/updateAt", que.Tweet.UpdateAt)
+                };
+                var timelines = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TIMELINE_CONTAINER_NAME);
+
+                // ÉNÉGÉäÇÃçÏê¨
+                var query = new QueryDefinition(
+                    "SELECT c.id, c.ownerUserId FROM c " +
+                    "WHERE c.tweetId = @TweetId")
+                    .WithParameter("@TweetId", que.Tweet.Id);
+
+                var iterator = timelines.GetItemQueryIterator<TimelineIdOwnerUserIdPair>(query);
+
+                while (iterator.HasMoreResults)
+                {
+                    var result = await iterator.ReadNextAsync();
+                    foreach (var pair in result.Resource)
+                    {
+                        tasks.Add(timelines
+                            .PatchItemAsync<Timeline>(
+                                id: pair.Id.ToString(),
+                                partitionKey: new PartitionKey(pair.OwnerUserId.ToString()),
+                                patchOperations: patch,
+                                requestOptions: new PatchItemRequestOptions { IfMatchEtag = result.ETag })
+                            );
+                    }
+                }
+
+                await Task.WhenAll(tasks);
+            }
+            catch (CosmosException ex)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        private class TimelineIdOwnerUserIdPair
+        {
+            public Guid Id { get; set; }
+            public Guid OwnerUserId { get; set; }
         }
     }
 }
