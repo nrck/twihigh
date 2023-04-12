@@ -5,6 +5,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using PheasantTails.TwiHigh.Data.Model;
+using PheasantTails.TwiHigh.Data.Model.Queues;
 using PheasantTails.TwiHigh.Data.Model.Timelines;
 using PheasantTails.TwiHigh.Data.Store.Entity;
 using PheasantTails.TwiHigh.Functions.Core;
@@ -26,9 +27,9 @@ namespace PheasantTails.TwiHigh.Functions.Tweets
             _client = client;
         }
 
-        [FunctionName("Tweets")]
+        [FunctionName("PostTweet")]
         public async Task<IActionResult> Post(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "tweets")] HttpRequest req)
         {
             try
             {
@@ -51,6 +52,8 @@ namespace PheasantTails.TwiHigh.Functions.Tweets
                     UserDisplayId = user.DisplayId,
                     UserDisplayName = user.DisplayName,
                     UserAvatarUrl = user.AvatarUrl,
+                    IsDeleted = false,
+                    UpdateAt = DateTimeOffset.UtcNow,
                     CreateAt = DateTimeOffset.UtcNow
                 };
 
@@ -59,6 +62,52 @@ namespace PheasantTails.TwiHigh.Functions.Tweets
                     AZURE_STORAGE_ADD_TIMELINES_TWEET_TRIGGER_QUEUE_NAME,
                     new QueAddTimelineContext(tweet, user.Followers));
                 return new CreatedResult("", res.Resource);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        [FunctionName("DelateTweetById")]
+        public async Task<IActionResult> DeleteTweetByIdAsync(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "tweets/{id}")] HttpRequest req,
+            string id)
+        {
+            try
+            {
+                if (!req.TryGetUserId(out var userId))
+                {
+                    _logger.LogWarning("ユーザIDを取得できませんでした。");
+                    return new UnauthorizedResult();
+                }
+
+                // 削除対象のツイートに削除フラグを立てる
+                var patch = new[]
+                {
+                    // 削除フラグ
+                    PatchOperation.Set("/isDeleted", true),
+                    // 更新日時を現在時刻に
+                    PatchOperation.Set("/updateAt", DateTimeOffset.Now)
+                };
+
+                // 自分のツイート以外のIDが指定されても、ここで例外が発生するはず
+                try
+                {
+                    var tweet = await _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TWEET_CONTAINER_NAME)
+                        .PatchItemAsync<Tweet>(id, new PartitionKey(userId), patch);
+
+                    // フォロワーのタイムラインから削除する
+                    await QueueStorages.InsertMessageAsync(
+                        AZURE_STORAGE_DELETE_TIMELINES_TWEET_TRIGGER_QUEUE_NAME,
+                        new DeleteTimelineQueue(tweet));
+                }
+                catch (CosmosException ex)
+                {
+                    return new StatusCodeResult((int)ex.StatusCode);
+                }
+
+                return new OkResult();
             }
             catch (Exception ex)
             {
