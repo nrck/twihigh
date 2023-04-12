@@ -16,7 +16,7 @@ Console.WriteLine();
 var connectionString = Console.ReadLine();
 
 var client = new CosmosClientBuilder(connectionString)
-    .WithApplicationName("KinmuSystemAPI")
+    .WithApplicationName("TwiHighAPI")
     .WithConnectionModeDirect() // Gatewayを通さずTCPで直接接続（この方がパフォーマンスが良いらしい）
     .WithSerializerOptions(new CosmosSerializationOptions { PropertyNamingPolicy = CosmosPropertyNamingPolicy.CamelCase })
     .WithBulkExecution(true)
