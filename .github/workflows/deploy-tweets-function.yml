@@ -21,5 +21,6 @@ jobs:
     with:
       function-app-name: twihigh-dev-func-tweets
       function-project-path: ./src/PheasantTails.TwiHigh.Functions.Tweets
+      deploy-environment-name: dev-func-tweets
     secrets:
       publish-profile: ${{ secrets.AZURE_FUNCTION_PUBLISH_DEV_TWEETS }}

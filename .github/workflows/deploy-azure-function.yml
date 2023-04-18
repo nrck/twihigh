@@ -11,6 +11,9 @@ on:
       function-project-path:
         required: true
         type: string
+      deploy-environment-name:
+        required: true
+        type: string
     secrets:
       publish-profile:
         required: true
@@ -21,7 +24,7 @@ env:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    environment: dev
+    environment: ${{ inputs.deploy-environment-name }}
     steps:
     - name: '[ ${{ inputs.function-app-name }} ]Checkout GitHub Action'
       uses: actions/checkout@v3
