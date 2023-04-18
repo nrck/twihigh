@@ -1,0 +1,25 @@
+#---------------------------------------------------------------------------------------
+#   deploy-dev.yml
+#       refer to https://github.com/Azure/actions-workflow-samples
+#---------------------------------------------------------------------------------------
+name: Deploy Tweets function
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/PheasantTails.TwiHigh.Data.Model/**'
+      - 'src/PheasantTails.TwiHigh.Data.Store/**'
+      - 'src/PheasantTails.TwiHigh.Functions.Core/**'
+      - 'src/PheasantTails.TwiHigh.Functions.Extensions/**'
+      - 'src/PheasantTails.TwiHigh.Functions.Tweets/**'
+
+jobs:
+  build-and-deploy-tweets:
+    name: Build and deploy Tweets
+    uses: ./.github/workflows/deploy-azure-function.yml
+    with:
+      function-app-name: twihigh-dev-func-tweets
+      function-project-path: ./src/PheasantTails.TwiHigh.Functions.Tweets
+    secrets:
+      publish-profile: ${{ secrets.AZURE_FUNCTION_PUBLISH_DEV_TWEETS }}

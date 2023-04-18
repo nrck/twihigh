@@ -1,0 +1,25 @@
+#---------------------------------------------------------------------------------------
+#   deploy-dev.yml
+#       refer to https://github.com/Azure/actions-workflow-samples
+#---------------------------------------------------------------------------------------
+name: Deploy Timelines function
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/PheasantTails.TwiHigh.Data.Model/**'
+      - 'src/PheasantTails.TwiHigh.Data.Store/**'
+      - 'src/PheasantTails.TwiHigh.Functions.Core/**'
+      - 'src/PheasantTails.TwiHigh.Functions.Extensions/**'
+      - 'src/PheasantTails.TwiHigh.Functions.Timelines/**'
+
+jobs:
+  build-and-deploy-timelines:
+    name: Build and deploy Timelines
+    uses: ./.github/workflows/deploy-azure-function.yml
+    with:
+      function-app-name: twihigh-dev-func-timelines
+      function-project-path: ./src/PheasantTails.TwiHigh.Functions.Timelines
+    secrets:
+      publish-profile: ${{ secrets.AZURE_FUNCTION_PUBLISH_DEV_TIMELINES }}

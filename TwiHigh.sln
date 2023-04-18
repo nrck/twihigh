@@ -30,6 +30,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.Funct
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.Client", "src\PheasantTails.TwiHigh.Client\PheasantTails.TwiHigh.Client.csproj", "{18D0277E-E8D6-4666-9AEB-9495C2A0D459}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{BF0D3C53-21DF-4443-ABE1-25814284A14A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{8BCDB0CD-DFDE-4FE1-8A98-0AD961073AFB}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\deploy-azure-function.yml = .github\workflows\deploy-azure-function.yml
+		.github\workflows\deploy-client-application.yml = .github\workflows\deploy-client-application.yml
+		.github\workflows\deploy-follows-function.yml = .github\workflows\deploy-follows-function.yml
+		.github\workflows\deploy-timelines-function.yml = .github\workflows\deploy-timelines-function.yml
+		.github\workflows\deploy-tweets-function.yml = .github\workflows\deploy-tweets-function.yml
+		.github\workflows\deploy-twihighusers-function.yml = .github\workflows\deploy-twihighusers-function.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,6 +91,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8BCDB0CD-DFDE-4FE1-8A98-0AD961073AFB} = {BF0D3C53-21DF-4443-ABE1-25814284A14A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0A5F0AC6-A1E7-4971-B1F0-B8C42660EC25}
