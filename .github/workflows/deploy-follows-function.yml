@@ -1,0 +1,25 @@
+#---------------------------------------------------------------------------------------
+#   deploy-dev.yml
+#       refer to https://github.com/Azure/actions-workflow-samples
+#---------------------------------------------------------------------------------------
+name: Deploy Follows function
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/PheasantTails.TwiHigh.Data.Model/**'
+      - 'src/PheasantTails.TwiHigh.Data.Store/**'
+      - 'src/PheasantTails.TwiHigh.Functions.Core/**'
+      - 'src/PheasantTails.TwiHigh.Functions.Extensions/**'
+      - 'src/PheasantTails.TwiHigh.Functions.Follows/**'
+
+jobs:
+  build-and-deploy-follows:
+    name: Build and deploy Follows
+    uses: ./.github/workflows/deploy-azure-function.yml
+    with:
+      function-app-name: twihigh-dev-func-follows
+      function-project-path: ./src/PheasantTails.TwiHigh.Functions.Follows
+    secrets:
+      publish-profile: ${{ secrets.AZURE_FUNCTION_PUBLISH_DEV_FOLLOWS }}
