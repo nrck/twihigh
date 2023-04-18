@@ -2,7 +2,7 @@
 #   deploy-dev.yml
 #       refer to https://github.com/Azure/actions-workflow-samples
 #---------------------------------------------------------------------------------------
-name: Build and Deploy Client
+name: Deploy Client application
 on:
   push:
     branches:
@@ -15,6 +15,7 @@ on:
 jobs:
   build-and-deploy-client:
     runs-on: ubuntu-latest
+    environment: dev-client
     name: Build and Deploy Client
     steps:
       - uses: actions/checkout@v2

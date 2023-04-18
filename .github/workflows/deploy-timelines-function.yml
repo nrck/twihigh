@@ -21,5 +21,6 @@ jobs:
     with:
       function-app-name: twihigh-dev-func-timelines
       function-project-path: ./src/PheasantTails.TwiHigh.Functions.Timelines
+      deploy-environment-name: dev-func-timelines
     secrets:
       publish-profile: ${{ secrets.AZURE_FUNCTION_PUBLISH_DEV_TIMELINES }}
