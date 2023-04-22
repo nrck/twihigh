@@ -24,9 +24,16 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
         private string AvatarUrl { get; set; } = string.Empty;
 
+        private Guid MyTwiHithUserId { get; set; }
+
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
+            var id = (await AuthenticationState!).User.Claims.FirstOrDefault(c => c.Type == nameof(ResponseTwiHighUserContext.Id))?.Value ?? string.Empty;
+            if (Guid.TryParse(id, out var result))
+            {
+                MyTwiHithUserId = result;
+            }
             await LoadTimelineFromLocalStorageAsync();
             WorkerCancellationTokenSource ??= new CancellationTokenSource();
             AvatarUrl = await GetMyAvatarUrlAsync();
@@ -76,7 +83,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
         private async Task LoadTimelineFromLocalStorageAsync()
         {
-            var id = (await AuthenticationState!).User.Claims.FirstOrDefault(c => c.Type == nameof(ResponseTwiHighUserContext.Id))?.Value ?? string.Empty;
+            var id = MyTwiHithUserId.ToString();
             var key = string.Format(LOCAL_STORAGE_KEY_TWEETS, id);
             Tweets = await LocalStorageService.GetItemAsync<Tweet[]>(key);
         }

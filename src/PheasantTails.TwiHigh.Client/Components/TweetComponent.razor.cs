@@ -10,6 +10,9 @@ namespace PheasantTails.TwiHigh.Client.Components
         [Parameter]
         public Tweet? Tweet { get; set; }
 
+        [Parameter]
+        public bool IsMyTweet { get; set; }
+
 #pragma warning disable CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
         [Inject]
         private NavigationManager Navigation { get; set; }
@@ -63,6 +66,5 @@ namespace PheasantTails.TwiHigh.Client.Components
             var url = string.Format(DefinePaths.PAGE_PATH_PROFILE, Tweet.UserDisplayId);
             Navigation.NavigateTo(url);
         }
-
     }
 }

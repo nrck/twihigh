@@ -30,7 +30,7 @@
             }
             else
             {
-                <TweetComponent Tweet="tweet" />
+                <TweetComponent Tweet="tweet" IsMyTweet=@(tweet.UserId == MyTwiHithUserId) />
             }
         }
         if (Tweets[Tweets.Length - 1].UserId != Guid.Empty)
