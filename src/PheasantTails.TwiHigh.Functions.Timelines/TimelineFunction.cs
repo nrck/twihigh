@@ -179,7 +179,8 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
             // 対象ユーザのツイートを取得
             var tweets = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TWEET_CONTAINER_NAME);
             var iterator = tweets.GetItemQueryIterator<Tweet>(
-                "SELECT * FROM c",
+                "SELECT * FROM c " +
+                "WHERE c.isDeleted = false OR NOT IS_DEFINED(c.isDeleted)",
                 requestOptions: new QueryRequestOptions
                 {
                     PartitionKey = new PartitionKey(context.FolloweeId.ToString())
