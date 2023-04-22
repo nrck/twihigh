@@ -7,7 +7,8 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
     public class TweetHttpClient
     {
         private const string API_URL_BASE = "https://twihigh-dev-apim.azure-api.net/tweets";
-        private const string API_URL_TWEET = $"{API_URL_BASE}/Tweets";
+        private const string API_URL_TWEET = $"{API_URL_BASE}/tweets";
+        private const string API_URL_DELETE_TWEET = $"{API_URL_BASE}/tweets/{{0}}";
         private readonly HttpClient _httpClient;
 
         public TweetHttpClient(HttpClient httpClient)
@@ -30,6 +31,19 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
             try
             {
                 return await _httpClient.PostAsJsonAsync(API_URL_TWEET, context);
+            }
+            catch (Exception)
+            {
+                return await Task.FromResult<HttpResponseMessage?>(default);
+            }
+        }
+
+        public async Task<HttpResponseMessage?> DeleteTweetAsync(Guid id)
+        {
+            try
+            {
+                var url = string.Format(API_URL_DELETE_TWEET, id.ToString());
+                return await _httpClient.DeleteAsync(url);
             }
             catch (Exception)
             {
