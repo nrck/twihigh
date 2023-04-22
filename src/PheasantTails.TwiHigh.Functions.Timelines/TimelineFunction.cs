@@ -97,8 +97,8 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
             var query = new QueryDefinition(
                 "SELECT TOP 50 * FROM c " +
                 "WHERE c.ownerUserId = @OwnerUserId " +
-                "AND @SinceDatetime < c.createAt " +
-                "AND c.createAt <= @UntilDatetime " +
+                "AND @SinceDatetime < c.updateAt " +
+                "AND c.updateAt <= @UntilDatetime " +
                 "ORDER BY c.createAt DESC")
                 .WithParameter("@OwnerUserId", id)
                 .WithParameter("@SinceDatetime", sinceDatetime)
