@@ -83,3 +83,38 @@
         font-weight: 400;
         word-wrap: break-word;
     }
+
+.tweet-article-right-footer {
+    display: flex;
+    width: 100%;
+    margin-top: 4px;
+    font-size: 14px;
+    line-height: 16px;
+}
+
+    .tweet-article-right-footer .link-button {
+        display: flex;
+        height: 20px;
+        width: calc(100% / 4);
+        border-width: 0px;
+        background-color: rgb(255, 255, 255, 0);
+        padding: 0;
+        margin: 0;
+        color: rgb(83, 100, 113);
+    }
+
+        .tweet-article-right-footer .link-button .icon {
+            height: 20px;
+            width: 30%;
+            text-align: right;
+            padding-top: 2px;
+            padding-right: 4px;
+        }
+
+        .tweet-article-right-footer .link-button .number {
+            height: 20px;
+            width: 70%;
+            text-align: left;
+            padding-top: 2px;
+            padding-left: 4px;
+        }
