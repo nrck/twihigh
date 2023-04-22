@@ -42,7 +42,7 @@
             <span class="number">----</span>
             </button>
             *@
-                @if (IsMyTweet)
+                @if (IsMyTweet && !Tweet.IsDeleted)
                 {
                     <button class="link-button" @onclick=OnClickDeleteButton>
                         <span class="icon oi oi-trash"></span>
