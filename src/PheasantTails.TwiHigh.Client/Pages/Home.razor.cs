@@ -103,7 +103,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
                 return;
             }
 
-            Tweets = Tweets.UnionBy(source, keySelector: tweet => tweet.Id)
+            Tweets = source.UnionBy(Tweets, keySelector: tweet => tweet.Id)
                 .OrderByDescending(tweet => tweet.CreateAt)
                 .ToArray();
         }
@@ -156,6 +156,16 @@ namespace PheasantTails.TwiHigh.Client.Pages
             tmp.RemoveAt(index);
             Tweets = tmp.ToArray();
             await GetTweetsAndMergeAsync(since, until);
+        }
+
+        private async void OnClickDeleteButtonAsync(Guid tweetId)
+        {
+            await DeleteMyTweet(tweetId);
+        }
+
+        private async Task DeleteMyTweet(Guid tweetId)
+        {
+            var _ = await TweetHttpClient.DeleteTweetAsync(tweetId);
         }
     }
 }

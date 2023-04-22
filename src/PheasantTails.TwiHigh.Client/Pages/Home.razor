@@ -30,7 +30,7 @@
             }
             else
             {
-                <TweetComponent Tweet="tweet" IsMyTweet=@(tweet.UserId == MyTwiHithUserId) />
+                <TweetComponent Tweet="tweet" IsMyTweet=@(tweet.UserId == MyTwiHithUserId) OnDeleteAction="OnClickDeleteButtonAsync" />
             }
         }
         if (Tweets[Tweets.Length - 1].UserId != Guid.Empty)
