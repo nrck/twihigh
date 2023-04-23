@@ -87,6 +87,10 @@ namespace PheasantTails.TwiHigh.Functions.Tweets
                     var tweetid = context.ReplyTo.TweetId.ToString();
                     var key = new PartitionKey(context.ReplyTo.UserId.ToString());
                     await tweets.PatchItemAsync<Tweet>(tweetid, key, patch);
+                    
+                    // TimelineFunctionへキューを送信
+                        // 成功時はリプライ先を更新
+                        // 失敗時は自分のツイートのリプライ先の削除更新
                 }
                 await QueueStorages.InsertMessageAsync(
                     AZURE_STORAGE_ADD_TIMELINES_TWEET_TRIGGER_QUEUE_NAME,
