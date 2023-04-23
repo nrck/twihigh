@@ -3,6 +3,12 @@
     public class PostTweetContext
     {
         public string Text { get; set; } = string.Empty;
-        public Guid? ReplyTo { get; set; }
+        public ReplyToContext? ReplyTo { get; set; }
+    }
+
+    public class ReplyToContext
+    {
+        public Guid TweetId { get; set; }
+        public Guid UserId { get; set; }
     }
 }
