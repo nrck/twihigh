@@ -47,7 +47,7 @@ namespace PheasantTails.TwiHigh.Functions.Tweets
                 {
                     Id = Guid.NewGuid(),
                     Text = context.Text,
-                    ReplyTo = context.ReplyTo,
+                    ReplyTo = context.ReplyTo.TweetId,
                     UserId = user.Id,
                     UserDisplayId = user.DisplayId,
                     UserDisplayName = user.DisplayName,
@@ -57,7 +57,37 @@ namespace PheasantTails.TwiHigh.Functions.Tweets
                     CreateAt = DateTimeOffset.UtcNow
                 };
 
-                var res = await _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TWEET_CONTAINER_NAME).CreateItemAsync(tweet);
+                // ツイートの作成
+                var tweets = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TWEET_CONTAINER_NAME);
+                var res = await tweets.CreateItemAsync(tweet);
+
+                // リプライ先があれば実行
+                if (context.ReplyTo != null)
+                {
+                    // クエリの作成
+                    //var query = new QueryDefinition(
+                    //    "SELECT * FROM c " +
+                    //    "WHERE c.id = @ReplyToId")
+                    //    .WithParameter("@ReplyToId", context.ReplyTo.TweetId);
+                    //var iterator = tweets.GetItemQueryIterator<Tweet>(query);
+                    //if(iterator.HasMoreResults)
+                    //{
+                    //    var replyToTweet = (await iterator.ReadNextAsync()).Resource.FirstOrDefault();
+                    //    replyToTweet.ReplyFrom = replyToTweet.ReplyFrom.Append(context.ReplyTo.Value).ToArray();
+                    //    var patch = new[]
+                    //    {       
+                    //        PatchOperation.Add("/replyFrom", context.ReplyTo.Value)
+                    //    };
+                    //    tweets.PatchItemAsync()
+                    //}
+                    var patch = new[]
+                    {
+                        PatchOperation.Add("/replyFrom", res.Resource.Id)
+                    };
+                    var tweetid = context.ReplyTo.TweetId.ToString();
+                    var key = new PartitionKey(context.ReplyTo.UserId.ToString());
+                    await tweets.PatchItemAsync<Tweet>(tweetid, key, patch);
+                }
                 await QueueStorages.InsertMessageAsync(
                     AZURE_STORAGE_ADD_TIMELINES_TWEET_TRIGGER_QUEUE_NAME,
                     new QueAddTimelineContext(tweet, user.Followers));
