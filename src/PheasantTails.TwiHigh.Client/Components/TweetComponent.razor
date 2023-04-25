@@ -32,11 +32,21 @@
                 </div>
             </div>
             <div class="tweet-article-right-footer">
+                @if (IsOpendReplyPostForm)
+                {
+                    <button class="link-button" @onclick=OnClickReplyPostCloseButton>
+                        <span class="icon oi oi-circle-x"></span>
+                        <span class="number">@Tweet.ReplyFrom.Length</span>
+                    </button>
+                }
+                else
+                {
+                    <button class="link-button" @onclick=OnClickReplyButton>
+                        <span class="icon oi oi-comment-square"></span>
+                        <span class="number">@Tweet.ReplyFrom.Length</span>
+                    </button>
+                }
                 @*
-                <button class="link-button">
-                    <span class="icon oi oi-comment-square"></span>
-                    <span class="number">@Tweet.ReplyFrom.Length</span>
-                </button>
             <button class="link-button">
             <span class="icon oi oi-star"></span>
             <span class="number">----</span>
@@ -52,3 +62,9 @@
         </div>
     }
 </article>
+@if (IsOpendReplyPostForm)
+{
+    <section class="reply-section">
+        <PostFormComponent ReplyToContext=ReplyToContext />
+    </section>
+}

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using PheasantTails.TwiHigh.Client.Pages;
+using PheasantTails.TwiHigh.Data.Model;
 using PheasantTails.TwiHigh.Data.Store.Entity;
 
 namespace PheasantTails.TwiHigh.Client.Components
@@ -55,6 +56,26 @@ namespace PheasantTails.TwiHigh.Client.Components
             }
         }
 
+        private bool IsOpendReplyPostForm { get; set; }
+
+        private ReplyToContext? _replyToContext;
+        private ReplyToContext? ReplyToContext
+        {
+            get
+            {
+                if (_replyToContext == null && Tweet != null)
+                {
+                    _replyToContext = new ReplyToContext
+                    {
+                        TweetId = Tweet.Id,
+                        UserId = Tweet.UserId
+                    };
+                }
+
+                return _replyToContext;
+            }
+        }
+
         private void OnClickAvatar(MouseEventArgs _) => NavigateToProfilePage();
 
         private void OnClickUserDisplayName(MouseEventArgs _) => NavigateToProfilePage();
@@ -63,7 +84,7 @@ namespace PheasantTails.TwiHigh.Client.Components
 
         private void NavigateToProfilePage()
         {
-            if(Tweet == null)
+            if (Tweet == null)
             {
                 return;
             }
@@ -75,6 +96,17 @@ namespace PheasantTails.TwiHigh.Client.Components
         private void OnClickDeleteButton(MouseEventArgs _)
         {
             OnDeleteAction?.Invoke(Tweet!.Id);
+        }
+
+
+        private void OnClickReplyButton(MouseEventArgs _)
+        {
+            IsOpendReplyPostForm = true;
+        }
+
+        private void OnClickReplyPostCloseButton(MouseEventArgs _)
+        {
+            IsOpendReplyPostForm = false;
         }
     }
 }
