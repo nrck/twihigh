@@ -12,7 +12,7 @@ on:
       - 'src/PheasantTails.TwiHigh.Data.Store/**'
       - 'src/PheasantTails.TwiHigh.Functions.Core/**'
       - 'src/PheasantTails.TwiHigh.Functions.Extensions/**'
-      - 'src/PheasantTails.TwiHigh.Functions.Tweets/**'
+      - 'src/PheasantTails.TwiHigh.Functions.TwiHighUsers/**'
 
 jobs:
   build-and-deploy-twihighusers:
