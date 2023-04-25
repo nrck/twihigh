@@ -47,7 +47,7 @@ namespace PheasantTails.TwiHigh.Functions.Tweets
                 {
                     Id = Guid.NewGuid(),
                     Text = context.Text,
-                    ReplyTo = context.ReplyTo.TweetId,
+                    ReplyTo = context.ReplyTo?.TweetId,
                     UserId = user.Id,
                     UserDisplayId = user.DisplayId,
                     UserDisplayName = user.DisplayName,
