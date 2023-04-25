@@ -82,11 +82,12 @@ namespace PheasantTails.TwiHigh.Functions.Tweets
                     //}
                     var patch = new[]
                     {
-                        PatchOperation.Add("/replyFrom", res.Resource.Id)
+                        PatchOperation.Add("/replyFrom/-", tweet.Id),
+                        PatchOperation.Set("/updateAt", DateTimeOffset.Now)
                     };
                     var tweetid = context.ReplyTo.TweetId.ToString();
                     var key = new PartitionKey(context.ReplyTo.UserId.ToString());
-                    await tweets.PatchItemAsync<Tweet>(tweetid, key, patch);
+                    await _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TWEET_CONTAINER_NAME).PatchItemAsync<Tweet>(tweetid, key, patch);
                     
                     // TimelineFunctionへキューを送信
                         // 成功時はリプライ先を更新
