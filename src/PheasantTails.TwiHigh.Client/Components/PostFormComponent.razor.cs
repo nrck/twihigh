@@ -1,9 +1,11 @@
 ﻿using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using PheasantTails.TwiHigh.Client.Pages;
 using PheasantTails.TwiHigh.Client.TypedHttpClients;
 using PheasantTails.TwiHigh.Data.Model;
+using PheasantTails.TwiHigh.Data.Model.TwiHighUsers;
 
 namespace PheasantTails.TwiHigh.Client.Components
 {
@@ -27,6 +29,15 @@ namespace PheasantTails.TwiHigh.Client.Components
         [Parameter]
         public string UserAvatarUrl { get; set; } = string.Empty;
 
+        [Parameter]
+        public ReplyToContext? ReplyToContext { get; set; }
+
+        [Parameter]
+        public EventCallback<MouseEventArgs>? OnReplyTweetPosted { get; set; }
+
+        [CascadingParameter]
+        protected Task<AuthenticationState>? AuthenticationState { get; set; }
+
         private PostTweetContext PostTweetContext { get; set; } = new PostTweetContext();
 
         private bool IsPosting { get; set; }
@@ -37,6 +48,10 @@ namespace PheasantTails.TwiHigh.Client.Components
         protected override async Task OnInitializedAsync()
         {
             var token = await LocalStorage.GetItemAsStringAsync("TwiHighJwt");
+            if (AuthenticationState != null)
+            {
+                UserAvatarUrl = (await AuthenticationState).User.Claims.FirstOrDefault(c => c.Type == nameof(ResponseTwiHighUserContext.AvatarUrl))?.Value ?? string.Empty;
+            }
             TweetHttpClient.SetToken(token);
             await base.OnInitializedAsync();
         }
@@ -51,12 +66,17 @@ namespace PheasantTails.TwiHigh.Client.Components
             IsPosting = true;
             StateHasChanged();
             PostTweetContext.Text = TweetText;
+            PostTweetContext.ReplyTo = ReplyToContext;
             await TweetHttpClient.PostTweetAsync(PostTweetContext);
             Console.WriteLine("OnSubmit:" + PostTweetContext.Text);
             PostTweetContext.Text = string.Empty;
             PostTweetContext.ReplyTo = null;
             TweetText = string.Empty;
             IsPosting = false;
+            if(ReplyToContext != null && OnReplyTweetPosted != null)
+            {
+                await OnReplyTweetPosted.Value.InvokeAsync();
+            }
             StateHasChanged();
         }
 

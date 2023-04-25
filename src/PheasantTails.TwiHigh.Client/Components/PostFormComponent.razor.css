@@ -1,5 +1,6 @@
 ﻿.post-article {
     display: flex;
+    padding-top: 12px;
     padding-left: 12px;
     padding-right: 12px;
     padding-bottom: 12px;
