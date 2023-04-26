@@ -234,18 +234,20 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
                 if (myQueueItem == null) return;
 
                 var que = JsonSerializer.Deserialize<UpdateTimelineQueue>(myQueueItem);
+
+                if (!que.Tweet.ReplyTo.HasValue)
+                {
+                    throw new ArgumentException("ReplyTo property is required.", nameof(myQueueItem));
+                }
+
                 var patch = new[]
                 {
                     PatchOperation.Add("/replyFrom/-", que.Tweet.Id),
                     PatchOperation.Set("/updateAt", que.Tweet.UpdateAt)
                 };
-                await PatchTimelineAsync(que.Tweet.Id, patch);
+                await PatchTimelineAsync(que.Tweet.ReplyTo.Value, patch);
             }
             catch (CosmosException ex)
-            {
-                throw;
-            }
-            catch (Exception ex)
             {
                 throw;
             }
