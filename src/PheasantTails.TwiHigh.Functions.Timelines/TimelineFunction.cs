@@ -207,41 +207,14 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
             try
             {
                 if (myQueueItem == null) return;
-
                 var que = JsonSerializer.Deserialize<DeleteTimelineQueue>(myQueueItem);
-                var tasks = new List<Task>();
                 var patch = new[]
                 {
                     PatchOperation.Set("/text", "This tweet has been deleted."),
                     PatchOperation.Set("/isDeleted", true),
                     PatchOperation.Set("/updateAt", que.Tweet.UpdateAt)
                 };
-                var timelines = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TIMELINE_CONTAINER_NAME);
-
-                // クエリの作成
-                var query = new QueryDefinition(
-                    "SELECT c.id, c.ownerUserId FROM c " +
-                    "WHERE c.tweetId = @TweetId")
-                    .WithParameter("@TweetId", que.Tweet.Id);
-
-                var iterator = timelines.GetItemQueryIterator<TimelineIdOwnerUserIdPair>(query);
-
-                while (iterator.HasMoreResults)
-                {
-                    var result = await iterator.ReadNextAsync();
-                    foreach (var pair in result.Resource)
-                    {
-                        tasks.Add(timelines
-                            .PatchItemAsync<Timeline>(
-                                id: pair.Id.ToString(),
-                                partitionKey: new PartitionKey(pair.OwnerUserId.ToString()),
-                                patchOperations: patch,
-                                requestOptions: new PatchItemRequestOptions { IfMatchEtag = result.ETag })
-                            );
-                    }
-                }
-
-                await Task.WhenAll(tasks);
+                await PatchTimelineAsync(que.Tweet.Id, patch);
             }
             catch (CosmosException ex)
             {
@@ -251,6 +224,87 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
             {
                 throw;
             }
+        }
+
+        [FunctionName("UpdateReplyFromTimelinesTweetTrigger")]
+        public async Task UpdateReplyFromTimelinesTweetTriggerAsync([QueueTrigger(AZURE_STORAGE_UPDATE_REPLYFROM_TIMELINES_TWEET_TRIGGER_QUEUE_NAME, Connection = QUEUE_STORAGE_CONNECTION_STRINGS_ENV_NAME)] string myQueueItem)
+        {
+            try
+            {
+                if (myQueueItem == null) return;
+
+                var que = JsonSerializer.Deserialize<UpdateTimelineQueue>(myQueueItem);
+                var patch = new[]
+                {
+                    PatchOperation.Set("/replyFrom", que.Tweet.ReplyFrom),
+                    PatchOperation.Set("/updateAt", que.Tweet.UpdateAt)
+                };
+                await PatchTimelineAsync(que.Tweet.Id, patch);
+            }
+            catch (CosmosException ex)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+
+        [FunctionName("UpdateReplyToTimelinesTweetTrigger")]
+        public async Task UpdateReplyToTimelinesTweetTriggerAsync([QueueTrigger(AZURE_STORAGE_UPDATE_REPLYTO_TIMELINES_TWEET_TRIGGER_QUEUE_NAME, Connection = QUEUE_STORAGE_CONNECTION_STRINGS_ENV_NAME)] string myQueueItem)
+        {
+            try
+            {
+                if (myQueueItem == null) return;
+                var que = JsonSerializer.Deserialize<UpdateTimelineQueue>(myQueueItem);
+                var patch = new[]
+                {
+                    PatchOperation.Remove("/replyTo"),
+                    PatchOperation.Set("/updateAt", que.Tweet.UpdateAt)
+                };
+                await PatchTimelineAsync(que.Tweet.Id, patch);
+            }
+            catch (CosmosException ex)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        private async Task PatchTimelineAsync(Guid tweetId, IReadOnlyList<PatchOperation> patch)
+        {
+            var timelines = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TIMELINE_CONTAINER_NAME);
+
+            // クエリの作成
+            var query = new QueryDefinition(
+                "SELECT c.id, c.ownerUserId FROM c " +
+                "WHERE c.tweetId = @TweetId")
+                .WithParameter("@TweetId", tweetId);
+
+            var iterator = timelines.GetItemQueryIterator<TimelineIdOwnerUserIdPair>(query);
+
+            var tasks = new List<Task>();
+            while (iterator.HasMoreResults)
+            {
+                var result = await iterator.ReadNextAsync();
+                foreach (var pair in result.Resource)
+                {
+                    tasks.Add(timelines
+                        .PatchItemAsync<Timeline>(
+                            id: pair.Id.ToString(),
+                            partitionKey: new PartitionKey(pair.OwnerUserId.ToString()),
+                            patchOperations: patch,
+                            requestOptions: new PatchItemRequestOptions { IfMatchEtag = result.ETag })
+                        );
+                }
+            }
+
+            await Task.WhenAll(tasks);
         }
 
         private class TimelineIdOwnerUserIdPair

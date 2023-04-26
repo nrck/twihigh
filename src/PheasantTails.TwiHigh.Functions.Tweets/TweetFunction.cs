@@ -87,11 +87,23 @@ namespace PheasantTails.TwiHigh.Functions.Tweets
                     };
                     var tweetid = context.ReplyTo.TweetId.ToString();
                     var key = new PartitionKey(context.ReplyTo.UserId.ToString());
-                    await _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TWEET_CONTAINER_NAME).PatchItemAsync<Tweet>(tweetid, key, patch);
-                    
-                    // TimelineFunctionへキューを送信
+                    try
+                    {
+                        await _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TWEET_CONTAINER_NAME).PatchItemAsync<Tweet>(tweetid, key, patch);
+
                         // 成功時はリプライ先を更新
-                        // 失敗時は自分のツイートのリプライ先の削除更新
+                        await QueueStorages.InsertMessageAsync(
+                            AZURE_STORAGE_UPDATE_REPLYFROM_TIMELINES_TWEET_TRIGGER_QUEUE_NAME,
+                            new UpdateTimelineQueue(tweet));
+                    }
+                    catch (CosmosException ex)
+                    {
+                        _logger.LogError(ex, "PostTweet throw CosmosException.");
+                        // 失敗時は自ツイートのreplyToを削除する
+                        await QueueStorages.InsertMessageAsync(
+                            AZURE_STORAGE_UPDATE_REPLYTO_TIMELINES_TWEET_TRIGGER_QUEUE_NAME,
+                            new UpdateTimelineQueue(tweet));
+                    }
                 }
                 await QueueStorages.InsertMessageAsync(
                     AZURE_STORAGE_ADD_TIMELINES_TWEET_TRIGGER_QUEUE_NAME,
