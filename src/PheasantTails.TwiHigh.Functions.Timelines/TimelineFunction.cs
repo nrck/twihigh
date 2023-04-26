@@ -236,7 +236,7 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
                 var que = JsonSerializer.Deserialize<UpdateTimelineQueue>(myQueueItem);
                 var patch = new[]
                 {
-                    PatchOperation.Set("/replyFrom", que.Tweet.ReplyFrom),
+                    PatchOperation.Add("/replyFrom/-", que.Tweet.Id),
                     PatchOperation.Set("/updateAt", que.Tweet.UpdateAt)
                 };
                 await PatchTimelineAsync(que.Tweet.Id, patch);
