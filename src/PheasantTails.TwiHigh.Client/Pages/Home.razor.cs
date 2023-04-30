@@ -165,7 +165,15 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
         private async Task DeleteMyTweet(Guid tweetId)
         {
-            var _ = await TweetHttpClient.DeleteTweetAsync(tweetId);
+            var res = await TweetHttpClient.DeleteTweetAsync(tweetId);
+            if (res != null && res.IsSuccessStatusCode)
+            {
+                SetSucessMessage("ツイートを削除しました！");
+            }
+            else
+            {
+                SetErrorMessage("ツイートを削除できませんでした。");
+            }
         }
     }
 }
