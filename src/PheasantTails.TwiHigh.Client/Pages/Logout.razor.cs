@@ -6,6 +6,7 @@
         {
             await base.OnInitializedAsync();
             await ((TwiHighAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsLoggedOutAsync();
+            SetInfoMessage("ログアウトしました。");
             Navigation.NavigateTo(DefinePaths.PAGE_PATH_LOGIN);
         }
     }

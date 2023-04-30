@@ -12,10 +12,10 @@
         </article>
 
         <section style="position: fixed; bottom: 0; z-index: 100; width: 100%; max-width: -webkit-fill-available;">
-            <MessageComponent Message="新しい通知があります。" Level="MessageComponent.MessageLevel.Info" />
-            <MessageComponent Message="ツイートを送信しました。" Level="MessageComponent.MessageLevel.Success" />
-            <MessageComponent Message="少し前にツイートした内容と同じです。" Level="MessageComponent.MessageLevel.Warn" />
-            <MessageComponent Message="通信エラーが発生しました。" Level="MessageComponent.MessageLevel.Error" />
+            @foreach (var item in MessageService.Messages)
+            {
+                <MessageComponent Context="item" />
+            }
         </section>
     </main>
 

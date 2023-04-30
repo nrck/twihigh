@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components.Web;
 
 namespace PheasantTails.TwiHigh.Client.Components
 {
-    public partial class MessageComponent : IAsyncDisposable
+    public partial class MessageComponent : IDisposable
     {
         public enum MessageLevel
         {
@@ -13,19 +13,26 @@ namespace PheasantTails.TwiHigh.Client.Components
             Error
         }
 
-        [Parameter]
-        public Guid MessageId { get; set; }
+        public class MessageContext
+        {
+            public Guid MessageId { get; set; }
+            public string Message { get; set; }
+            public MessageLevel Level { get; set; }
+            public Action<Guid> OnClickClose { get; set; }
+
+            public MessageContext(MessageLevel level, string message, Action<Guid> onClickClose)
+            {
+                MessageId = Guid.NewGuid();
+                Message = message;
+                Level = level;
+                OnClickClose = onClickClose;
+            }
+        }
 
         [Parameter]
-        public string Message { get; set; } = string.Empty;
+        public MessageContext? Context { get; set; }
 
-        [Parameter]
-        public MessageLevel Level { get; set; } = MessageLevel.Info;
-
-        [Parameter]
-        public EventCallback<Guid> OnClickClose { get; set; }
-
-        private string MessageAreaCssClass => Level switch
+        private string MessageAreaCssClass => Context?.Level switch
         {
             MessageLevel.Success => "success",
             MessageLevel.Error => "error",
@@ -33,26 +40,36 @@ namespace PheasantTails.TwiHigh.Client.Components
             _ => "info",
         };
 
-        private bool IsDispose { get; set; }
+        private bool IsClosed { get; set; }
 
-        private void OnClickCloseButton(MouseEventArgs e)
+        private Timer AutoCloseTimer { get; set; }
+
+        public void Dispose()
         {
-            OnClickClose.InvokeAsync(MessageId);
+            GC.SuppressFinalize(this);
         }
 
-        public ValueTask DisposeAsync()
+        protected override void OnInitialized()
         {
-            if (IsDispose)
+            base.OnInitialized();
+            AutoCloseTimer = new Timer(OnFireAutoCloseTimer,null, 5000, 0);
+        }
+
+        private void OnClickCloseButton(MouseEventArgs e) => CloseMessage();
+
+        private void OnFireAutoCloseTimer(object? state) => CloseMessage();
+
+        private void CloseMessage()
+        {
+            if (Context == null || IsClosed == true)
             {
-                return ValueTask.CompletedTask;
+                return;
             }
-            IsDispose = true;
+            IsClosed = true;
+            AutoCloseTimer.Dispose();
             StateHasChanged();
-            var task = Task.Run(async () => {
-                await Task.Delay(1000);
-                GC.SuppressFinalize(this);
-            });
-            return new ValueTask(task);
+            _ = new Timer((object? _) => { Context.OnClickClose.Invoke(Context.MessageId); }, null, 500, 0);
+            ;
         }
     }
 }

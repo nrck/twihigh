@@ -68,6 +68,14 @@ namespace PheasantTails.TwiHigh.Client.Pages
             AdjustPatchContext();
             // 送信する
             User = await AppUserHttpClient.PatchTwiHighUserAsync(PatchContext);
+            if (User == null)
+            {
+                SetErrorMessage("プロフィールの更新に失敗しました。");
+            }
+            else
+            {
+                SetSucessMessage("プロフィールを更新しました！");
+            }
             SetDisplayVariables();
             StateHasChanged();
         }

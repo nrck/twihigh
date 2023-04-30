@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using PheasantTails.TwiHigh.Client.Extensions;
+using PheasantTails.TwiHigh.Client.Services;
 using PheasantTails.TwiHigh.Client.TypedHttpClients;
+using static PheasantTails.TwiHigh.Client.Components.MessageComponent;
 
 namespace PheasantTails.TwiHigh.Client.Pages
 {
@@ -34,6 +36,9 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
         [Inject]
         protected AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+
+        [Inject]
+        protected IMessageService MessageService { get; set; }
 #pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
 
         [CascadingParameter]
@@ -111,6 +116,26 @@ namespace PheasantTails.TwiHigh.Client.Pages
             var token = await LocalStorageService.GetItemAsStringAsync(LOCAL_STORAGE_KEY_JWT);
             SetTokenToHtmlClient(token);
             Logger.LogFinish();
+        }
+
+        protected void SetErrorMessage(string text)
+        {
+            MessageService.Set(MessageLevel.Error, text);
+        }
+
+        protected void SetWarnMessage(string text)
+        {
+            MessageService.Set(MessageLevel.Warn, text);
+        }
+
+        protected void SetSucessMessage(string text)
+        {
+            MessageService.Set(MessageLevel.Success, text);
+        }
+
+        protected void SetInfoMessage(string text)
+        {
+            MessageService.Set(MessageLevel.Info, text);
         }
 
         protected virtual void Dispose(bool disposing)
