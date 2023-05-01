@@ -107,6 +107,15 @@ namespace PheasantTails.TwiHigh.Client.Pages
             Tweets = source.UnionBy(Tweets, keySelector: tweet => tweet.Id)
                 .OrderByDescending(tweet => tweet.CreateAt)
                 .ToList();
+            Tweets = Tweets.Where(tweet => tweet.ReplyTo.HasValue && string.IsNullOrEmpty(tweet.ReplyToUserDisplayId))
+                .Select(tweet =>
+                {
+                    tweet.ReplyToUserDisplayId = Tweets.FirstOrDefault(t => t.Id == tweet.ReplyTo!.Value)?.UserDisplayId ?? string.Empty;
+                    return tweet;
+                })
+                .UnionBy(Tweets, keySelector: tweet => tweet.Id)
+                .OrderByDescending(tweet => tweet.CreateAt)
+                .ToList();
         }
 
         private async Task GetTweetsAndMergeAsync(DateTimeOffset since, DateTimeOffset until)

@@ -12,6 +12,9 @@ namespace PheasantTails.TwiHigh.Client.Components
         [Parameter]
         public List<TweetViewModel> Tweets { get; set; } = new List<TweetViewModel>();
 
+        [Parameter]
+        public Guid MyTwiHithUserId { get; set; }
+
         /// <summary>
         /// リプライが投稿されたときに発火するイベントコールバック
         /// </summary>
@@ -59,6 +62,7 @@ namespace PheasantTails.TwiHigh.Client.Components
         /// </summary>
         [Parameter]
         public EventCallback<TweetViewModel> OnClickGapTweetsLoad { get; set; }
+
 
         private Task OnClickReplyAsync(PostTweetContext tweet) => OnPostReply.InvokeAsync(tweet);
 

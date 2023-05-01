@@ -29,6 +29,11 @@
             <div class="tweet-article-right-body">
                 @* テキスト本文 *@
                 <div class="user-tweet-text">
+                    @if (!string.IsNullOrEmpty(Tweet.ReplyToUserDisplayId) && !Tweet.IsDeleted)
+                    {
+                        <span class="reply"><AutoLink Text="@($"Replying to @{Tweet.ReplyToUserDisplayId}")" ReplaceUrl=false /></span>
+                        <br />
+                    }
                     <span><AutoLink Text="@Tweet.Text" ReplaceDisplayId=true /></span>
                 </div>
             </div>

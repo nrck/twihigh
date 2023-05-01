@@ -28,6 +28,11 @@ namespace PheasantTails.TwiHigh.Client.ViewModels
         public DateTimeOffset Until { get; set; }
 
         /// <summary>
+        /// 返信先
+        /// </summary>
+        public string ReplyToUserDisplayId { get; set; } = string.Empty;
+
+        /// <summary>
         /// 投稿日時（文字列）
         /// </summary>
         [JsonIgnore] 

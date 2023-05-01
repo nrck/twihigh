@@ -3,7 +3,7 @@
 <section>
     @if (Tweets != null)
     {
-        <Virtualize Items="@Tweets" Context="Tweet">
+        <Virtualize Items="@Tweets" Context="Tweet" ItemSize="72" OverscanCount="15">
             @if (Tweet.IsSystemTweet)
             {
                 <GapTweetsLoadButtonComponent @key="Tweet.Id" Tweet="Tweet" OnClick="OnClickGapTweetsLoadAsync" />
@@ -13,7 +13,7 @@
             {
                 <TweetComponent @key="Tweet.Id"
                         Tweet="Tweet"
-                        IsMyTweet=false
+                        IsMyTweet=@(MyTwiHithUserId == Tweet.UserId)
                         OnClickDelete="OnClickDeleteAsync"
                         OnClickDetail="OnClickDetailAsync"
                         OnClickFavorite="OnClickFavoriteAsync"
