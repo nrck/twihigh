@@ -15,31 +15,13 @@
 </section>
 @* タイムライン *@
 <section>
-    @if (Tweets != null && Tweets.Any())
-    {
-        for (var index = 0; index < Tweets.Length; index++)
+    <Virtualize Items="Tweets" Context="tweet">
+        @if (tweet.UserId == Guid.Empty)
         {
-            var tweet = Tweets[index];
-            if (tweet.UserId == Guid.Empty && index + 1 < Tweets.Length)
-            {
-                <GapTweetsLoadButtonComponent Index=index Since=@(Tweets[index + 1].CreateAt) Until=@(tweet.CreateAt) OnClick="OnClickGetGapTweets" />
-            }
-            else if (tweet.UserId == Guid.Empty && Tweets.Length <= index + 1)
-            {
-                <GapTweetsLoadButtonComponent Index=index Since=@(DateTimeOffset.MinValue) Until=@(tweet.CreateAt) OnClick="OnClickGetGapTweets" />
-            }
-            else
-            {
-                <TweetComponent Tweet="tweet" IsMyTweet=@(tweet.UserId == MyTwiHithUserId) OnDeleteAction="OnClickDeleteButtonAsync" />
-            }
         }
-        if (Tweets[Tweets.Length - 1].UserId != Guid.Empty)
+        else
         {
-            <GapTweetsLoadButtonComponent Index=@(Tweets.Length - 1) Since=@(DateTimeOffset.MinValue) Until=@(Tweets[Tweets.Length - 1].CreateAt) OnClick=OnClickGetGapTweets />
+            <TweetComponent @key="tweet.Id" Tweet="tweet" IsMyTweet=@(tweet.UserId == MyTwiHithUserId) OnDeleteAction="OnClickDeleteButtonAsync" />
         }
-    }
-    else
-    {
-        <p>広大な空白はまるで南極のよう</p>
-    }
+    </Virtualize>
 </section>
