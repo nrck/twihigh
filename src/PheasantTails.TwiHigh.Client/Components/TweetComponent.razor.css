@@ -84,6 +84,11 @@
         word-wrap: break-word;
     }
 
+    .user-tweet-text .reply {
+        line-height: 12px;
+        font-size: 10px;
+    }
+
 .tweet-article-right-footer {
     display: flex;
     width: 100%;
