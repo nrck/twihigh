@@ -11,17 +11,14 @@
 
 @* ツイート欄 *@
 <section>
-    <PostFormComponent UserAvatarUrl="@AvatarUrl" />
+    <PostFormComponent UserAvatarUrl="@AvatarUrl"
+                       OnClickAvatar="OnClickProfileEditor"
+                       OnPostTweet="PostTweetAsync" />
 </section>
 @* タイムライン *@
-<section>
-    <Virtualize Items="Tweets" Context="tweet">
-        @if (tweet.UserId == Guid.Empty)
-        {
-        }
-        else
-        {
-            <TweetComponent @key="tweet.Id" Tweet="tweet" IsMyTweet=@(tweet.UserId == MyTwiHithUserId) OnDeleteAction="OnClickDeleteButtonAsync" />
-        }
-    </Virtualize>
-</section>
+<TimelineComponent Tweets="Tweets"
+                   OnClickDelete="OnClickDeleteButtonAsync"
+                   OnPostReply="PostTweetAsync"
+                   OnClickProfileEditor="OnClickProfileEditor"
+                   OnClickProfile="OnClickProfile"
+                   OnClickGapTweetsLoad="OnClickGetGapTweets" />

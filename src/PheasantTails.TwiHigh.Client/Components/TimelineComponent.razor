@@ -1,14 +1,17 @@
 ﻿@inherits UIComponentBase
 @* ツイート外枠 *@
 <section>
-    <Virtualize Items="@Tweets" Context="Tweet">
-        @if (Tweet.IsSystemTweet)
-        {
-            // ギャップツイート用 
-        }
-        else
-        {
-            <TweetComponent @key="Tweet.Id"
+    @if (Tweets != null)
+    {
+        <Virtualize Items="@Tweets" Context="Tweet">
+            @if (Tweet.IsSystemTweet)
+            {
+                <GapTweetsLoadButtonComponent @key="Tweet.Id" Tweet="Tweet" OnClick="OnClickGapTweetsLoadAsync" />
+                Console.WriteLine("This is system: " + Tweet.Id);
+            }
+            else
+            {
+                <TweetComponent @key="Tweet.Id"
                         Tweet="Tweet"
                         IsMyTweet=false
                         OnClickDelete="OnClickDeleteAsync"
@@ -16,7 +19,10 @@
                         OnClickFavorite="OnClickFavoriteAsync"
                         OnClickProfile="OnClickProfileAsync"
                         OnClickRetweet="OnClickRetweetAsync"
-                        OnPostReply="OnClickReplyAsync" />
-        }
-    </Virtualize>
+                        OnPostReply="OnClickReplyAsync"
+                        OnClickProfileEditor="OnClickProfileEditorAsync" />
+                Console.WriteLine(Tweet.Id);
+            }
+        </Virtualize>
+    }
 </section>

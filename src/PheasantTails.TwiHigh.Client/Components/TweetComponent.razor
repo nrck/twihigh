@@ -69,6 +69,6 @@
 @if (IsOpendReplyPostForm)
 {
     <section class="reply-section">
-        <PostFormComponent ReplyToContext=ReplyToContext />
+        <PostFormComponent ReplyToContext=ReplyToContext TweetText="@($"@{Tweet?.UserDisplayId} ")" OnPostTweet="OnClickPostTweet" />
     </section>
 }

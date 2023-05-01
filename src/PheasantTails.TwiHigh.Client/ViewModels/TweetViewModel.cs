@@ -1,9 +1,12 @@
 ﻿using PheasantTails.TwiHigh.Data.Store.Entity;
+using System.Text.Json.Serialization;
 
 namespace PheasantTails.TwiHigh.Client.ViewModels
 {
     public class TweetViewModel : Tweet
     {
+        public static TweetViewModel SystemTweet => new() { IsSystemTweet = true };
+
         /// <summary>
         /// 既読管理フラグ（既読＝スクロール後に画面上に表示される）
         /// </summary>
@@ -27,6 +30,7 @@ namespace PheasantTails.TwiHigh.Client.ViewModels
         /// <summary>
         /// 投稿日時（文字列）
         /// </summary>
+        [JsonIgnore] 
         public string CreateAtDatetimeString
         {
             get
@@ -69,5 +73,7 @@ namespace PheasantTails.TwiHigh.Client.ViewModels
             UserDisplayName = tweet.UserDisplayName;
             UserId = tweet.UserId;
         }
+
+        public TweetViewModel() { }
     }
 }
