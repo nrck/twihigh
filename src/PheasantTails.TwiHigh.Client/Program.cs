@@ -10,7 +10,7 @@ namespace PheasantTails.TwiHigh.Client
 {
     public class Program
     {
-        public static string TwiHighVersion => "0.5.1";
+        public static string TwiHighVersion => "0.5.2";
 
         public static async Task Main(string[] args)
         {
