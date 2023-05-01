@@ -48,6 +48,18 @@ namespace PheasantTails.TwiHigh.Client.Components
         [Parameter]
         public EventCallback<TweetViewModel> OnClickProfile { get; set; }
 
+        /// <summary>
+        /// プロフィール編集欄への遷移が発生したときに発火するイベントコールバック
+        /// </summary>
+        [Parameter]
+        public EventCallback OnClickProfileEditor { get; set; }
+
+        /// <summary>
+        /// 更にツイートを取得ボタンが押下されたときに発火するイベントコールバック
+        /// </summary>
+        [Parameter]
+        public EventCallback<TweetViewModel> OnClickGapTweetsLoad { get; set; }
+
         private Task OnClickReplyAsync(PostTweetContext tweet) => OnPostReply.InvokeAsync(tweet);
 
         private Task OnClickDeleteAsync(TweetViewModel tweet) => OnClickDelete.InvokeAsync(tweet);
@@ -59,5 +71,9 @@ namespace PheasantTails.TwiHigh.Client.Components
         private Task OnClickFavoriteAsync(TweetViewModel tweet) => OnClickFavorite.InvokeAsync(tweet);
 
         private Task OnClickProfileAsync(TweetViewModel tweet) => OnClickProfile.InvokeAsync(tweet);
+
+        private Task OnClickProfileEditorAsync() => OnClickProfileEditor.InvokeAsync();
+
+        private Task OnClickGapTweetsLoadAsync(TweetViewModel tweet) => OnClickGapTweetsLoad.InvokeAsync(tweet);
     }
 }

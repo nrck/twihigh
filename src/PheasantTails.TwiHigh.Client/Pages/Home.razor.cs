@@ -1,7 +1,8 @@
 ﻿using PheasantTails.TwiHigh.Client.TypedHttpClients;
+using PheasantTails.TwiHigh.Client.ViewModels;
+using PheasantTails.TwiHigh.Data.Model;
 using PheasantTails.TwiHigh.Data.Model.Timelines;
 using PheasantTails.TwiHigh.Data.Model.TwiHighUsers;
-using PheasantTails.TwiHigh.Data.Store.Entity;
 using System.Net;
 
 namespace PheasantTails.TwiHigh.Client.Pages
@@ -11,14 +12,14 @@ namespace PheasantTails.TwiHigh.Client.Pages
         /// <summary>
         /// ローカルストレージキー（タイムライン保存用）
         /// </summary>
-        private const string LOCAL_STORAGE_KEY_TWEETS = "UserTimelines_{0}";
+        private const string LOCAL_STORAGE_KEY_TWEETS = "UserTimelines_{0}_v2";
 
         /// <summary>
         /// ローカルキャッシュするタイムラインのツイート数
         /// </summary>
         private const int LOCAL_CACHE_MAXIMUM_SIZE = 10000;
 
-        private Tweet[] Tweets { get; set; } = Array.Empty<Tweet>();
+        private List<TweetViewModel> Tweets { get; set; } = new List<TweetViewModel>();
 
         private CancellationTokenSource? WorkerCancellationTokenSource { get; set; } = null;
 
@@ -85,7 +86,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
         {
             var id = MyTwiHithUserId.ToString();
             var key = string.Format(LOCAL_STORAGE_KEY_TWEETS, id);
-            Tweets = await LocalStorageService.GetItemAsync<Tweet[]>(key);
+            Tweets = await LocalStorageService.GetItemAsync<List<TweetViewModel>>(key);
         }
 
         private async Task SaveTimelineToLocalStorageAsync()
@@ -95,7 +96,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
             await LocalStorageService.SetItemAsync(key, Tweets.Take(LOCAL_CACHE_MAXIMUM_SIZE).ToArray());
         }
 
-        private void MergeTimeline(Tweet[] source)
+        private void MergeTimeline(List<TweetViewModel> source)
         {
             if (Tweets == null)
             {
@@ -105,7 +106,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
             Tweets = source.UnionBy(Tweets, keySelector: tweet => tweet.Id)
                 .OrderByDescending(tweet => tweet.CreateAt)
-                .ToArray();
+                .ToList();
         }
 
         private async Task GetTweetsAndMergeAsync(DateTimeOffset since, DateTimeOffset until)
@@ -131,18 +132,15 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
             if (response != null && response.Tweets.Any())
             {
-                MergeTimeline(response.Tweets);
-                if (response.Tweets.Length == 50)
+                MergeTimeline(response.Tweets.Select(t => new TweetViewModel(t)).ToList());
+                if (0 < response.Tweets.Length)
                 {
-                    var tmp = new[] {
-                        // UserId を Guid.Emptyとしてギャップツイート取得用とする
-                        new Tweet
-                        {
-                            Id = Guid.NewGuid(),
-                            UserId = Guid.Empty,
-                            CreateAt = response.Tweets.Min(tweet => tweet.CreateAt)
-                        }
-                    };
+                    var systemTweet = TweetViewModel.SystemTweet;
+                    systemTweet.Id = Guid.NewGuid();
+                    systemTweet.Since = DateTimeOffset.MinValue;
+                    systemTweet.Until = response.Oldest.AddTicks(-1);
+                    systemTweet.CreateAt = response.Oldest.AddTicks(-1);
+                    var tmp = new List<TweetViewModel> { systemTweet };
                     MergeTimeline(tmp);
                 }
                 await SaveTimelineToLocalStorageAsync();
@@ -150,17 +148,17 @@ namespace PheasantTails.TwiHigh.Client.Pages
             }
         }
 
-        private async Task OnClickGetGapTweets(int index, DateTimeOffset since, DateTimeOffset until)
+        private async Task OnClickGetGapTweets(TweetViewModel tweet)
         {
-            var tmp = Tweets.ToList();
-            tmp.RemoveAt(index);
-            Tweets = tmp.ToArray();
-            await GetTweetsAndMergeAsync(since, until);
+            await GetTweetsAndMergeAsync(tweet.Since, tweet.Until);
+            Tweets.Remove(tweet);
+            await SaveTimelineToLocalStorageAsync();
+            StateHasChanged();
         }
 
-        private async void OnClickDeleteButtonAsync(Guid tweetId)
+        private async void OnClickDeleteButtonAsync(TweetViewModel model)
         {
-            await DeleteMyTweet(tweetId);
+            await DeleteMyTweet(model.Id);
         }
 
         private async Task DeleteMyTweet(Guid tweetId)
@@ -173,6 +171,23 @@ namespace PheasantTails.TwiHigh.Client.Pages
             else
             {
                 SetErrorMessage("ツイートを削除できませんでした。");
+            }
+        }
+
+        private void OnClickProfileEditor() => Navigation.NavigateTo(DefinePaths.PAGE_PATH_PROFILE_EDITOR);
+
+        private void OnClickProfile(TweetViewModel tweetViewModel) => Navigation.NavigateTo(string.Format(DefinePaths.PAGE_PATH_PROFILE, tweetViewModel.UserDisplayId));
+
+        private async Task PostTweetAsync(PostTweetContext postTweet)
+        {
+            var res = await TweetHttpClient.PostTweetAsync(postTweet);
+            if (res != null && res.IsSuccessStatusCode)
+            {
+                SetSucessMessage("ツイートを送信しました！");
+            }
+            else
+            {
+                SetErrorMessage("ツイートできませんでした。");
             }
         }
     }

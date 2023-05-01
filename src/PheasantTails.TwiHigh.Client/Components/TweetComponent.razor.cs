@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Components.Web;
 using PheasantTails.TwiHigh.Client.ViewModels;
 using PheasantTails.TwiHigh.Data.Model;
+using static PheasantTails.TwiHigh.Client.Components.TimelineComponent;
 
 namespace PheasantTails.TwiHigh.Client.Components
 {
@@ -50,6 +51,12 @@ namespace PheasantTails.TwiHigh.Client.Components
         public EventCallback<TweetViewModel> OnClickProfile { get; set; }
 
         /// <summary>
+        /// プロフィール編集欄への遷移が発生したときに発火するイベントコールバック
+        /// </summary>
+        [Parameter]
+        public EventCallback OnClickProfileEditor { get; set; }
+
+        /// <summary>
         /// 表示しているツイートが自身のものなら<c>true</c>
         /// </summary>
         [Parameter]
@@ -75,7 +82,7 @@ namespace PheasantTails.TwiHigh.Client.Components
             }
         }
 
-        private Task OnClickAvatar(MouseEventArgs _) => OnClickProfile.InvokeAsync(Tweet);
+        private Task OnClickAvatar(MouseEventArgs _) => OnClickProfileEditor.InvokeAsync();
 
         private Task OnClickUserDisplayName(MouseEventArgs _) => OnClickProfile.InvokeAsync(Tweet);
 
@@ -86,5 +93,11 @@ namespace PheasantTails.TwiHigh.Client.Components
         private void OnClickReplyButton(MouseEventArgs _) => IsOpendReplyPostForm = true;
 
         private void OnClickReplyPostCloseButton(MouseEventArgs _) => IsOpendReplyPostForm = false;
+
+        private async Task OnClickPostTweet(PostTweetContext postTweet)
+        {
+            await OnPostReply.InvokeAsync(postTweet);
+            IsOpendReplyPostForm = false;
+        }
     }
 }
