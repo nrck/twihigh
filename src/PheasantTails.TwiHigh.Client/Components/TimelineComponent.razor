@@ -1,0 +1,22 @@
+﻿@inherits UIComponentBase
+@* ツイート外枠 *@
+<section>
+    <Virtualize Items="@Tweets" Context="Tweet">
+        @if (Tweet.IsSystemTweet)
+        {
+            // ギャップツイート用 
+        }
+        else
+        {
+            <TweetComponent @key="Tweet.Id"
+                        Tweet="Tweet"
+                        IsMyTweet=false
+                        OnClickDelete="OnClickDeleteAsync"
+                        OnClickDetail="OnClickDetailAsync"
+                        OnClickFavorite="OnClickFavoriteAsync"
+                        OnClickProfile="OnClickProfileAsync"
+                        OnClickRetweet="OnClickRetweetAsync"
+                        OnPostReply="OnClickReplyAsync" />
+        }
+    </Virtualize>
+</section>
