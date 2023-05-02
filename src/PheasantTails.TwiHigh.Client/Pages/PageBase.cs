@@ -139,7 +139,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
             Logger.LogStart();
             if (string.IsNullOrEmpty(token))
             {
-                Navigation.NavigateTo(DefinePaths.PAGE_PATH_LOGIN, replace: true);
+                //Navigation.NavigateTo(DefinePaths.PAGE_PATH_LOGIN, replace: true);
                 Logger.LogFinish();
                 return;
             }
