@@ -3,7 +3,9 @@ using PheasantTails.TwiHigh.Client.ViewModels;
 using PheasantTails.TwiHigh.Data.Model;
 using PheasantTails.TwiHigh.Data.Model.Timelines;
 using PheasantTails.TwiHigh.Data.Model.TwiHighUsers;
+using PheasantTails.TwiHigh.Data.Store.Entity;
 using System.Net;
+using System.Net.Http.Json;
 
 namespace PheasantTails.TwiHigh.Client.Pages
 {
@@ -193,6 +195,12 @@ namespace PheasantTails.TwiHigh.Client.Pages
             if (res != null && res.IsSuccessStatusCode)
             {
                 SetSucessMessage("ツイートを送信しました！");
+                var tweet = await res.Content.ReadFromJsonAsync<Tweet>();
+                if (tweet != null)
+                {
+                    var viewModel = new TweetViewModel(tweet);
+                    MergeTimeline(new List<TweetViewModel> { viewModel });
+                }
             }
             else
             {

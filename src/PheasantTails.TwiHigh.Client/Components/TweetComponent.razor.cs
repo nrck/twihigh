@@ -82,7 +82,7 @@ namespace PheasantTails.TwiHigh.Client.Components
             }
         }
 
-        private Task OnClickAvatar(MouseEventArgs _) => OnClickProfile.InvokeAsync();
+        private Task OnClickAvatar(MouseEventArgs _) => OnClickProfile.InvokeAsync(Tweet);
 
         private Task OnClickUserDisplayName(MouseEventArgs _) => OnClickProfile.InvokeAsync(Tweet);
 
