@@ -11,6 +11,8 @@ using PheasantTails.TwiHigh.Data.Store.Entity;
 using PheasantTails.TwiHigh.Functions.Core;
 using PheasantTails.TwiHigh.Functions.Extensions;
 using System;
+using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using static PheasantTails.TwiHigh.Functions.Core.StaticStrings;
 
@@ -64,22 +66,6 @@ namespace PheasantTails.TwiHigh.Functions.Tweets
                 // リプライ先があれば実行
                 if (context.ReplyTo != null)
                 {
-                    // クエリの作成
-                    //var query = new QueryDefinition(
-                    //    "SELECT * FROM c " +
-                    //    "WHERE c.id = @ReplyToId")
-                    //    .WithParameter("@ReplyToId", context.ReplyTo.TweetId);
-                    //var iterator = tweets.GetItemQueryIterator<Tweet>(query);
-                    //if(iterator.HasMoreResults)
-                    //{
-                    //    var replyToTweet = (await iterator.ReadNextAsync()).Resource.FirstOrDefault();
-                    //    replyToTweet.ReplyFrom = replyToTweet.ReplyFrom.Append(context.ReplyTo.Value).ToArray();
-                    //    var patch = new[]
-                    //    {       
-                    //        PatchOperation.Add("/replyFrom", context.ReplyTo.Value)
-                    //    };
-                    //    tweets.PatchItemAsync()
-                    //}
                     var patch = new[]
                     {
                         PatchOperation.Add("/replyFrom/-", tweet.Id),
@@ -155,6 +141,44 @@ namespace PheasantTails.TwiHigh.Functions.Tweets
                 }
 
                 return new OkResult();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        [FunctionName("GetTweetById")]
+        public async Task<IActionResult> GetTweetByIdAsync(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "tweets/{tweetId}")] HttpRequest req,
+            Guid tweetId)
+        {
+            try
+            {
+                var tweets = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TWEET_CONTAINER_NAME);
+                var query = new QueryDefinition(
+                    "SELECT * FROM c WHERE c.replyTo = @TweetId " +
+                    "OR c.id = @TweetId " +
+                    "OR ARRAY_CONTAINS(c.replyFrom, @TweetId) " +
+                    "ORDER BY c.creatAt")
+                    .WithParameter("@TweetId", tweetId);
+
+                var iterator = tweets.GetItemQueryIterator<Tweet>(query);
+
+                var tweet = new List<Tweet>();
+                while (iterator.HasMoreResults)
+                {
+                    var res = await iterator.ReadNextAsync();
+                    tweet.AddRange(res);
+                }
+                if (tweet.Count > 0)
+                {
+                    return new OkObjectResult(tweet);
+                }
+                else
+                {
+                    return new NotFoundResult();
+                }
             }
             catch (Exception ex)
             {
