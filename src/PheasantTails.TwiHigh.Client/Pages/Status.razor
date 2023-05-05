@@ -1,8 +1,17 @@
-﻿<h3>Tweet</h3>
-
+﻿@page "/{UserDisplayId}/Status/{TweetId}"
+@inherits PageBase
 @*
     ツイート単一
 *@
-@code {
 
-}
+@* タイトル *@
+<PageTitle>@(Title) - ツイハイ！</PageTitle>
+<PageTitleComponent Title="ツイート" />
+
+@* タイムライン *@
+<TimelineComponent Tweets="Tweets"
+                   MyTwiHithUserId=MyTwiHithUserId
+                   OnClickDelete="OnClickDeleteButtonAsync"
+                   OnPostReply="PostTweetAsync"
+                   OnClickProfileEditor="OnClickProfileEditor"
+                   OnClickProfile="OnClickProfile" />

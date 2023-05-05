@@ -8,6 +8,6 @@
         internal const string PAGE_PATH_PROFILE = "/profile/{0}";
         internal const string PAGE_PATH_PROFILE_EDITOR = "/profile/editor";
         internal const string PAGE_PATH_SIGNUP = "/signup";
-        internal const string PAGE_PATH_STATUS = "/status";
+        internal const string PAGE_PATH_STATUS = "/{0}/status/{1}";
     }
 }
