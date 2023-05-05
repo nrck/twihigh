@@ -157,9 +157,9 @@ namespace PheasantTails.TwiHigh.Functions.Tweets
             {
                 var tweets = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TWEET_CONTAINER_NAME);
                 var query = new QueryDefinition(
-                    "SELECT * FROM c WHERE c.replyTo = @TweetId " +
-                    "OR c.id = @TweetId " +
-                    "OR ARRAY_CONTAINS(c.replyFrom, @TweetId) " +
+                    "SELECT * FROM c " +
+                    "WHERE (c.replyTo = @TweetId OR c.id = @TweetId OR ARRAY_CONTAINS(c.replyFrom, @TweetId)) " +
+                    "AND c.isDeleted != true " +
                     "ORDER BY c.creatAt")
                     .WithParameter("@TweetId", tweetId);
 
