@@ -42,7 +42,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
             AvatarUrl = await GetMyAvatarUrlAsync();
             StateHasChanged();
 
-            await GetMyTimerlineEvery5secAsync(WorkerCancellationTokenSource.Token);
+            await GetMyTimelineEvery5secAsync(WorkerCancellationTokenSource.Token);
         }
 
         protected override void Dispose(bool disposing)
@@ -54,12 +54,13 @@ namespace PheasantTails.TwiHigh.Client.Pages
             }
         }
 
-        private async Task GetMyTimerlineEvery5secAsync(CancellationToken cancellationToken = default)
+        private async Task GetMyTimelineEvery5secAsync(CancellationToken cancellationToken = default)
         {
             var since = DateTimeOffset.MinValue;
             var until = DateTimeOffset.MaxValue;
             while (!cancellationToken.IsCancellationRequested)
             {
+                await GetTweetsAndMergeAsync(since, until);
                 if (Tweets != null && Tweets.Any())
                 {
                     since = Tweets.Max(tweet => tweet.CreateAt);
@@ -68,7 +69,6 @@ namespace PheasantTails.TwiHigh.Client.Pages
                 {
                     since = DateTimeOffset.MinValue;
                 }
-                await GetTweetsAndMergeAsync(since, until);
                 await Task.Delay(5000, cancellationToken);
             }
         }
