@@ -99,5 +99,7 @@ namespace PheasantTails.TwiHigh.Client.Components
             await OnPostReply.InvokeAsync(postTweet);
             IsOpendReplyPostForm = false;
         }
+
+        private void OnClickTweetArea(MouseEventArgs _) => OnClickDetail.InvokeAsync(Tweet);
     }
 }
