@@ -24,6 +24,10 @@
     max-width: 100%;
 }
 
+.tweet-article-right-body:hover {
+    cursor: pointer;
+}
+
 .user-display-name {
     padding-right: 4px;
     white-space: nowrap;

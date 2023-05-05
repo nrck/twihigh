@@ -1,4 +1,5 @@
-﻿using PheasantTails.TwiHigh.Data.Store.Entity;
+﻿using Microsoft.AspNetCore.Components;
+using PheasantTails.TwiHigh.Data.Store.Entity;
 using System.Text.Json.Serialization;
 
 namespace PheasantTails.TwiHigh.Client.ViewModels
@@ -80,5 +81,7 @@ namespace PheasantTails.TwiHigh.Client.ViewModels
         }
 
         public TweetViewModel() { }
+
+        public string GetTextWithNewline() => Text.TrimStart('\r', '\n').TrimEnd('\r', '\n').Replace(Environment.NewLine, "<br />");
     }
 }
