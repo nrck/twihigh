@@ -207,5 +207,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
                 SetErrorMessage("ツイートできませんでした。");
             }
         }
+
+        private void OnClickDetail(TweetViewModel tweetViewModel) => Navigation.NavigateTo(string.Format(DefinePaths.PAGE_PATH_STATUS, tweetViewModel.UserDisplayId, tweetViewModel.Id));
     }
 }

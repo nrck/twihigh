@@ -57,7 +57,14 @@ namespace PheasantTails.TwiHigh.Client.Pages
             }
 
             var tweets = await res.Content.ReadFromJsonAsync<List<Tweet>>();
-            var main = tweets!.First(t => t.Id == tweetId);
+            var main = tweets!.FirstOrDefault(t => t.Id == tweetId);
+            if(main == null)
+            {
+                SetWarnMessage("指定されたツイートは削除されています。");
+                Navigation.NavigateTo(DefinePaths.PAGE_PATH_HOME, replace: true);
+                return;
+            }
+
             if (main.UserDisplayId != UserDisplayId)
             {
                 Navigation.NavigateTo(string.Format(DefinePaths.PAGE_PATH_STATUS, main.UserDisplayId, TweetId), replace: true);
@@ -109,5 +116,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
         private void OnClickProfileEditor() => Navigation.NavigateTo(DefinePaths.PAGE_PATH_PROFILE_EDITOR);
 
         private void OnClickProfile(TweetViewModel tweetViewModel) => Navigation.NavigateTo(string.Format(DefinePaths.PAGE_PATH_PROFILE, tweetViewModel.UserDisplayId));
+
+        private void OnClickDetail(TweetViewModel tweetViewModel) => Navigation.NavigateTo(string.Format(DefinePaths.PAGE_PATH_STATUS, tweetViewModel.UserDisplayId, tweetViewModel.Id));
     }
 }
