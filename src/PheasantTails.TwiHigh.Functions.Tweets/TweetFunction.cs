@@ -186,16 +186,12 @@ namespace PheasantTails.TwiHigh.Functions.Tweets
         }
 
         [FunctionName("GetUserTweet")]
-        public async Task<IActionResult> GetTweetByIdAsync(
+        public async Task<IActionResult> GetUserTweetAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "user/{userId}")] HttpRequest req,
-            string userId)
+            Guid userId)
         {
             try
             {
-                if (!Guid.TryParse(userId, out var userGuid))
-                {
-                    return new BadRequestResult();
-                }
                 // åüçıîÕàÕÇê›íË
                 var sinceDatetime = DateTimeOffset.MinValue;
                 var untilDatetime = DateTimeOffset.MaxValue;
@@ -224,7 +220,7 @@ namespace PheasantTails.TwiHigh.Functions.Tweets
                 var iterator = tweets.GetItemQueryIterator<Tweet>(query,
                     requestOptions: new QueryRequestOptions
                     {
-                        PartitionKey = new PartitionKey(userGuid.ToString())
+                        PartitionKey = new PartitionKey(userId.ToString())
                     });
 
                 var tweet = new List<Tweet>();
