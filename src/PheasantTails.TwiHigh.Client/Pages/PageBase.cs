@@ -37,7 +37,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
         protected AuthenticationStateProvider AuthenticationStateProvider { get; set; }
 #pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             Logger.LogStart();
             Dispose(true);
@@ -45,7 +45,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
             Logger.LogFinish();
         }
 
-        public ValueTask DisposeAsync()
+        public virtual ValueTask DisposeAsync()
         {
             Logger.LogStart();
             Dispose(true);

@@ -22,10 +22,14 @@ namespace PheasantTails.TwiHigh.Client.Components
         [Parameter]
         public string TweetText { get; set; } = string.Empty;
 
+        [Parameter]
+        public bool IsForceForcus { get; set; }
+
         private PostTweetContext PostTweetContext { get; set; } = new PostTweetContext();
 
         private bool IsPosting { get; set; }
 
+        private ElementReference TextArea { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
@@ -34,6 +38,15 @@ namespace PheasantTails.TwiHigh.Client.Components
                 UserAvatarUrl = (await AuthenticationState).User.Claims.FirstOrDefault(c => c.Type == nameof(ResponseTwiHighUserContext.AvatarUrl))?.Value ?? string.Empty;
             }
             await base.OnInitializedAsync();
+        }
+
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            await base.OnAfterRenderAsync(firstRender);
+            if (IsForceForcus || firstRender)
+            {
+                await TextArea.FocusAsync();
+            }
         }
 
         private async Task OnSubmitAsync()

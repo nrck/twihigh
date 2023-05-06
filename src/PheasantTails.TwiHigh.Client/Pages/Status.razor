@@ -9,7 +9,8 @@
 <PageTitleComponent Title="ツイート" />
 
 @* タイムライン *@
-<TimelineComponent Tweets="Tweets"
+<TimelineComponent @key="TweetId"
+                   Tweets="Tweets"
                    MyTwiHithUserId=MyTwiHithUserId
                    OnClickDelete="OnClickDeleteButtonAsync"
                    OnPostReply="PostTweetAsync"

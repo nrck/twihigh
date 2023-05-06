@@ -156,3 +156,45 @@
 .reply-section {
     background-color: aliceblue;
 }
+
+.fadein {
+    animation-name: fadeinAnime;
+    animation-duration: 0.3s;
+    animation-fill-mode: forwards;
+}
+
+.unread-border {
+    border-left-width: 8px;
+    border-left-style: solid;
+    border-left-color: lightsalmon;
+    padding-left: 4px;
+}
+
+.readed {
+    animation-name: readedAnime;
+    animation-delay: 1s;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
+}
+
+@keyframes fadeinAnime {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes readedAnime {
+    from {
+    }
+
+    to {
+        border-left-width: 0;
+        border-left-style: none;
+        border-left-color: lightsalmon;
+        padding-left: 12px;
+    }
+}

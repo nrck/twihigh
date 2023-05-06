@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Components.Web;
 using PheasantTails.TwiHigh.Client.ViewModels;
 using PheasantTails.TwiHigh.Data.Model;
-using static PheasantTails.TwiHigh.Client.Components.TimelineComponent;
 
 namespace PheasantTails.TwiHigh.Client.Components
 {
@@ -81,6 +80,8 @@ namespace PheasantTails.TwiHigh.Client.Components
                 return _replyToContext;
             }
         }
+
+        private string ArticleId => $"tweet-{Tweet?.Id}";
 
         private Task OnClickAvatar(MouseEventArgs _) => OnClickProfile.InvokeAsync(Tweet);
 

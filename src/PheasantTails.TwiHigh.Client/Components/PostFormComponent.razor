@@ -8,7 +8,7 @@
     </div>
     <div class="tweet-post-form">
         <div class="tweet-post-textarea">
-            <textarea value="@TweetText" placeholder="いまどうしてる？" @onkeypress="OnKeyPressAsync" @oninput="OnInputTextarea" disabled="@IsPosting" />
+            <textarea @ref="TextArea" value="@TweetText" placeholder="いまどうしてる？" @onkeypress="OnKeyPressAsync" @oninput="OnInputTextarea" disabled="@IsPosting" />
         </div>
         <div class="tweet-post-submit-button">
 

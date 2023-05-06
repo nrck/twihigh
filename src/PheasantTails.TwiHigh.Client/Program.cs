@@ -29,6 +29,7 @@ namespace PheasantTails.TwiHigh.Client
             builder.Services.AddScoped<AuthenticationStateProvider, TwiHighAuthenticationStateProvider>();
             builder.Services.AddPWAUpdater();
             builder.Services.AddSingleton<IMessageService, MessageService>();
+            builder.Services.AddSingleton<IScrollInfoService, ScrollInfoService>();
 
             builder.Services.AddOptions();
             builder.Services.AddAuthorizationCore();

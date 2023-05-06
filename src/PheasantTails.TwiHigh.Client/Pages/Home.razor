@@ -13,14 +13,16 @@
 <section>
     <PostFormComponent UserAvatarUrl="@AvatarUrl"
                        OnClickAvatar="OnClickProfileEditor"
-                       OnPostTweet="PostTweetAsync" />
+                       OnPostTweet="PostTweetAsync"
+                       IsForceForcus=true />
 </section>
 @* タイムライン *@
-<TimelineComponent Tweets="Tweets"
+<TimelineComponent @key="MyTwiHithUserId"
+                   Tweets="Tweets"
                    MyTwiHithUserId=MyTwiHithUserId
                    OnClickDelete="OnClickDeleteButtonAsync"
                    OnPostReply="PostTweetAsync"
                    OnClickProfileEditor="OnClickProfileEditor"
                    OnClickProfile="OnClickProfile"
                    OnClickGapTweetsLoad="OnClickGetGapTweets"
-                   OnClickDetail="OnClickDetail"/>
+                   OnClickDetail="OnClickDetail" />

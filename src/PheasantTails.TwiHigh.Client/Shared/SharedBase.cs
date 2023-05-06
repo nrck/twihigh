@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.JSInterop;
 using PheasantTails.TwiHigh.Client.Services;
 using static PheasantTails.TwiHigh.Client.Components.MessageComponent;
 
@@ -9,6 +10,12 @@ namespace PheasantTails.TwiHigh.Client.Shared
     {
         [Inject]
         protected IMessageService MessageService { get; set; }
+
+        [Inject]
+        protected IJSRuntime JSRuntime { get; set; }
+
+        [Inject]
+        protected IScrollInfoService ScrollInfoService { get; set; }
 
         [CascadingParameter]
         protected Task<AuthenticationState>? AuthenticationState { get; set; }
