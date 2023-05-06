@@ -44,7 +44,6 @@
                     if (WindowPositionTop <= rect.top && rect.top + rect.height <= WindowPositionTop + WindowHeight) {
                         visbles.push(child.id);
                     }
-                    console.warn(child.id);
                 }
                 if (0 < visbles.length) {
                     window.myScrollInfoService.invokeMethodAsync('ScrolledVisbleArticles', visbles);
