@@ -11,33 +11,48 @@
         @* 右 *@
         <div class="tweet-article-right">
             @* ヘッダー *@
-            <div class="tweet-article-right-header">
+            <div class="tweet-article-right-header @(Tweet.IsEmphasized ? "emphasized" : "")">
                 @* ユーザー名 *@
                 <div class="user-display-name">
-                    <span @onclick=OnClickUserDisplayName>@Tweet.UserDisplayName</span>
+                    <span class="@(Tweet.IsEmphasized ? "emphasized" : "")" @onclick=OnClickUserDisplayName>@Tweet.UserDisplayName</span>
                 </div>
+                @if (Tweet.IsEmphasized)
+                {
+                    <div style="width: 100%;"></div>
+                }
                 @* ユーザーID *@
                 <div class="user-display-id">
-                    <span @onclick=OnClickUserDisplayId>@@@Tweet.UserDisplayId</span>
+                    <span class="@(Tweet.IsEmphasized ? "emphasized" : "")" @onclick=OnClickUserDisplayId>@@@Tweet.UserDisplayId</span>
                 </div>
-                @* 投稿時刻 *@
-                <div class="user-display-createat">
-                    <span title="@(Tweet.CreateAt.ToLocalTime().ToString("G"))">@Tweet.CreateAtDatetimeString</span>
-                </div>
+                @if (!Tweet.IsEmphasized)
+                {
+                    @* 投稿時刻 *@
+                    <div class="user-display-createat">
+                        <span title="@(Tweet.CreateAt.ToLocalTime().ToString("G"))">@Tweet.CreateAtDatetimeString</span>
+                    </div>
+                }
             </div>
             @* ボディ*@
             <div class="tweet-article-right-body" @onclick="OnClickTweetArea">
                 @* テキスト本文 *@
-                <div class="user-tweet-text">
+                <div class="user-tweet-text @(Tweet.IsEmphasized ? "emphasized" : "")">
                     @if (!string.IsNullOrEmpty(Tweet.ReplyToUserDisplayId) && !Tweet.IsDeleted)
                     {
                         <span class="reply"><AutoLink Text="@($"Replying to @{Tweet.ReplyToUserDisplayId}")" ReplaceUrl=false /></span>
                         <br />
                     }
-                    <span><AutoLink Text="@Tweet.GetTextWithNewline()" ReplaceDisplayId=true /></span>
+                    <span class="@(Tweet.IsEmphasized ? "emphasized" : "")"><AutoLink Text="@Tweet.GetTextWithNewline()" ReplaceDisplayId=true /></span>
                 </div>
             </div>
-            <div class="tweet-article-right-footer">
+            <div class="tweet-article-right-footer  @(Tweet.IsEmphasized ? "emphasized" : "")">
+                @if (Tweet.IsEmphasized)
+                {
+                    @* 投稿時刻 *@
+                    <div class="user-display-createat">
+                        <span title="@(Tweet.CreateAt.ToLocalTime().ToString("G"))">@(Tweet.CreateAt.ToLocalTime().ToString("G")) 投稿</span>
+                    </div>
+                    <div style="width: 100%; height: 8px;"></div>
+                }
                 @if (!Tweet.IsDeleted)
                 {
                     @if (IsOpendReplyPostForm)

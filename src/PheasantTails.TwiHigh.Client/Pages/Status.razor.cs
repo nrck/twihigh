@@ -58,7 +58,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
             var tweets = await res.Content.ReadFromJsonAsync<List<Tweet>>();
             var main = tweets!.FirstOrDefault(t => t.Id == tweetId);
-            if(main == null)
+            if (main == null)
             {
                 SetWarnMessage("指定されたツイートは削除されています。");
                 Navigation.NavigateTo(DefinePaths.PAGE_PATH_HOME, replace: true);
@@ -72,7 +72,15 @@ namespace PheasantTails.TwiHigh.Client.Pages
             }
 
             Title = $"{main.UserDisplayName}さんのツイート：{main.Text}";
-            Tweets = tweets!.Select(t => new TweetViewModel(t)).OrderBy(t=>t.CreateAt).ToList();
+            Tweets = tweets!.Select(t =>
+            {
+                var tmp = new TweetViewModel(t);
+                if (tmp.Id == tweetId)
+                {
+                    tmp.IsEmphasized = true;
+                }
+                return tmp;
+            }).OrderBy(t => t.CreateAt).ToList();
         }
 
         private async void OnClickDeleteButtonAsync(TweetViewModel model)

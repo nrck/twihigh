@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
-using PheasantTails.TwiHigh.Data.Store.Entity;
+﻿using PheasantTails.TwiHigh.Data.Store.Entity;
 using System.Text.Json.Serialization;
 
 namespace PheasantTails.TwiHigh.Client.ViewModels
@@ -32,6 +31,11 @@ namespace PheasantTails.TwiHigh.Client.ViewModels
         /// 返信先
         /// </summary>
         public string ReplyToUserDisplayId { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 強調表示する
+        /// </summary>
+        public bool IsEmphasized { get; set; }
 
         /// <summary>
         /// 投稿日時（文字列）

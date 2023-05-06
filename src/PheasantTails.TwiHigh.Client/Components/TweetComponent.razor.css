@@ -19,6 +19,10 @@
     width: calc(100% - 12px - 48px);
 }
 
+    .tweet-article-right .emphasized {
+        flex-wrap: wrap;
+    }
+
 .tweet-article-right-header {
     display: flex;
     max-width: 100%;
@@ -47,6 +51,10 @@
             text-decoration: underline;
         }
 
+        .user-display-name span.emphasized {
+            font-size: 18px;
+        }
+
 .user-display-id {
     padding-right: 16px;
     white-space: nowrap;
@@ -70,12 +78,23 @@
     margin-left: auto;
 }
 
+
     .user-display-createat span {
         color: rgb(83,100,113);
         font-size: 15px;
         font-weight: 400;
         white-space: nowrap;
     }
+
+.emphasized .user-display-createat {
+    margin-left: 0;
+    margin-right: auto;
+}
+
+.tweet-article-right-body .emphasized {
+    margin-top: 12px;
+    margin-bottom: 12px;
+}
 
 .user-tweet-text {
 }
@@ -87,6 +106,12 @@
         font-weight: 400;
         word-wrap: break-word;
     }
+
+        .user-tweet-text span.emphasized {
+            line-height: 36px;
+            font-size: 24px;
+            word-wrap: break-word;
+        }
 
     .user-tweet-text .reply {
         line-height: 12px;
