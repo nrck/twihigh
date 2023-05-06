@@ -9,7 +9,7 @@ using System.Net.Http.Json;
 
 namespace PheasantTails.TwiHigh.Client.Pages
 {
-    public partial class Home : PageBase, IDisposable, IAsyncDisposable
+    public partial class Home : PageBase, IAsyncDisposable
     {
         /// <summary>
         /// ローカルストレージキー（タイムライン保存用）
@@ -29,6 +29,17 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
         private Guid MyTwiHithUserId { get; set; }
 
+        private bool IsProcessingMarkAsReaded { get; set; }
+
+        public override async ValueTask DisposeAsync()
+        {
+            WorkerCancellationTokenSource?.Cancel();
+            ScrollInfoService.OnScroll -= MarkAsReadedTweet;
+            await ScrollInfoService.Disable();
+            await base.DisposeAsync();
+            GC.SuppressFinalize(this);
+        }
+
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
@@ -42,28 +53,26 @@ namespace PheasantTails.TwiHigh.Client.Pages
             AvatarUrl = await GetMyAvatarUrlAsync();
             StateHasChanged();
 
-            await GetMyTimelineEvery5secAsync(WorkerCancellationTokenSource.Token);
-        }
+            await ScrollInfoService.Enable();
+            ScrollInfoService.OnScroll += MarkAsReadedTweet;
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                WorkerCancellationTokenSource?.Cancel();
-                base.Dispose(disposing);
-            }
+            await GetMyTimelineEvery5secAsync(WorkerCancellationTokenSource.Token);
         }
 
         private async Task GetMyTimelineEvery5secAsync(CancellationToken cancellationToken = default)
         {
             var since = DateTimeOffset.MinValue;
+            if (Tweets != null && Tweets.Any())
+            {
+                since = Tweets.Max(tweet => tweet.UpdateAt);
+            }
             var until = DateTimeOffset.MaxValue;
             while (!cancellationToken.IsCancellationRequested)
             {
                 await GetTweetsAndMergeAsync(since, until);
                 if (Tweets != null && Tweets.Any())
                 {
-                    since = Tweets.Max(tweet => tweet.CreateAt);
+                    since = Tweets.Max(tweet => tweet.UpdateAt);
                 }
                 else
                 {
@@ -209,5 +218,27 @@ namespace PheasantTails.TwiHigh.Client.Pages
         }
 
         private void OnClickDetail(TweetViewModel tweetViewModel) => Navigation.NavigateTo(string.Format(DefinePaths.PAGE_PATH_STATUS, tweetViewModel.UserDisplayId, tweetViewModel.Id));
+
+        private async void MarkAsReadedTweet(object? sender, string[] ids)
+        {
+            if (IsProcessingMarkAsReaded)
+            {
+                return;
+            }
+            IsProcessingMarkAsReaded = true;
+            List<Guid> tweetIds = new();
+            foreach (var id in ids)
+            {
+                if (Guid.TryParse(id[6..], out var guid))
+                {
+                    tweetIds.Add(guid);
+                }
+            }
+
+            Tweets.Where(tweet => tweetIds.Any(i => i == tweet.Id)).ToList().ForEach(tweet => tweet.IsReaded = true);
+            await SaveTimelineToLocalStorageAsync();
+            StateHasChanged();
+            IsProcessingMarkAsReaded = false;
+        }
     }
 }

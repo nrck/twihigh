@@ -74,7 +74,10 @@ namespace PheasantTails.TwiHigh.Client.Pages
             Title = $"{main.UserDisplayName}さんのツイート：{main.Text}";
             Tweets = tweets!.Select(t =>
             {
-                var tmp = new TweetViewModel(t);
+                var tmp = new TweetViewModel(t)
+                {
+                    IsReaded = true
+                };
                 if (tmp.Id == tweetId)
                 {
                     tmp.IsEmphasized = true;

@@ -28,6 +28,41 @@
         <script>navigator.serviceWorker.register('service-worker.js');</script>
     -->
     <script src="_content/Toolbelt.Blazor.PWA.Updater.Service/script.min.js"></script>
-</body>
 
+    <script>
+        const onScrollEventHandler = function (event) {
+            if (window.myScrollInfoService != null) {
+                var timelineElement = document.getElementById('timeline');
+                var WindowPositionTop = 0;// window.pageYOffset;
+                var WindowHeight = document.documentElement.clientHeight;
+                var visbles = [];
+
+                for (let i = 0; i < timelineElement.children.length; i++) {
+                    var child = timelineElement.children[i];
+                    if (child.tagName != "ARTICLE" || child.id.slice(0, 5) !== "tweet") { continue; }
+                    var rect = child.getBoundingClientRect();
+                    if (WindowPositionTop <= rect.top && rect.top + rect.height <= WindowPositionTop + WindowHeight) {
+                        visbles.push(child.id);
+                    }
+                    console.warn(child.id);
+                }
+                if (0 < visbles.length) {
+                    window.myScrollInfoService.invokeMethodAsync('ScrolledVisbleArticles', visbles);
+                }
+            }
+        }
+
+        window.EnableScrollEventHandling = function () {
+            window.addEventListener("scroll", onScrollEventHandler);
+        }
+
+        window.DisableScrollEventHandling = function () {
+            window.removeEventListener("scroll", onScrollEventHandler);
+        }
+
+        window.RegisterScrollInfoService = function (scrollInfoService) {
+            window.myScrollInfoService = scrollInfoService;
+        }
+    </script>
+</body>
 </html>

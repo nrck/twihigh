@@ -1,13 +1,12 @@
 ﻿@inherits UIComponentBase
 @* ツイート外枠 *@
-<section>
+<section id="timeline">
     @if (Tweets != null)
     {
         <Virtualize Items="@Tweets" Context="Tweet" ItemSize="72" OverscanCount="15">
             @if (Tweet.IsSystemTweet)
             {
                 <GapTweetsLoadButtonComponent @key="Tweet.Id" Tweet="Tweet" OnClick="OnClickGapTweetsLoadAsync" />
-                Console.WriteLine("This is system: " + Tweet.Id);
             }
             else
             {
@@ -21,7 +20,6 @@
                         OnClickRetweet="OnClickRetweetAsync"
                         OnPostReply="OnClickReplyAsync"
                         OnClickProfileEditor="OnClickProfileEditorAsync" />
-                Console.WriteLine(Tweet.Id);
             }
         </Virtualize>
     }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web.Virtualization;
 using PheasantTails.TwiHigh.Client.ViewModels;
 using PheasantTails.TwiHigh.Data.Model;
 
@@ -62,7 +63,6 @@ namespace PheasantTails.TwiHigh.Client.Components
         /// </summary>
         [Parameter]
         public EventCallback<TweetViewModel> OnClickGapTweetsLoad { get; set; }
-
 
         private Task OnClickReplyAsync(PostTweetContext tweet) => OnPostReply.InvokeAsync(tweet);
 
