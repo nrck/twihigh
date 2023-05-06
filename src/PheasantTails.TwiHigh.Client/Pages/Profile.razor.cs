@@ -1,6 +1,11 @@
 ﻿using Microsoft.AspNetCore.Components;
 using PheasantTails.TwiHigh.Client.TypedHttpClients;
+using PheasantTails.TwiHigh.Client.ViewModels;
+using PheasantTails.TwiHigh.Data.Model;
 using PheasantTails.TwiHigh.Data.Model.TwiHighUsers;
+using PheasantTails.TwiHigh.Data.Store.Entity;
+using System.Net;
+using System.Net.Http.Json;
 
 namespace PheasantTails.TwiHigh.Client.Pages
 {
@@ -19,6 +24,20 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
         private string Title { get; set; } = "プロフィール読み込み中";
 
+        private List<TweetViewModel> Tweets { get; set; } = new List<TweetViewModel>();
+
+        private Guid MyTwiHithUserId { get; set; }
+
+        protected override async Task OnInitializedAsync()
+        {
+            await base.OnInitializedAsync();
+            var id = (await AuthenticationState!).User.Claims.FirstOrDefault(c => c.Type == nameof(ResponseTwiHighUserContext.Id))?.Value ?? string.Empty;
+            if (Guid.TryParse(id, out var result))
+            {
+                MyTwiHithUserId = result;
+            }
+        }
+
         protected override async Task OnParametersSetAsync()
         {
             User = await AppUserHttpClient.GetTwiHighUserAsync(Id);
@@ -31,6 +50,17 @@ namespace PheasantTails.TwiHigh.Client.Pages
                 Title = $"{User.DisplayName}（@{User.DisplayId}）";
             }
             StateHasChanged();
+            if (User != null)
+            {
+                var res = await TweetHttpClient.GetUserTweetsAsync(User.Id);
+                if (res != null && res.IsSuccessStatusCode && res.StatusCode == HttpStatusCode.OK)
+                {
+                    var tweets = await res.Content.ReadFromJsonAsync<Tweet[]>();
+                    Tweets = tweets!.Select(t => new TweetViewModel(t) { IsReaded = true })
+                        .OrderByDescending(t => t.CreateAt)
+                        .ToList();
+                }
+            }
             await SetFollowButtonAsync();
             await base.OnParametersSetAsync();
         }
@@ -80,5 +110,49 @@ namespace PheasantTails.TwiHigh.Client.Pages
             }
             StateHasChanged();
         }
+
+        private async Task OnClickDeleteButtonAsync(TweetViewModel model)
+        {
+            await DeleteMyTweet(model.Id);
+        }
+
+        private async Task DeleteMyTweet(Guid tweetId)
+        {
+            var res = await TweetHttpClient.DeleteTweetAsync(tweetId);
+            if (res != null && res.IsSuccessStatusCode)
+            {
+                SetSucessMessage("ツイートを削除しました！");
+            }
+            else
+            {
+                SetErrorMessage("ツイートを削除できませんでした。");
+            }
+        }
+
+        private async Task PostTweetAsync(PostTweetContext postTweet)
+        {
+            var res = await TweetHttpClient.PostTweetAsync(postTweet);
+            if (res != null && res.IsSuccessStatusCode)
+            {
+                SetSucessMessage("ツイートを送信しました！");
+                var tweet = await res.Content.ReadFromJsonAsync<Tweet>();
+                if (tweet != null)
+                {
+                    var viewModel = new TweetViewModel(tweet);
+                    Tweets.Add(viewModel);
+                    Tweets = Tweets.OrderBy(t => t.CreateAt).ToList();
+                }
+            }
+            else
+            {
+                SetErrorMessage("ツイートできませんでした。");
+            }
+        }
+
+        private void OnClickProfileEditor() => Navigation.NavigateTo(DefinePaths.PAGE_PATH_PROFILE_EDITOR);
+
+        private void OnClickProfile(TweetViewModel tweetViewModel) => Navigation.NavigateTo(string.Format(DefinePaths.PAGE_PATH_PROFILE, tweetViewModel.UserDisplayId));
+
+        private void OnClickDetail(TweetViewModel tweetViewModel) => Navigation.NavigateTo(string.Format(DefinePaths.PAGE_PATH_STATUS, tweetViewModel.UserDisplayId, tweetViewModel.Id));
     }
 }

@@ -11,7 +11,7 @@ namespace PheasantTails.TwiHigh.Client.Components
         /// タイムラインに表示するツイートList
         /// </summary>
         [Parameter]
-        public List<TweetViewModel> Tweets { get; set; } = new List<TweetViewModel>();
+        public List<TweetViewModel> Tweets { get; set; }
 
         [Parameter]
         public Guid MyTwiHithUserId { get; set; }

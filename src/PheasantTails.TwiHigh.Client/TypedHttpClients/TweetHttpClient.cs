@@ -10,6 +10,7 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
         private const string API_URL_TWEET = $"{API_URL_BASE}/tweets";
         private const string API_URL_DELETE_TWEET = $"{API_URL_BASE}/tweets/{{0}}";
         private const string API_URL_GET_TWEET = $"{API_URL_BASE}/tweets/{{0}}";
+        private const string API_URL_GET_USER_TWEETS = $"{API_URL_BASE}/user/{{0}}";
         private readonly HttpClient _httpClient;
 
         public TweetHttpClient(HttpClient httpClient)
@@ -57,6 +58,19 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
             try
             {
                 var url = string.Format(API_URL_GET_TWEET, id.ToString());
+                return await _httpClient.GetAsync(url);
+            }
+            catch (Exception)
+            {
+                return await Task.FromResult<HttpResponseMessage?>(default);
+            }
+        }
+
+        public async Task<HttpResponseMessage?> GetUserTweetsAsync(Guid id)
+        {
+            try
+            {
+                var url = string.Format(API_URL_GET_USER_TWEETS, id.ToString());
                 return await _httpClient.GetAsync(url);
             }
             catch (Exception)
