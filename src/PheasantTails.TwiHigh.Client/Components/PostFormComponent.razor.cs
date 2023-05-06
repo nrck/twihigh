@@ -40,15 +40,6 @@ namespace PheasantTails.TwiHigh.Client.Components
             await base.OnInitializedAsync();
         }
 
-        protected override async Task OnAfterRenderAsync(bool firstRender)
-        {
-            await base.OnAfterRenderAsync(firstRender);
-            if (IsForceForcus || firstRender)
-            {
-                await TextArea.FocusAsync();
-            }
-        }
-
         private async Task OnSubmitAsync()
         {
             if (string.IsNullOrEmpty(TweetText) || IsPosting)
@@ -65,6 +56,11 @@ namespace PheasantTails.TwiHigh.Client.Components
             PostTweetContext.ReplyTo = null;
             TweetText = string.Empty;
             IsPosting = false;
+            if (IsForceForcus)
+            {
+                StateHasChanged();
+                await TextArea.FocusAsync();
+            }
         }
 
         private async Task OnKeyPressAsync(KeyboardEventArgs e)
@@ -72,7 +68,6 @@ namespace PheasantTails.TwiHigh.Client.Components
             if (e.CtrlKey && e.Code == "Enter" && !IsPosting)
             {
                 await OnSubmitAsync();
-                StateHasChanged();
             }
         }
 
