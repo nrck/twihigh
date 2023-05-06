@@ -125,6 +125,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
                     return tweet;
                 })
                 .UnionBy(Tweets, keySelector: tweet => tweet.Id)
+                .Where(tweet => !tweet.IsDeleted)
                 .OrderByDescending(tweet => tweet.CreateAt)
                 .ToList();
         }
