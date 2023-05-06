@@ -12,7 +12,6 @@ using PheasantTails.TwiHigh.Functions.Core;
 using PheasantTails.TwiHigh.Functions.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading.Tasks;
 using static PheasantTails.TwiHigh.Functions.Core.StaticStrings;
 
@@ -164,6 +163,69 @@ namespace PheasantTails.TwiHigh.Functions.Tweets
                     .WithParameter("@TweetId", tweetId);
 
                 var iterator = tweets.GetItemQueryIterator<Tweet>(query);
+
+                var tweet = new List<Tweet>();
+                while (iterator.HasMoreResults)
+                {
+                    var res = await iterator.ReadNextAsync();
+                    tweet.AddRange(res);
+                }
+                if (tweet.Count > 0)
+                {
+                    return new OkObjectResult(tweet);
+                }
+                else
+                {
+                    return new NotFoundResult();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        [FunctionName("GetUserTweet")]
+        public async Task<IActionResult> GetTweetByIdAsync(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "user/{userId}")] HttpRequest req,
+            string userId)
+        {
+            try
+            {
+                if (!Guid.TryParse(userId, out var userGuid))
+                {
+                    return new BadRequestResult();
+                }
+                // åüçıîÕàÕÇê›íË
+                var sinceDatetime = DateTimeOffset.MinValue;
+                var untilDatetime = DateTimeOffset.MaxValue;
+                if (req.Query.TryGetValue("since", out var since) && DateTimeOffset.TryParse(since, out var tmpSinceDatetime))
+                {
+                    sinceDatetime = tmpSinceDatetime;
+                }
+                if (req.Query.TryGetValue("until", out var until) && DateTimeOffset.TryParse(until, out var tmpUntilDatetime))
+                {
+                    untilDatetime = tmpUntilDatetime;
+                }
+
+                var tweets = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TWEET_CONTAINER_NAME);
+                var query = new QueryDefinition(
+                    "SELECT TOP 50 * FROM c " +
+                    "WHERE c.isDeleted != true " +
+                    "AND (" +
+                        "(@SinceDatetime < c.updateAt AND c.updateAt <= @UntilDatetime) " +
+                        "OR (NOT IS_DEFINED(c.updateAt) " +
+                        "AND (@SinceDatetime < c.createAt AND c.createAt <= @UntilDatetime))" +
+                    ")" +
+                    "ORDER BY c.createAt DESC")
+                    .WithParameter("@SinceDatetime", sinceDatetime)
+                    .WithParameter("@UntilDatetime", untilDatetime);
+
+                var iterator = tweets.GetItemQueryIterator<Tweet>(query,
+                    requestOptions: new QueryRequestOptions
+                    {
+                        PartitionKey = new PartitionKey(userGuid.ToString())
+                    });
 
                 var tweet = new List<Tweet>();
                 while (iterator.HasMoreResults)
