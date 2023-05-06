@@ -86,7 +86,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
             }).OrderBy(t => t.CreateAt).ToList();
         }
 
-        private async void OnClickDeleteButtonAsync(TweetViewModel model)
+        private async Task OnClickDeleteButtonAsync(TweetViewModel model)
         {
             await DeleteMyTweet(model.Id);
         }

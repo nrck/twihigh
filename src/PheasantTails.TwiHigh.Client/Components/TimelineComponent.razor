@@ -1,7 +1,11 @@
 ﻿@inherits UIComponentBase
 @* ツイート外枠 *@
 <section id="timeline">
-    @if (Tweets != null)
+    @if (Tweets == null)
+    {
+        <Loading />
+    }
+    else
     {
         <Virtualize Items="@Tweets" Context="Tweet" ItemSize="72" OverscanCount="15">
             @if (Tweet.IsSystemTweet)

@@ -60,5 +60,12 @@ else
         </div>
     </section>
     @* ツイート *@
-
+    <TimelineComponent @key="User.Id"
+                   Tweets="Tweets"
+                   MyTwiHithUserId="MyTwiHithUserId"
+                   OnClickDelete="OnClickDeleteButtonAsync"
+                   OnClickProfileEditor="OnClickProfileEditor"
+                   OnPostReply="PostTweetAsync"
+                   OnClickProfile="OnClickProfile"
+                   OnClickDetail="OnClickDetail" />
 }
