@@ -9,7 +9,6 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
     public class TimelineHttpClient
     {
         private const string API_URL_BASE = "https://twihigh-dev-apim.azure-api.net/timelines";
-        private const string API_URL_TIMELINE = $"{API_URL_BASE}/GetMyTimeline";
         private const string API_URL_TIMELINE_V2 = $"{API_URL_BASE}/timeline?since={{0}}&until={{1}}";
         private readonly HttpClient _httpClient;
 
@@ -26,11 +25,6 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
             }
 
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        }
-
-        public async Task<ResponseTimelineContext?> GetMyTimelineAsync()
-        {
-            return await _httpClient.GetFromJsonAsync<ResponseTimelineContext>(API_URL_TIMELINE);
         }
 
         public async Task<ResponseTimelineContext?> GetMyTimelineAsync(DateTimeOffset since, DateTimeOffset until)
