@@ -9,7 +9,12 @@ namespace PheasantTails.TwiHigh.Client.Pages
 {
     public class PageBase : SharedBase, IDisposable, IAsyncDisposable
     {
-        private const string LOCAL_STORAGE_KEY_JWT = "TwiHighJwt";
+        /// <summary>
+        /// ローカルストレージキー（タイムライン保存用）
+        /// </summary>
+        protected const string LOCAL_STORAGE_KEY_TWEETS = "UserTimelines_{0}_v2";
+
+        protected const string LOCAL_STORAGE_KEY_JWT = "TwiHighJwt";
 
 #pragma warning disable CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
         [Inject]

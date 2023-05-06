@@ -13,18 +13,21 @@
             <AuthorizeView>
                 <NotAuthorized>
                     <NavLink class="nav-link" href="signup">
-                        <span class="oi oi-home" aria-hidden="true"></span> Sign up
+                        <span class="oi oi-check" aria-hidden="true"></span> 参加する
                     </NavLink>
                     <NavLink class="nav-link" href="login">
-                        <span class="oi oi-home" aria-hidden="true"></span> Login
+                        <span class="oi oi-account-login" aria-hidden="true"></span> ログイン
                     </NavLink>
                 </NotAuthorized>
                 <Authorized>
                     <NavLink class="nav-link" href="home">
-                        <span class="oi oi-home" aria-hidden="true"></span> Home
+                        <span class="oi oi-home" aria-hidden="true"></span> ホーム
+                    </NavLink>
+                    <NavLink class="nav-link" href="clear">
+                        <span class="oi oi-delete" aria-hidden="true"></span> キャッシュクリア
                     </NavLink>
                     <NavLink class="nav-link" href="logout">
-                        <span class="oi oi-home" aria-hidden="true"></span> Logout
+                        <span class="oi oi-account-logout" aria-hidden="true"></span> ログアウト
                     </NavLink>
                 </Authorized>
             </AuthorizeView>
