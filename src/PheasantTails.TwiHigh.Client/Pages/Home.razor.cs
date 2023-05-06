@@ -12,11 +12,6 @@ namespace PheasantTails.TwiHigh.Client.Pages
     public partial class Home : PageBase, IAsyncDisposable
     {
         /// <summary>
-        /// ローカルストレージキー（タイムライン保存用）
-        /// </summary>
-        private const string LOCAL_STORAGE_KEY_TWEETS = "UserTimelines_{0}_v2";
-
-        /// <summary>
         /// ローカルキャッシュするタイムラインのツイート数
         /// </summary>
         private const int LOCAL_CACHE_MAXIMUM_SIZE = 10000;
