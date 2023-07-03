@@ -4,13 +4,15 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
 {
     public class FollowHttpClient
     {
-        private const string API_URL_BASE = "https://twihigh-dev-apim.azure-api.net/follows";
-        private const string API_URL_ADD_FOLLOW = $"{API_URL_BASE}/{{0}}";
+        private readonly string _apiUrlBase;
+        private readonly string _apiUrlAddFollow;
         private readonly HttpClient _httpClient;
 
-        public FollowHttpClient(HttpClient httpClient)
+        public FollowHttpClient(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
+            _apiUrlBase = $"{configuration["ApiUrl"]}/follows";
+            _apiUrlAddFollow = $"{_apiUrlBase}/{{0}}";
         }
 
         public void SetToken(string token)
@@ -25,7 +27,7 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
 
         public Task<HttpResponseMessage> PutNewFollowee(string followeeUserId)
         {
-            var url = string.Format(API_URL_ADD_FOLLOW, followeeUserId);
+            var url = string.Format(_apiUrlAddFollow, followeeUserId);
             return _httpClient.PutAsync(url, null);
         }
     }

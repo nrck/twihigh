@@ -6,16 +6,21 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
 {
     public class TweetHttpClient
     {
-        private const string API_URL_BASE = "https://twihigh-dev-apim.azure-api.net/tweets";
-        private const string API_URL_TWEET = $"{API_URL_BASE}/tweets";
-        private const string API_URL_DELETE_TWEET = $"{API_URL_BASE}/tweets/{{0}}";
-        private const string API_URL_GET_TWEET = $"{API_URL_BASE}/tweets/{{0}}";
-        private const string API_URL_GET_USER_TWEETS = $"{API_URL_BASE}/user/{{0}}";
+        private readonly string _apiUrlBase = "https://twihigh-dev-apim.azure-api.net/tweets";
+        private readonly string _apiUrlTweet;
+        private readonly string _apiUrlDeleteTweet;
+        private readonly string _apiUrlGetTweet;
+        private readonly string _apiUrlGetUserTweets;
         private readonly HttpClient _httpClient;
 
-        public TweetHttpClient(HttpClient httpClient)
+        public TweetHttpClient(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
+            _apiUrlBase = $"{configuration["ApiUrl"]}/timelines";
+            _apiUrlTweet = $"{_apiUrlBase}/tweets";
+            _apiUrlDeleteTweet = $"{_apiUrlBase}/tweets/{{0}}";
+            _apiUrlGetTweet = $"{_apiUrlBase}/tweets/{{0}}";
+            _apiUrlGetUserTweets = $"{_apiUrlBase}/user/{{0}}";
         }
 
         public void SetToken(string token)
@@ -32,7 +37,7 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
         {
             try
             {
-                return await _httpClient.PostAsJsonAsync(API_URL_TWEET, context);
+                return await _httpClient.PostAsJsonAsync(_apiUrlTweet, context);
             }
             catch (Exception)
             {
@@ -44,7 +49,7 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
         {
             try
             {
-                var url = string.Format(API_URL_DELETE_TWEET, id.ToString());
+                var url = string.Format(_apiUrlDeleteTweet, id.ToString());
                 return await _httpClient.DeleteAsync(url);
             }
             catch (Exception)
@@ -57,7 +62,7 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
         {
             try
             {
-                var url = string.Format(API_URL_GET_TWEET, id.ToString());
+                var url = string.Format(_apiUrlGetTweet, id.ToString());
                 return await _httpClient.GetAsync(url);
             }
             catch (Exception)
@@ -70,7 +75,7 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
         {
             try
             {
-                var url = string.Format(API_URL_GET_USER_TWEETS, id.ToString());
+                var url = string.Format(_apiUrlGetUserTweets, id.ToString());
                 return await _httpClient.GetAsync(url);
             }
             catch (Exception)

@@ -8,13 +8,15 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
 {
     public class TimelineHttpClient
     {
-        private const string API_URL_BASE = "https://twihigh-dev-apim.azure-api.net/timelines";
-        private const string API_URL_TIMELINE_V2 = $"{API_URL_BASE}/timeline?since={{0}}&until={{1}}";
+        private readonly string _apiUrlBase;
+        private readonly string _apiUrlTimeline;
         private readonly HttpClient _httpClient;
 
-        public TimelineHttpClient(HttpClient httpClient)
+        public TimelineHttpClient(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
+            _apiUrlBase = $"{configuration["ApiUrl"]}/timelines";
+            _apiUrlTimeline = $"{_apiUrlBase}/timeline?since={{0}}&until={{1}}";
         }
 
         public void SetToken(string token)
@@ -34,7 +36,7 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
                 throw new ArgumentException("開始時刻と終了時刻が逆転しています。", nameof(since));
             }
 
-            var url = string.Format(API_URL_TIMELINE_V2, HttpUtility.UrlEncode(since.ToString("yyyy-MM-ddTHH:mm:ss.fffffffzzz")), HttpUtility.UrlEncode(until.ToString("yyyy-MM-ddTHH:mm:ss.fffffffzzz")));
+            var url = string.Format(_apiUrlTimeline, HttpUtility.UrlEncode(since.ToString("yyyy-MM-ddTHH:mm:ss.fffffffzzz")), HttpUtility.UrlEncode(until.ToString("yyyy-MM-ddTHH:mm:ss.fffffffzzz")));
             var response = await _httpClient.GetAsync(url);
             if (response.StatusCode == HttpStatusCode.OK)
             {
