@@ -16,18 +16,25 @@ on:
       - 'src/PheasantTails.TwiHigh.Functions.Extensions/**'
       - 'src/PheasantTails.TwiHigh.Functions.Follows/**'
 
-env:
-  AZURE_FUNCTION_APP_NAME: ${{ github.ref == 'refs/heads/main' && 'twihigh-pro-func-follows' || 'twihigh-dev-func-follows' }}
-  AZURE_DEPLOY_ENVIRONMENT_NAME: ${{ github.ref == 'refs/heads/main' && 'pro-func-follows' || 'dev-func-follows' }}
-  AZURE_PUBLISH_PROFILE: ${{ github.ref == 'refs/heads/main' && secrets.AZURE_FUNCTION_PUBLISH_PRO_FOLLOWS || secrets.AZURE_FUNCTION_PUBLISH_DEV_FOLLOWS }}
-
 jobs:
-  build-and-deploy-follows:
+  dev-build-and-deploy-follows:
     name: Build and deploy Follows
+    if: github.ref == 'refs/heads/main'
     uses: ./.github/workflows/deploy-azure-function.yml
     with:
-      function-app-name: ${{ env.AZURE_FUNCTION_APP_NAME }}
+      function-app-name: twihigh-pro-func-follows
       function-project-path: ./src/PheasantTails.TwiHigh.Functions.Follows
-      deploy-environment-name: ${{ env.AZURE_DEPLOY_ENVIRONMENT_NAME}}
+      deploy-environment-name: pro-func-follows
     secrets:
-      publish-profile: ${{ env.AZURE_PUBLISH_PROFILE }}
+      publish-profile: ${{ secrets.AZURE_FUNCTION_PUBLISH_PRO_FOLLOWS }}
+
+  pro-build-and-deploy-follows:
+    name: Build and deploy Follows
+    if: github.ref != 'refs/heads/main'
+    uses: ./.github/workflows/deploy-azure-function.yml
+    with:
+      function-app-name: twihigh-dev-func-follows
+      function-project-path: ./src/PheasantTails.TwiHigh.Functions.Follows
+      deploy-environment-name: dev-func-follows
+    secrets:
+      publish-profile: ${{ secrets.AZURE_FUNCTION_PUBLISH_DEV_FOLLOWS }}
