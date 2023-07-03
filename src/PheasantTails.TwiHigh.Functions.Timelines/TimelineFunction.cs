@@ -332,8 +332,10 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
             // フォローを外した人のツイートを取得する
             var query = new QueryDefinition(
                 "SELECT c.id, c.ownerUserId FROM c " +
-                "WHERE c.userId = @FolloweeId")
-                .WithParameter("@FolloweeId", que.FolloweeId);
+                "WHERE c.userId = @FolloweeId " +
+                "AND c.ownerUserId = @OwnerUserId")
+                .WithParameter("@FolloweeId", que.FolloweeId)
+                .WithParameter("@OwnerUserId", que.UserId);
 
             var timelines = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TIMELINE_CONTAINER_NAME);
             var batch = timelines.CreateTransactionalBatch(new PartitionKey(que.UserId.ToString()));
