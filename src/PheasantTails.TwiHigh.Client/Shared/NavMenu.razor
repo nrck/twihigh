@@ -1,4 +1,6 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using Microsoft.AspNetCore.Components.WebAssembly.Hosting
+@inject IWebAssemblyHostEnvironment HostEnvironment
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="/">ツイハイ！</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -32,7 +34,7 @@
                 </Authorized>
             </AuthorizeView>
             <span class="version">
-                Version @Program.TwiHighVersion
+                Version @Program.TwiHighVersion (@HostEnvironment.Environment)
             </span>
         </div>
     </nav>
