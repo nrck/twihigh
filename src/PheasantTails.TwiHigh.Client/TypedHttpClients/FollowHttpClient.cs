@@ -6,6 +6,7 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
     {
         private readonly string _apiUrlBase;
         private readonly string _apiUrlAddFollow;
+        private readonly string _apiUrlRemoveFollow;
         private readonly HttpClient _httpClient;
 
         public FollowHttpClient(HttpClient httpClient, IConfiguration configuration)
@@ -13,6 +14,7 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
             _httpClient = httpClient;
             _apiUrlBase = $"{configuration["ApiUrl"]}/follows";
             _apiUrlAddFollow = $"{_apiUrlBase}/{{0}}";
+            _apiUrlRemoveFollow = $"{_apiUrlBase}/{{0}}";
         }
 
         public void SetToken(string token)
@@ -25,10 +27,16 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
 
-        public Task<HttpResponseMessage> PutNewFollowee(string followeeUserId)
+        public Task<HttpResponseMessage> PutNewFolloweeAsync(string followeeUserId)
         {
             var url = string.Format(_apiUrlAddFollow, followeeUserId);
             return _httpClient.PutAsync(url, null);
+        }
+
+        public Task<HttpResponseMessage> DeleteFolloweeAsync(string followeeUserId)
+        {
+            var url = string.Format(_apiUrlAddFollow, followeeUserId);
+            return _httpClient.DeleteAsync(url);
         }
     }
 }
