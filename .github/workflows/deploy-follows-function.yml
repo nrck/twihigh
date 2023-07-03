@@ -18,7 +18,7 @@ on:
 
 jobs:
   dev-build-and-deploy-follows:
-    name: DEV:Build and deploy Follows
+    name: PRO:Build and deploy Follows
     if: github.ref == 'refs/heads/main'
     uses: ./.github/workflows/deploy-azure-function.yml
     with:
@@ -29,7 +29,7 @@ jobs:
       publish-profile: ${{ secrets.AZURE_FUNCTION_PUBLISH_PRO_FOLLOWS }}
 
   pro-build-and-deploy-follows:
-    name: PRO:Build and deploy Follows
+    name: DEV:Build and deploy Follows
     if: github.ref != 'refs/heads/main'
     uses: ./.github/workflows/deploy-azure-function.yml
     with:

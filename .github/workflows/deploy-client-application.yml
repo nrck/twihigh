@@ -7,16 +7,41 @@ on:
   push:
     branches:
       - main
+      - dev
     paths:
+      - '.github/workflows/deploy-client-application.yml'
       - 'src/PheasantTails.TwiHigh.Client/**'
       - 'src/PheasantTails.TwiHigh.Data.Model/**'
       - 'src/PheasantTails.TwiHigh.Data.Store/**'
 
 jobs:
-  build-and-deploy-client:
+  pro-build-and-deploy-client:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: pro-client
+    name: PRO:Build and Deploy Client
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Build And Deploy Client
+        id: builddeploy
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_PRO }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: "upload"
+          # ref: https://aka.ms/swaworkflowconfig
+          app_location: "src/PheasantTails.TwiHigh.Client" # App source code path
+          output_location: "wwwroot" # Built app content directory - optional
+          skip_api_build: true
+          production_branch: "main"
+          
+  dev-build-and-deploy-client:
+    if: github.ref != 'refs/heads/main'
     runs-on: ubuntu-latest
     environment: dev-client
-    name: Build and Deploy Client
+    name: DEV:Build and Deploy Client
     steps:
       - uses: actions/checkout@v2
         with:
@@ -32,4 +57,4 @@ jobs:
           app_location: "src/PheasantTails.TwiHigh.Client" # App source code path
           output_location: "wwwroot" # Built app content directory - optional
           skip_api_build: true
-          production_branch: "main"
+          production_branch: "dev"

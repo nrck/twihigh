@@ -7,7 +7,9 @@ on:
   push:
     branches:
       - main
+      - dev
     paths:
+      - '.github/workflows/deploy-twihighusers-function.yml'
       - 'src/PheasantTails.TwiHigh.Data.Model/**'
       - 'src/PheasantTails.TwiHigh.Data.Store/**'
       - 'src/PheasantTails.TwiHigh.Functions.Core/**'
@@ -15,8 +17,20 @@ on:
       - 'src/PheasantTails.TwiHigh.Functions.TwiHighUsers/**'
 
 jobs:
-  build-and-deploy-twihighusers:
-    name: Build and deploy TwiHighUsers
+  pro-build-and-deploy-twihighusers:
+    name: PRO:Build and deploy TwiHighUsers
+    if: github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/deploy-azure-function.yml
+    with:
+      function-app-name: twihigh-pro-func-twihighusers
+      function-project-path: ./src/PheasantTails.TwiHigh.Functions.TwiHighUsers
+      deploy-environment-name: pro-func-twihighusers
+    secrets:
+      publish-profile: ${{ secrets.AZURE_FUNCTION_PUBLISH_PRO_TWIHIGHUSERS }}
+      
+  dev-build-and-deploy-twihighusers:
+    name: DEV:Build and deploy TwiHighUsers
+    if: github.ref != 'refs/heads/main'
     uses: ./.github/workflows/deploy-azure-function.yml
     with:
       function-app-name: twihigh-dev-func-twihighusers
