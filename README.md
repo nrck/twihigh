@@ -1,1 +1,11 @@
-# twihigh
+# ツイハイ！
+Twitter 代替サービスの[ツイハイ！](https://www.twi-high.com/)
+
+## Status badge
+|Production|Develop|
+|---|---|
+|[![Deploy Client application](https://github.com/nrck/twihigh/actions/workflows/deploy-client-application.yml/badge.svg?branch=main)](https://github.com/nrck/twihigh/actions/workflows/deploy-client-application.yml)|[![Deploy Client application](https://github.com/nrck/twihigh/actions/workflows/deploy-client-application.yml/badge.svg?branch=dev)](https://github.com/nrck/twihigh/actions/workflows/deploy-client-application.yml)|
+|[![Deploy Follows function](https://github.com/nrck/twihigh/actions/workflows/deploy-follows-function.yml/badge.svg?branch=main)](https://github.com/nrck/twihigh/actions/workflows/deploy-follows-function.yml)|[![Deploy Follows function](https://github.com/nrck/twihigh/actions/workflows/deploy-follows-function.yml/badge.svg?branch=dev)](https://github.com/nrck/twihigh/actions/workflows/deploy-follows-function.yml)|
+|[![Deploy Timelines function](https://github.com/nrck/twihigh/actions/workflows/deploy-timelines-function.yml/badge.svg?branch=main)](https://github.com/nrck/twihigh/actions/workflows/deploy-timelines-function.yml)|[![Deploy Timelines function](https://github.com/nrck/twihigh/actions/workflows/deploy-timelines-function.yml/badge.svg?branch=dev)](https://github.com/nrck/twihigh/actions/workflows/deploy-timelines-function.yml)|
+|[![Deploy Tweets function](https://github.com/nrck/twihigh/actions/workflows/deploy-tweets-function.yml/badge.svg?branch=main)](https://github.com/nrck/twihigh/actions/workflows/deploy-tweets-function.yml)|[![Deploy Tweets function](https://github.com/nrck/twihigh/actions/workflows/deploy-tweets-function.yml/badge.svg?branch=dev)](https://github.com/nrck/twihigh/actions/workflows/deploy-tweets-function.yml)|
+|[![Deploy TwiHighUsers function](https://github.com/nrck/twihigh/actions/workflows/deploy-twihighusers-function.yml/badge.svg?branch=main)](https://github.com/nrck/twihigh/actions/workflows/deploy-twihighusers-function.yml)|[![Deploy TwiHighUsers function](https://github.com/nrck/twihigh/actions/workflows/deploy-twihighusers-function.yml/badge.svg?branch=dev)](https://github.com/nrck/twihigh/actions/workflows/deploy-twihighusers-function.yml)|
