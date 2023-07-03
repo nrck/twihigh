@@ -6,7 +6,7 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
 {
     public class TweetHttpClient
     {
-        private readonly string _apiUrlBase = "https://twihigh-dev-apim.azure-api.net/tweets";
+        private readonly string _apiUrlBase;
         private readonly string _apiUrlTweet;
         private readonly string _apiUrlDeleteTweet;
         private readonly string _apiUrlGetTweet;
@@ -16,7 +16,7 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
         public TweetHttpClient(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
-            _apiUrlBase = $"{configuration["ApiUrl"]}/timelines";
+            _apiUrlBase = $"{configuration["ApiUrl"]}/tweets";
             _apiUrlTweet = $"{_apiUrlBase}/tweets";
             _apiUrlDeleteTweet = $"{_apiUrlBase}/tweets/{{0}}";
             _apiUrlGetTweet = $"{_apiUrlBase}/tweets/{{0}}";
