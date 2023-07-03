@@ -11,6 +11,7 @@ using PheasantTails.TwiHigh.Data.Store.Entity;
 using PheasantTails.TwiHigh.Functions.Extensions;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -306,6 +307,49 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
             }
 
             await Task.WhenAll(tasks);
+        }
+
+        [FunctionName("DeleteTimelinesFollowTrigger")]
+        public async Task DeleteTimelinesFollowTriggerAsync([QueueTrigger(AZURE_STORAGE_DELETE_TIMELINES_FOLLOW_TRIGGER_QUEUE_NAME, Connection = QUEUE_STORAGE_CONNECTION_STRINGS_ENV_NAME)] string myQueueItem)
+        {
+            if (myQueueItem == null)
+            {
+                return;
+            }
+
+            // キューの取得
+            var que = JsonSerializer.Deserialize<RemoveFolloweeTweetContext>(myQueueItem);
+            var now = DateTimeOffset.UtcNow;
+
+            var patch = new PatchOperation[]
+            {
+                PatchOperation.Set("/text", "This tweet has been deleted."),
+                PatchOperation.Set("/isDeleted", true),
+                PatchOperation.Set("/updateAt", now)
+            };
+
+            // フォローを外した人のツイートを取得する
+            var query = new QueryDefinition(
+                "SELECT c.id, c.ownerUserId FROM c " +
+                "WHERE c.userId = @FolloweeId")
+                .WithParameter("@FolloweeId", que.FolloweeId);
+
+            var timelines = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TIMELINE_CONTAINER_NAME);
+            var batch = timelines.CreateTransactionalBatch(new PartitionKey(que.UserId.ToString()));
+            var iterator = timelines.GetItemQueryIterator<TimelineIdOwnerUserIdPair>(query);
+            while (iterator.HasMoreResults)
+            {
+                var result = await iterator.ReadNextAsync();
+                foreach (var pair in result.Resource)
+                {
+                    batch.PatchItem(
+                        id: pair.Id.ToString(),
+                        patchOperations: patch,
+                        requestOptions: new TransactionalBatchPatchItemRequestOptions { IfMatchEtag = result.ETag }
+                    );
+                }
+            }
+            var response = await batch.ExecuteAsync();
         }
 
         private class TimelineIdOwnerUserIdPair
