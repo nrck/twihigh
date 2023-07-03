@@ -195,7 +195,7 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
                 foreach (var tweet in result.Resource)
                 {
                     var timeline = new Timeline(context.UserId, tweet);
-                    batch.CreateItem(timeline);
+                    batch.UpsertItem(timeline);
                 }
                 await batch.ExecuteAsync();
             }
