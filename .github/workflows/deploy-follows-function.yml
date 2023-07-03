@@ -7,7 +7,9 @@ on:
   push:
     branches:
       - main
+      - dev
     paths:
+      - '.github/workflows/deploy-follows-function.yml'
       - 'src/PheasantTails.TwiHigh.Data.Model/**'
       - 'src/PheasantTails.TwiHigh.Data.Store/**'
       - 'src/PheasantTails.TwiHigh.Functions.Core/**'
@@ -15,8 +17,20 @@ on:
       - 'src/PheasantTails.TwiHigh.Functions.Follows/**'
 
 jobs:
-  build-and-deploy-follows:
-    name: Build and deploy Follows
+  dev-build-and-deploy-follows:
+    name: PRO:Build and deploy Follows
+    if: github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/deploy-azure-function.yml
+    with:
+      function-app-name: twihigh-pro-func-follows
+      function-project-path: ./src/PheasantTails.TwiHigh.Functions.Follows
+      deploy-environment-name: pro-func-follows
+    secrets:
+      publish-profile: ${{ secrets.AZURE_FUNCTION_PUBLISH_PRO_FOLLOWS }}
+
+  pro-build-and-deploy-follows:
+    name: DEV:Build and deploy Follows
+    if: github.ref != 'refs/heads/main'
     uses: ./.github/workflows/deploy-azure-function.yml
     with:
       function-app-name: twihigh-dev-func-follows

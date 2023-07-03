@@ -1,7 +1,13 @@
 ﻿namespace PheasantTails.TwiHigh.Data.Store.Entity
 {
+    /// <summary>
+    /// Timelineコンテナエンティティ
+    /// </summary>
     public class Timeline : BaseEntity
     {
+        /// <summary>
+        /// パーテーションキー
+        /// </summary>
         public const string PARTITION_KEY = "/ownerUserId";
 
         public Guid OwnerUserId { get; set; }

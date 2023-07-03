@@ -7,7 +7,9 @@ on:
   push:
     branches:
       - main
+      - dev
     paths:
+      - '.github/workflows/deploy-timelines-function.yml'
       - 'src/PheasantTails.TwiHigh.Data.Model/**'
       - 'src/PheasantTails.TwiHigh.Data.Store/**'
       - 'src/PheasantTails.TwiHigh.Functions.Core/**'
@@ -15,8 +17,20 @@ on:
       - 'src/PheasantTails.TwiHigh.Functions.Timelines/**'
 
 jobs:
-  build-and-deploy-timelines:
-    name: Build and deploy Timelines
+  pro-build-and-deploy-timelines:
+    name: PRO:Build and deploy Timelines
+    if: github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/deploy-azure-function.yml
+    with:
+      function-app-name: twihigh-pro-func-timelines
+      function-project-path: ./src/PheasantTails.TwiHigh.Functions.Timelines
+      deploy-environment-name: pro-func-timelines
+    secrets:
+      publish-profile: ${{ secrets.AZURE_FUNCTION_PUBLISH_PRO_TIMELINES }}
+      
+  dev-build-and-deploy-timelines:
+    name: DEV:Build and deploy Timelines
+    if: github.ref != 'refs/heads/main'
     uses: ./.github/workflows/deploy-azure-function.yml
     with:
       function-app-name: twihigh-dev-func-timelines
