@@ -9,7 +9,7 @@ on:
       - main
       - dev
     paths:
-      - 'src/.github/workflows/deploy-follows-function.yml'
+      - '.github/workflows/deploy-follows-function.yml'
       - 'src/PheasantTails.TwiHigh.Data.Model/**'
       - 'src/PheasantTails.TwiHigh.Data.Store/**'
       - 'src/PheasantTails.TwiHigh.Functions.Core/**'
