@@ -321,6 +321,7 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
             var que = JsonSerializer.Deserialize<RemoveFolloweeTweetContext>(myQueueItem);
             var now = DateTimeOffset.UtcNow;
 
+            _logger.LogInformation("{0} remove to {1} at {2}.", que.UserId, que.FolloweeId, now.ToString("yyyy/MM/dd HH:mm:ss"));
             var patch = new PatchOperation[]
             {
                 PatchOperation.Set("/text", "This tweet has been deleted."),
@@ -347,9 +348,11 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
                         patchOperations: patch,
                         requestOptions: new TransactionalBatchPatchItemRequestOptions { IfMatchEtag = result.ETag }
                     );
+                    _logger.LogInformation("id: {0}, ownerUserId:{1}", pair.Id, pair.OwnerUserId);
                 }
             }
             var response = await batch.ExecuteAsync();
+            _logger.LogInformation("Batch status code:{0}", response.StatusCode);
         }
 
         private class TimelineIdOwnerUserIdPair
