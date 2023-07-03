@@ -28,6 +28,8 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
         private Guid MyTwiHithUserId { get; set; }
 
+        private bool IsProcessing { get; set; }
+
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
@@ -71,20 +73,55 @@ namespace PheasantTails.TwiHigh.Client.Pages
             {
                 return;
             }
+            if (IsProcessing)
+            {
+                return;
+            }
+            IsProcessing = true;
             try
             {
-                var res = await FollowHttpClient.PutNewFollowee(User.Id.ToString());
-            }
-            catch (HttpRequestException ex)
-            {
-            }
-
-            try
-            {
+                var res = await FollowHttpClient.PutNewFolloweeAsync(User.Id.ToString());
+                res.EnsureSuccessStatusCode();
+                SetSucessMessage($"@{User.DisplayId}さんをフォローしました！");
                 User = await AppUserHttpClient.GetTwiHighUserAsync(Id);
             }
             catch (HttpRequestException ex)
             {
+                SetErrorMessage("フォローできませんでした。");
+            }
+            finally
+            {
+                IsProcessing = false;
+            }
+            await SetFollowButtonAsync();
+            StateHasChanged();
+        }
+
+        private async Task OnClickRemoveButton()
+        {
+            if (User == null)
+            {
+                return;
+            }
+            if (IsProcessing)
+            {
+                return;
+            }
+            IsProcessing = true;
+            try
+            {
+                var res = await FollowHttpClient.DeleteFolloweeAsync(User.Id.ToString());
+                res.EnsureSuccessStatusCode();
+                SetInfoMessage($"@{User.DisplayId}さんをリムーブしました！");
+                User = await AppUserHttpClient.GetTwiHighUserAsync(Id);
+            }
+            catch (HttpRequestException ex)
+            {
+                SetErrorMessage("リムーブできませんでした。");
+            }
+            finally
+            {
+                IsProcessing = false;
             }
             await SetFollowButtonAsync();
             StateHasChanged();

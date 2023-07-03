@@ -11,7 +11,19 @@ namespace PheasantTails.TwiHigh.Client.Components
         [Parameter]
         public EventCallback<MouseEventArgs> OnClickFollowButton { get; set; }
 
-        //[Parameter]
-        //public EventCallback<MouseEventArgs> OnClickUnfollowButton { get; set; }
+        [Parameter]
+        public EventCallback<MouseEventArgs> OnClickRemoveButton { get; set; }
+
+        private string FollowedButtonText { get; set; } = "フォロー中";
+
+        private void OnMouseOverRemoveButton(MouseEventArgs e)
+        {
+            FollowedButtonText = "リムーブする";
+        }
+
+        private void OnMouseOutRemoveButton(MouseEventArgs e)
+        {
+            FollowedButtonText = "フォロー中";
+        }
     }
 }
