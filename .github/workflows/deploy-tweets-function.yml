@@ -7,7 +7,9 @@ on:
   push:
     branches:
       - main
+      - dev
     paths:
+      - '.github/workflows/deploy-tweets-function.yml'
       - 'src/PheasantTails.TwiHigh.Data.Model/**'
       - 'src/PheasantTails.TwiHigh.Data.Store/**'
       - 'src/PheasantTails.TwiHigh.Functions.Core/**'
@@ -15,8 +17,20 @@ on:
       - 'src/PheasantTails.TwiHigh.Functions.Tweets/**'
 
 jobs:
-  build-and-deploy-tweets:
-    name: Build and deploy Tweets
+  pro-build-and-deploy-tweets:
+    name: PRO:Build and deploy Tweets
+    if: github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/deploy-azure-function.yml
+    with:
+      function-app-name: twihigh-pro-func-tweets
+      function-project-path: ./src/PheasantTails.TwiHigh.Functions.Tweets
+      deploy-environment-name: pro-func-tweets
+    secrets:
+      publish-profile: ${{ secrets.AZURE_FUNCTION_PUBLISH_PRO_TWEETS }}
+      
+  dev-build-and-deploy-tweets:
+    name: DEV:Build and deploy Tweets
+    if: github.ref != 'refs/heads/main'
     uses: ./.github/workflows/deploy-azure-function.yml
     with:
       function-app-name: twihigh-dev-func-tweets
