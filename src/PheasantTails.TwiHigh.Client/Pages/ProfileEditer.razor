@@ -17,14 +17,12 @@ else
     <section class="px-3">
         <div class="profile-header">
             @* アイコン *@
-            <div>
-                <BigAvatarComponent UserAvatarUrl="@AvatarUrl" />
-                <InputFile OnChange="LoadFiles" accept="image/png, image/jpeg" />
-                @if (0 < LocalRowAvatarData.LongLength)
-                {
-                    <button @onclick=OnClickAvatarResetButton>画像を元に戻す</button>
-                }
-            </div>
+            <BigAvatarComponent UserAvatarUrl="@AvatarUrl" />
+            <InputFile OnChange="LoadFiles" accept="image/png, image/jpeg" />
+            @if (0 < LocalRowAvatarData.LongLength)
+            {
+                <button @onclick=OnClickAvatarResetButton>画像を元に戻す</button>
+            }
         </div>
 
         @* プロフィール *@
