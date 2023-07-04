@@ -1,6 +1,8 @@
 ﻿.user-avatar-icon {
     aspect-ratio: 1;
     width: 25%;
+    min-width: 25%;
+    max-width: 25%;
 }
 
     .user-avatar-icon img {
