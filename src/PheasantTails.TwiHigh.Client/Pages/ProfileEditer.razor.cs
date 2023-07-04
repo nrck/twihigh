@@ -16,6 +16,8 @@ namespace PheasantTails.TwiHigh.Client.Pages
         private string DisplayId { get; set; } = string.Empty;
         private string DisplayName { get; set; } = string.Empty;
         private string Biography { get; set; } = string.Empty;
+        private byte[] LocalRowAvatarData { get; set; } = Array.Empty<byte>();
+        private string LocalRowAvatarContentType { get; set; } = string.Empty;
 
         protected override async Task OnInitializedAsync()
         {
@@ -46,20 +48,28 @@ namespace PheasantTails.TwiHigh.Client.Pages
                 file.ContentType != "image/jpeg"
             )
             {
+                SetWarnMessage("画像はPNGもしくはJPEGのみがサポートされています。他の画像を使用してください。");
+                return;
+            }
+
+            if (file.Size <= 0)
+            {
+                SetErrorMessage("画像データを読み込めませんでした。");
                 return;
             }
 
             if (1 * 1024 * 1024 < file.Size)
             {
+                SetWarnMessage("画像の最大サイズは1MBです。リサイズするなど、ファイルサイズを小さくしてください。");
                 return;
             }
-            byte[] data = new byte[file.Size];
+            LocalRowAvatarData = new byte[file.Size];
+            LocalRowAvatarContentType = file.ContentType;
             var stream = file.OpenReadStream(1 * 1024 * 1024);
-            await stream.ReadAsync(data);
+            await stream.ReadAsync(LocalRowAvatarData);
 
-            var base64string = Convert.ToBase64String(data);
-            AvatarUrl = $"data:{file.ContentType};base64,{base64string}";
-            PatchContext.EncodeAvaterImage(file.ContentType, data);
+            var base64string = Convert.ToBase64String(LocalRowAvatarData);
+            AvatarUrl = $"data:{LocalRowAvatarContentType};base64,{base64string}";
             StateHasChanged();
         }
 
@@ -94,11 +104,16 @@ namespace PheasantTails.TwiHigh.Client.Pages
             {
                 PatchContext.Biography = Biography;
             }
+            if (0 < LocalRowAvatarData.LongLength && !string.IsNullOrEmpty(LocalRowAvatarContentType))
+            {
+                PatchContext.EncodeAvaterImage(LocalRowAvatarContentType, LocalRowAvatarData);
+            }
         }
 
         private void OnClickAvatarResetButton()
         {
-            PatchContext.Base64EncodedAvatarImage = null;
+            LocalRowAvatarContentType = string.Empty;
+            LocalRowAvatarData = Array.Empty<byte>();
             AvatarUrl = User!.AvatarUrl;
         }
 
