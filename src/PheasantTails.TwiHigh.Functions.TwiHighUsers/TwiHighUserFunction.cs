@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using PheasantTails.TwiHigh.Data.Model.TwiHighUsers;
 using PheasantTails.TwiHigh.Data.Store.Entity;
+using PheasantTails.TwiHigh.Functions.Core.Services;
 using PheasantTails.TwiHigh.Functions.Extensions;
 using System;
 using System.Collections.Generic;
@@ -27,12 +28,14 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
         private readonly ILogger<TwiHighUserFunction> _logger;
         private readonly CosmosClient _client;
         private readonly IConfiguration _configuration;
+        private readonly IAzureBlobStorageService _azureBlobStorageService;
 
-        public TwiHighUserFunction(CosmosClient client, IConfiguration configuration, ILogger<TwiHighUserFunction> log)
+        public TwiHighUserFunction(CosmosClient client, IConfiguration configuration, ILogger<TwiHighUserFunction> log, IAzureBlobStorageService azureBlobStorageService)
         {
             _logger = log;
             _client = client;
             _configuration = configuration;
+            _azureBlobStorageService = azureBlobStorageService;
         }
 
         [FunctionName("SignUp")]
@@ -236,9 +239,13 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
                 return new ConflictResult();
             }
 
-            var operations = GetPatchOperations(patch);
-            var result = await users.PatchItemAsync<TwiHighUser>(id, new PartitionKey(id), operations, requestOptions: new PatchItemRequestOptions { IfMatchEtag = user.ETag });
+            var operations = await GetPatchOperationsAsync(patch);
+            if (!operations.Any())
+            {
+                return new BadRequestObjectResult(patch);
+            }
 
+            TwiHighUser result = await users.PatchItemAsync<TwiHighUser>(id, new PartitionKey(id), operations, requestOptions: new PatchItemRequestOptions { IfMatchEtag = user.ETag });
             return new OkObjectResult(new ResponseTwiHighUserContext(result));
         }
 
@@ -313,7 +320,7 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
             return result.ToArray();
         }
 
-        private List<PatchOperation> GetPatchOperations(PatchTwiHighUserContext context)
+        private async Task<List<PatchOperation>> GetPatchOperationsAsync(PatchTwiHighUserContext context)
         {
             var operations = new List<PatchOperation>();
             if (!string.IsNullOrWhiteSpace(context.DisplayId))
@@ -340,8 +347,10 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
             if (context.Base64EncodedAvatarImage != null)
             {
                 // アップロード処理
-                //var url = string.Empty;
-                //operations.Add(PatchOperation.Set("/avatarUrl", url));
+                var filetype = context.Base64EncodedAvatarImage.ContentType.Split("/")[1];
+                var url = await _azureBlobStorageService.UploadAsync(
+                    "twihigh-images", $"icon/{Guid.NewGuid()}.{filetype}", new BinaryData(context.DecodeAvaterImage()));
+                operations.Add(PatchOperation.Set("/avatarUrl", url.OriginalString));
             }
 
             return operations;
