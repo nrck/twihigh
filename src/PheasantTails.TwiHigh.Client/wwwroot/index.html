@@ -22,26 +22,11 @@
         <a href="" class="reload">ページを更新してエラーを解消する</a>
         <a class="dismiss">🗙</a>
     </div>
-    <script src="_content/Microsoft.AspNetCore.Components.WebAssembly.Authentication/AuthenticationService.js"></script>
     <script src="_framework/blazor.webassembly.js" autostart="false"></script>
-    <script>
-        if (window.location.hostname.includes("localhost")
-            || window.location.hostname.includes("dev")
-            || window.location.hostname.includes("092c09b00")) {
-            Blazor.start({
-                environment: "Development"
-            });
-        } else {
-            Blazor.start({
-                environment: "Production"
-            });
-        }
-    </script>
     <!--
         <script>navigator.serviceWorker.register('service-worker.js');</script>
     -->
     <script src="_content/Toolbelt.Blazor.PWA.Updater.Service/script.min.js"></script>
-
     <script>
         const onScrollEventHandler = function (event) {
             if (window.myScrollInfoService != null) {
@@ -74,6 +59,19 @@
 
         window.RegisterScrollInfoService = function (scrollInfoService) {
             window.myScrollInfoService = scrollInfoService;
+        }
+    </script>
+    <script>
+        if (window.location.hostname.includes("localhost")
+            || window.location.hostname.includes("dev")
+            || window.location.hostname.includes("092c09b00")) {
+            Blazor.start({
+                environment: "Development"
+            });
+        } else {
+            Blazor.start({
+                environment: "Production"
+            });
         }
     </script>
 </body>
