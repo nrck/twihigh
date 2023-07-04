@@ -65,7 +65,13 @@ namespace PheasantTails.TwiHigh.Client.Components
 
         private async Task OnKeyPressAsync(KeyboardEventArgs e)
         {
-            if (e.CtrlKey && e.Code == "Enter" && !IsPosting)
+            if (IsPosting)
+            {
+                // 処理中なら送信しない
+                return;
+            }
+
+            if (e.CtrlKey && (e.Code == "Enter" || e.Code == "NumpadEnter"))
             {
                 await OnSubmitAsync();
             }
