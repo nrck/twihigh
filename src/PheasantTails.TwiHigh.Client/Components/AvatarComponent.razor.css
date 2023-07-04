@@ -1,6 +1,6 @@
 ﻿.user-avatar-icon {
-    height: 48px;
-    width: 48px;
+    min-height: 48px;
+    min-width: 48px;
 }
 
     .user-avatar-icon img {

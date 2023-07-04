@@ -10,6 +10,7 @@
 
 @if (User == null)
 {
+    <Loading />
 }
 else
 {
@@ -18,8 +19,11 @@ else
             @* アイコン *@
             <div>
                 <BigAvatarComponent UserAvatarUrl="@AvatarUrl" />
-                @*<InputFile OnChange="LoadFiles" accept="image/png, image/jpeg" />*@
-                @*<button @onclick=OnClickAvatarResetButton>アバターのリセット</button>*@
+                <InputFile OnChange="LoadFiles" accept="image/png, image/jpeg" />
+                @if (0 < LocalRowAvatarData.LongLength)
+                {
+                    <button @onclick=OnClickAvatarResetButton>画像を元に戻す</button>
+                }
             </div>
         </div>
 
