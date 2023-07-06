@@ -29,13 +29,19 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
         private readonly CosmosClient _client;
         private readonly IConfiguration _configuration;
         private readonly IAzureBlobStorageService _azureBlobStorageService;
+        private readonly IImageProcesserService _imageProcesserService;
 
-        public TwiHighUserFunction(CosmosClient client, IConfiguration configuration, ILogger<TwiHighUserFunction> log, IAzureBlobStorageService azureBlobStorageService)
+        public TwiHighUserFunction(CosmosClient client,
+            IConfiguration configuration,
+            ILogger<TwiHighUserFunction> log,
+            IAzureBlobStorageService azureBlobStorageService,
+            IImageProcesserService imageProcesserService)
         {
             _logger = log;
             _client = client;
             _configuration = configuration;
             _azureBlobStorageService = azureBlobStorageService;
+            _imageProcesserService = imageProcesserService;
         }
 
         [FunctionName("SignUp")]
@@ -225,8 +231,16 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
             {
                 return new UnauthorizedResult();
             }
+            PatchTwiHighUserContext patch;
+            try
+            {
+                patch = await req.JsonDeserializeAsync<PatchTwiHighUserContext>();
+            }
+            catch (Exception)
+            {
+                return new BadRequestResult();
+            }
 
-            var patch = await req.JsonDeserializeAsync<PatchTwiHighUserContext>();
             var users = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_USER_CONTAINER_NAME);
             var user = await users.ReadItemAsync<TwiHighUser>(id, new PartitionKey(id));
             if (!string.IsNullOrWhiteSpace(patch.Password))
@@ -347,9 +361,10 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
             if (context.Base64EncodedAvatarImage != null)
             {
                 // アップロード処理
+                var data = _imageProcesserService.TrimmingToSquare(context.DecodeAvaterImage());
                 var filetype = context.Base64EncodedAvatarImage.ContentType.Split("/")[1];
                 var url = await _azureBlobStorageService.UploadAsync(
-                    "twihigh-images", $"icon/{Guid.NewGuid()}.{filetype}", new BinaryData(context.DecodeAvaterImage()));
+                    "twihigh-images", $"icon/{Guid.NewGuid()}.{filetype}", new BinaryData(data));
                 operations.Add(PatchOperation.Set("/avatarUrl", url.OriginalString));
             }
 
