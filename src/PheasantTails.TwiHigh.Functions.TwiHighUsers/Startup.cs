@@ -16,6 +16,7 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
             builder.Services.AddOptions<AzureBlobStorageServiceOptions>()
                 .Configure<IConfiguration>((options, configuration) => configuration.Bind("AzureBlobStorageService", options));
             builder.Services.AddScoped<IAzureBlobStorageService, AzureBlobStorageService>();
+            builder.Services.AddScoped<IImageProcesserService, ImageProcesserService>();
         }
     }
 }
