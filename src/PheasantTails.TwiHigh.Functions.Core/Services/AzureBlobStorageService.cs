@@ -1,29 +1,24 @@
 ﻿using Azure.Storage.Blobs;
-using Microsoft.Extensions.Options;
 
 namespace PheasantTails.TwiHigh.Functions.Core.Services
 {
-    public class AzureBlobStorageService: IAzureBlobStorageService
+    public class AzureBlobStorageService : IAzureBlobStorageService
     {
         private readonly BlobServiceClient _blobServiceClient;
-        
-        public AzureBlobStorageService(IOptions<AzureBlobStorageServiceOptions> options)
+
+        public AzureBlobStorageService(BlobServiceClient blobServiceClient)
         {
-            _blobServiceClient = new BlobServiceClient(options.Value.ConnectionString);
+            _blobServiceClient = blobServiceClient;
         }
 
-        public async Task<Uri> UploadAsync(string containerName,string blobName, BinaryData content)
+        public async Task<Uri> UploadAsync(string containerName, string blobName, BinaryData content)
         {
-            BlobContainerClient containerClient = await _blobServiceClient.CreateBlobContainerAsync(containerName);
+            BlobContainerClient containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
+            await containerClient.CreateIfNotExistsAsync();
             var blobClient = containerClient.GetBlobClient(blobName);
             await blobClient.UploadAsync(content);
 
             return blobClient.Uri;
         }
-    }
-
-    public class AzureBlobStorageServiceOptions
-    {
-        public string ConnectionString { get; set; } = string.Empty;
     }
 }

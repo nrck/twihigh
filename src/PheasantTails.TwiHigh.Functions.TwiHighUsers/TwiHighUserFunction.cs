@@ -11,6 +11,7 @@ using PheasantTails.TwiHigh.Data.Model.TwiHighUsers;
 using PheasantTails.TwiHigh.Data.Store.Entity;
 using PheasantTails.TwiHigh.Functions.Core.Services;
 using PheasantTails.TwiHigh.Functions.Extensions;
+using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -361,8 +362,10 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
             if (context.Base64EncodedAvatarImage != null)
             {
                 // アップロード処理
-                var data = _imageProcesserService.TrimmingToSquare(context.DecodeAvaterImage());
+                var rawData = context.DecodeAvaterImage();
                 var filetype = context.Base64EncodedAvatarImage.ContentType.Split("/")[1];
+                var format = filetype == "png" ? SKEncodedImageFormat.Png : SKEncodedImageFormat.Jpeg;
+                var data = _imageProcesserService.TrimmingToSquare(rawData, format);
                 var url = await _azureBlobStorageService.UploadAsync(
                     "twihigh-images", $"icon/{Guid.NewGuid()}.{filetype}", new BinaryData(data));
                 operations.Add(PatchOperation.Set("/avatarUrl", url.OriginalString));

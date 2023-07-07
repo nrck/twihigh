@@ -1,7 +1,9 @@
-﻿namespace PheasantTails.TwiHigh.Functions.Core.Services
+﻿using SkiaSharp;
+
+namespace PheasantTails.TwiHigh.Functions.Core.Services
 {
     public interface IImageProcesserService
     {
-        byte[] TrimmingToSquare(in byte[] buffer);
+        byte[] TrimmingToSquare(in byte[] buffer, SKEncodedImageFormat format);
     }
 }
