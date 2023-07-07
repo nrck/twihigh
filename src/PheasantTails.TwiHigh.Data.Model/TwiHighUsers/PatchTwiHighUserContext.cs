@@ -15,8 +15,8 @@
             {
                 return null;
             }
-
-            return Convert.FromBase64String(Base64EncodedAvatarImage.Data);
+            var data = Convert.FromBase64String(Base64EncodedAvatarImage.Data);
+            return data;
         }
 
         public void EncodeAvaterImage(string contentType, byte[] data)
