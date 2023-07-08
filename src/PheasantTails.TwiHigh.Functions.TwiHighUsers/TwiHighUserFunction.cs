@@ -201,7 +201,7 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
         public async Task<IActionResult> RefreshAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req)
         {
-            if (req.TryGetUserId(out var id))
+            if (!req.TryGetUserId(out var id))
             {
                 return new UnauthorizedResult();
             }
