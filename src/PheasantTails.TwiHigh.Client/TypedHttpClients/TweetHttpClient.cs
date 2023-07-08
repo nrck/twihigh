@@ -16,7 +16,7 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
         public TweetHttpClient(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
-            _apiUrlBase = $"{configuration["ApiUrl"]}/tweets";
+            _apiUrlBase = $"{configuration["TweetApiUrl"]}";
             _apiUrlTweet = $"{_apiUrlBase}/tweets";
             _apiUrlDeleteTweet = $"{_apiUrlBase}/tweets/{{0}}";
             _apiUrlGetTweet = $"{_apiUrlBase}/tweets/{{0}}";

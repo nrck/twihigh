@@ -15,7 +15,7 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
         public TimelineHttpClient(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
-            _apiUrlBase = $"{configuration["ApiUrl"]}/timelines";
+            _apiUrlBase = $"{configuration["TimelineApiUrl"]}";
             _apiUrlTimeline = $"{_apiUrlBase}/timeline?since={{0}}&until={{1}}";
         }
 

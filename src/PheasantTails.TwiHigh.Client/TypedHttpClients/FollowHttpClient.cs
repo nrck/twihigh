@@ -12,7 +12,7 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
         public FollowHttpClient(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
-            _apiUrlBase = $"{configuration["ApiUrl"]}/follows";
+            _apiUrlBase = $"{configuration["FollowApiUrl"]}";
             _apiUrlAddFollow = $"{_apiUrlBase}/{{0}}";
             _apiUrlRemoveFollow = $"{_apiUrlBase}/{{0}}";
         }
@@ -35,7 +35,7 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
 
         public Task<HttpResponseMessage> DeleteFolloweeAsync(string followeeUserId)
         {
-            var url = string.Format(_apiUrlAddFollow, followeeUserId);
+            var url = string.Format(_apiUrlRemoveFollow, followeeUserId);
             return _httpClient.DeleteAsync(url);
         }
     }
