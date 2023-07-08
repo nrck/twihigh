@@ -19,7 +19,7 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
         public AppUserHttpClient(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
-            _apiUrlBase = $"{configuration["ApiUrl"]}/twihighusers";
+            _apiUrlBase = $"{configuration["AppUserApiUrl"]}";
             _apiUrlLogin = $"{_apiUrlBase}/Login";
             _apiUrlRefresh = $"{_apiUrlBase}/Refresh";
             _apiUrlSignin = $"{_apiUrlBase}/SignUp";
