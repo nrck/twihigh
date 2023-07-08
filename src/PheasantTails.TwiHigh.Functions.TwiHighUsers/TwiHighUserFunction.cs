@@ -228,40 +228,48 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
         public async Task<IActionResult> PatchTwiHighUserAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "TwiHighUser")] HttpRequest req)
         {
-            if (!req.TryGetUserId(out var id))
-            {
-                return new UnauthorizedResult();
-            }
-            PatchTwiHighUserContext patch;
             try
             {
-                patch = await req.JsonDeserializeAsync<PatchTwiHighUserContext>();
-            }
-            catch (Exception)
-            {
-                return new BadRequestResult();
-            }
+                if (!req.TryGetUserId(out var id))
+                {
+                    return new UnauthorizedResult();
+                }
+                PatchTwiHighUserContext patch;
+                try
+                {
+                    patch = await req.JsonDeserializeAsync<PatchTwiHighUserContext>();
+                }
+                catch (Exception)
+                {
+                    return new BadRequestResult();
+                }
 
-            var users = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_USER_CONTAINER_NAME);
-            var user = await users.ReadItemAsync<TwiHighUser>(id, new PartitionKey(id));
-            if (!string.IsNullOrWhiteSpace(patch.Password))
-            {
-                patch.Password = new PasswordHasher<TwiHighUser>().HashPassword(user, patch.Password);
-            }
+                var users = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_USER_CONTAINER_NAME);
+                var user = await users.ReadItemAsync<TwiHighUser>(id, new PartitionKey(id));
+                if (!string.IsNullOrWhiteSpace(patch.Password))
+                {
+                    patch.Password = new PasswordHasher<TwiHighUser>().HashPassword(user, patch.Password);
+                }
 
-            if (!string.IsNullOrWhiteSpace(patch.DisplayId) && await IsExistDisplayIdAsync(patch.DisplayId))
-            {
-                return new ConflictResult();
-            }
+                if (!string.IsNullOrWhiteSpace(patch.DisplayId) && await IsExistDisplayIdAsync(patch.DisplayId))
+                {
+                    return new ConflictResult();
+                }
 
-            var operations = await GetPatchOperationsAsync(patch);
-            if (!operations.Any())
-            {
-                return new BadRequestObjectResult(patch);
-            }
+                var operations = await GetPatchOperationsAsync(patch);
+                if (!operations.Any())
+                {
+                    return new BadRequestObjectResult(patch);
+                }
 
-            TwiHighUser result = await users.PatchItemAsync<TwiHighUser>(id, new PartitionKey(id), operations, requestOptions: new PatchItemRequestOptions { IfMatchEtag = user.ETag });
-            return new OkObjectResult(new ResponseTwiHighUserContext(result));
+                TwiHighUser result = await users.PatchItemAsync<TwiHighUser>(id, new PartitionKey(id), operations, requestOptions: new PatchItemRequestOptions { IfMatchEtag = user.ETag });
+                return new OkObjectResult(new ResponseTwiHighUserContext(result));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical(ex, "Exception happend at {0}", ex.Source);
+                throw;
+            }
         }
 
         private List<Claim> GenerateClaims(TwiHighUser user)
@@ -342,22 +350,27 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
             {
                 operations.Add(PatchOperation.Set("/displayId", context.DisplayId));
                 operations.Add(PatchOperation.Set("/lowerDisplayId", context.DisplayId.ToLower()));
+                _logger.LogInformation("Patch:: {0}: {1}", nameof(context.DisplayId), context.DisplayId);
             }
             if (!string.IsNullOrWhiteSpace(context.DisplayName))
             {
                 operations.Add(PatchOperation.Set("/displayName", context.DisplayName));
+                _logger.LogInformation("Patch:: {0}: {1}", nameof(context.DisplayName), context.DisplayName);
             }
             if (!string.IsNullOrWhiteSpace(context.Password))
             {
                 operations.Add(PatchOperation.Set("/hashedPassword", context.Password));
+                _logger.LogInformation("Patch:: {0}: {1}", nameof(context.Password), context.Password);
             }
             if (!string.IsNullOrWhiteSpace(context.Email))
             {
                 operations.Add(PatchOperation.Set("/email", context.Email));
+                _logger.LogInformation("Patch:: {0}: {1}", nameof(context.Email), context.Email);
             }
             if (!string.IsNullOrEmpty(context.Biography))
             {
                 operations.Add(PatchOperation.Set("/biography", context.Biography));
+                _logger.LogInformation("Patch:: {0}: {1}", nameof(context.Biography), context.Biography);
             }
             if (context.Base64EncodedAvatarImage != null)
             {
