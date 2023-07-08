@@ -267,7 +267,9 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
             }
             catch (Exception ex)
             {
-                _logger.LogCritical(ex, "Exception happend at {0}", ex.Source);
+                _logger.LogError(ex, "Exception happend at {0}", ex.Source);
+                _logger.LogError(ex.Message);
+                _logger.LogError(ex.StackTrace);
                 throw;
             }
         }
