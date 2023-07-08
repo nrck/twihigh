@@ -52,13 +52,11 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
             }
         }
 
-        public async Task<ResponseJwtContext?> RefreshAsync(string token)
+        public async Task<ResponseJwtContext?> RefreshAsync()
         {
             try
             {
-                var mes = new HttpRequestMessage(HttpMethod.Get, _apiUrlRefresh);
-                mes.Headers.Authorization = new AuthenticationHeaderValue("bearer", token);
-                var res = await _httpClient.SendAsync(mes);
+                var res = await _httpClient.GetAsync(_apiUrlRefresh);
                 res.EnsureSuccessStatusCode();
 
                 return await res.Content.ReadFromJsonAsync<ResponseJwtContext>();

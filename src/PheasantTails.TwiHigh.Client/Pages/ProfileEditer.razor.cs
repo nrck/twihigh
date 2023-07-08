@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components.Forms;
+﻿using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Forms;
 using PheasantTails.TwiHigh.Client.TypedHttpClients;
 using PheasantTails.TwiHigh.Data.Model.TwiHighUsers;
 
@@ -85,6 +86,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
             else
             {
                 SetSucessMessage("プロフィールを更新しました！");
+                await ((TwiHighAuthenticationStateProvider)AuthenticationStateProvider).RefreshAuthenticationStateAsync();
                 User = tmp;
                 SetDisplayVariables();
             }
