@@ -1,7 +1,14 @@
 ﻿.loader-wrapper {
-    display: flex;
     width: 100%
 }
+
+.show {
+    display: flex;
+}
+
+.none {
+    display: none;
+} 
 
 .loader-content {
     margin-left: auto;

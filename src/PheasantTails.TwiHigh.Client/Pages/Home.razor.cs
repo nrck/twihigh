@@ -16,7 +16,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
         /// </summary>
         private const int LOCAL_CACHE_MAXIMUM_SIZE = 10000;
 
-        private List<TweetViewModel> Tweets { get; set; } = new List<TweetViewModel>();
+        private List<TweetViewModel>? Tweets { get; set; }
 
         private CancellationTokenSource? WorkerCancellationTokenSource { get; set; } = null;
 
@@ -106,6 +106,10 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
         private async Task SaveTimelineToLocalStorageAsync()
         {
+            if (Tweets == null)
+            {
+                return;
+            }
             var id = (await AuthenticationState!).User.Claims.FirstOrDefault(c => c.Type == nameof(ResponseTwiHighUserContext.Id))?.Value ?? string.Empty;
             var key = string.Format(LOCAL_STORAGE_KEY_TWEETS, id);
             await LocalStorageService.SetItemAsync(key, Tweets.Take(LOCAL_CACHE_MAXIMUM_SIZE).ToArray());
@@ -175,6 +179,11 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
         private async Task OnClickGetGapTweets(TweetViewModel tweet)
         {
+            if (Tweets == null)
+            {
+                SetWarnMessage("タイムラインがありません。");
+                return;
+            }
             await GetTweetsAndMergeAsync(tweet.Since, tweet.Until);
             Tweets.Remove(tweet);
             await SaveTimelineToLocalStorageAsync();
@@ -226,7 +235,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
         private async void MarkAsReadedTweet(object? sender, string[] ids)
         {
-            if (IsProcessingMarkAsReaded)
+            if (IsProcessingMarkAsReaded || Tweets == null)
             {
                 return;
             }
