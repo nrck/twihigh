@@ -58,7 +58,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
             IsLoginWorking = false;
             await ((TwiHighAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsAuthenticatedAsync(res?.Token ?? string.Empty);
             SetInfoMessage("ログインしました。");
-            Navigation.NavigateTo(DefinePaths.PAGE_PATH_HOME);
+            Navigation.NavigateTo(DefinePaths.PAGE_PATH_HOME, false, true);
             return;
         }
     }

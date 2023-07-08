@@ -10,6 +10,7 @@
                 var isAuthenticated = (await AuthenticationState).User.Identity?.IsAuthenticated ?? false;
                 if (isAuthenticated)
                 {
+                    await ((TwiHighAuthenticationStateProvider)AuthenticationStateProvider).RefreshAuthenticationStateAsync();
                     Navigation.NavigateTo(DefinePaths.PAGE_PATH_HOME, false, true);
                     return;
                 }
