@@ -26,6 +26,7 @@ namespace PheasantTails.TwiHigh.Functions.Core.Services
             // クリッピング領域で新しい画像を作成
             originImage.ExtractSubset(newImage, rect);
 
+            // 400x400にリサイズ
             var data = newImage.Resize(new SKSizeI(400, 400), SKFilterQuality.High)
                 .Encode(format, 80).ToArray();
 
