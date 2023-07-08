@@ -60,12 +60,12 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
             if (1 * 1024 * 1024 < file.Size)
             {
-                SetWarnMessage("画像の最大サイズは1MBです。リサイズするなど、ファイルサイズを小さくしてください。");
+                SetWarnMessage("画像の最大サイズは5MBです。リサイズするなど、ファイルサイズを小さくしてください。");
                 return;
             }
             LocalRowAvatarData = new byte[file.Size];
             LocalRowAvatarContentType = file.ContentType;
-            var stream = file.OpenReadStream(1 * 1024 * 1024);
+            var stream = file.OpenReadStream(5 * 1024 * 1024);
             await stream.ReadAsync(LocalRowAvatarData);
 
             var base64string = Convert.ToBase64String(LocalRowAvatarData);
