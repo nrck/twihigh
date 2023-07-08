@@ -24,7 +24,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
         private string Title { get; set; } = "プロフィール読み込み中";
 
-        private List<TweetViewModel> Tweets { get; set; } = new List<TweetViewModel>();
+        private List<TweetViewModel>? Tweets { get; set; }
 
         private Guid MyTwiHithUserId { get; set; }
 
@@ -42,6 +42,9 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
         protected override async Task OnParametersSetAsync()
         {
+            User = null;
+            Tweets = null;
+
             User = await AppUserHttpClient.GetTwiHighUserAsync(Id);
             if (User == null)
             {

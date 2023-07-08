@@ -15,7 +15,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
         [Parameter]
         public string TweetId { get; set; }
 
-        private List<TweetViewModel> Tweets { get; set; } = new List<TweetViewModel>();
+        private List<TweetViewModel>? Tweets { get; set; }
 
         private string Title { get; set; } = "ツイートを読込中";
 
@@ -33,6 +33,10 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
         protected override async Task OnParametersSetAsync()
         {
+            // ツイートページ内で他のツイートが選択されたときのための初期化
+            Title = "ツイートを読込中";
+            Tweets = null;
+
             await base.OnParametersSetAsync();
             if (!Guid.TryParse(TweetId, out var tweetId))
             {
@@ -111,7 +115,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
             {
                 SetSucessMessage("ツイートを送信しました！");
                 var tweet = await res.Content.ReadFromJsonAsync<Tweet>();
-                if (tweet != null)
+                if (tweet != null && Tweets != null)
                 {
                     var viewModel = new TweetViewModel(tweet);
                     Tweets.Add(viewModel);
