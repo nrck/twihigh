@@ -26,32 +26,31 @@ namespace PheasantTails.TwiHigh.Client
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            var savedToken = await _localStorage.GetItemAsStringAsync(LOCAL_STORAGE_NAME_JWT);
+            var token = await _localStorage.GetItemAsStringAsync(LOCAL_STORAGE_NAME_JWT);
 
             // tokenが無い
-            if (string.IsNullOrWhiteSpace(savedToken))
+            if (string.IsNullOrWhiteSpace(token))
             {
                 return DefaultAuthenticationState;
             }
 
             // 有効期限の確認
-            var exp = GetUtcExpiryFromJwt(savedToken);
+            var exp = GetUtcExpiryFromJwt(token);
             if (exp.HasValue && exp.Value <= DateTime.UtcNow.AddDays(1))
             {
-                var newTokenRes = await _httpClient.RefreshAsync(savedToken);
-                if (string.IsNullOrEmpty(newTokenRes?.Token))
+                token = await GetRefreshedTokenAsync();
+                if (string.IsNullOrEmpty(token))
                 {
                     await _localStorage.RemoveItemAsync(LOCAL_STORAGE_NAME_JWT);
                     return DefaultAuthenticationState;
                 }
                 else
                 {
-                    await _localStorage.SetItemAsync(LOCAL_STORAGE_NAME_JWT, newTokenRes.Token);
-                    savedToken = newTokenRes.Token;
+                    await _localStorage.SetItemAsync(LOCAL_STORAGE_NAME_JWT, token);
                 }
             }
 
-            return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(ParseClaimsFromJwt(savedToken), "apiauth")));
+            return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(ParseClaimsFromJwt(token), "apiauth")));
         }
 
         public async Task MarkUserAsAuthenticatedAsync(string token)
@@ -60,6 +59,19 @@ namespace PheasantTails.TwiHigh.Client
             var authenticatedUser = new ClaimsPrincipal(new ClaimsIdentity(ParseClaimsFromJwt(token), "apiauth"));
             var authState = Task.FromResult(new AuthenticationState(authenticatedUser));
             NotifyAuthenticationStateChanged(authState);
+        }
+
+        public async Task RefreshAuthenticationStateAsync()
+        {
+            var token = await GetRefreshedTokenAsync();
+            if (string.IsNullOrEmpty(token))
+            {
+                await MarkUserAsLoggedOutAsync();
+            }
+            else
+            {
+                await MarkUserAsAuthenticatedAsync(token);
+            }
         }
 
         public async Task MarkUserAsLoggedOutAsync()
@@ -85,6 +97,23 @@ namespace PheasantTails.TwiHigh.Client
             }
 
             return null;
+        }
+
+        private async Task<string> GetRefreshedTokenAsync()
+        {
+            var savedToken = await _localStorage.GetItemAsStringAsync(LOCAL_STORAGE_NAME_JWT);
+
+            // tokenが無い
+            if (string.IsNullOrWhiteSpace(savedToken))
+            {
+                return string.Empty;
+            }
+
+            // Refreshトークンの取得
+            _httpClient.SetToken(savedToken);
+            var newTokenRes = await _httpClient.RefreshAsync();
+
+            return newTokenRes?.Token ?? string.Empty;
         }
     }
 }
