@@ -28,7 +28,11 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
         public override async ValueTask DisposeAsync()
         {
-            WorkerCancellationTokenSource?.Cancel();
+            if (WorkerCancellationTokenSource != null)
+            {
+                WorkerCancellationTokenSource.Cancel();
+                WorkerCancellationTokenSource.Dispose();
+            }
             ScrollInfoService.OnScroll -= MarkAsReadedTweet;
             await ScrollInfoService.Disable();
             await base.DisposeAsync();
@@ -62,8 +66,12 @@ namespace PheasantTails.TwiHigh.Client.Pages
                 since = Tweets.Max(tweet => tweet.UpdateAt);
             }
             var until = DateTimeOffset.MaxValue;
-            while (!cancellationToken.IsCancellationRequested)
+            while (true)
             {
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    break;
+                }
                 await GetTweetsAndMergeAsync(since, until);
                 if (Tweets != null && Tweets.Any())
                 {
@@ -75,6 +83,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
                 }
                 await Task.Delay(5000, cancellationToken);
             }
+            Logger.LogInformation("Timeline polling canceled");
         }
 
         private async Task<string> GetMyAvatarUrlAsync()
