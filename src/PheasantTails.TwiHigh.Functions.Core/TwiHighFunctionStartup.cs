@@ -50,14 +50,14 @@ namespace PheasantTails.TwiHigh.Functions.Core
 
             builder.Services.AddSingleton((s) =>
             {
-                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSecurityKey"]));
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT_SECURITY_KEY"]));
                 var tokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
-                    ValidIssuer = configuration["JwtIssuer"],
+                    ValidIssuer = configuration["JWT_ISSUER"],
 
                     ValidateAudience = true,
-                    ValidAudience = configuration["JwtAudience"],
+                    ValidAudience = configuration["JWT_AUDIENCE"],
 
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.Zero,

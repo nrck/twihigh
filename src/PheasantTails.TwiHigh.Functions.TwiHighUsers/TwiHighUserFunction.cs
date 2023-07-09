@@ -293,14 +293,14 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
         private JwtSecurityToken GenerateJwt(IEnumerable<Claim> claims = null)
         {
             // JWTÇÃå≥ÉlÉ^
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSecurityKey"]));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT_SECURITY_KEY"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expiry = DateTime.UtcNow.AddDays(Convert.ToInt32(_configuration["JwtExpiryInDays"]));
+            var expiry = DateTime.UtcNow.AddDays(Convert.ToInt32(_configuration["JWT_EXPIRY_IN_DAYS"]));
 
             // JWTÇÃçÏê¨
             var token = new JwtSecurityToken(
-                _configuration["JwtIssuer"],
-                _configuration["JwtAudience"],
+                _configuration["JWT_ISSUER"],
+                _configuration["JWT_AUDIENCE"],
                 claims,
                 expires: expiry,
                 signingCredentials: creds
