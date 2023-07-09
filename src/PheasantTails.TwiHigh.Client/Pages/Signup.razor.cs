@@ -12,39 +12,59 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
         private bool IsWorking { get; set; } = false;
 
-        private string ErrorMessage { get; set; } = string.Empty;
-
         private async Task OnClickSignupButtonAsync(MouseEventArgs _)
         {
             if (IsWorking)
             {
                 return;
             }
-
-            ErrorMessage = string.Empty;
             IsWorking = true;
 
-            // 暫定的にIDをメール名で取る
-            Context.DisplayId = Context.Email.Split('@').FirstOrDefault() ?? string.Empty;
+            Context.DisplayName = Context.DisplayId;
 
             // バリデーションの実施
             var result = Validator.Validate(Context);
             if (!result.IsValid)
             {
-                ErrorMessage = result.Errors.FirstOrDefault()?.ErrorMessage ?? "入力項目を見直してください。";
+                SetErrorMessage(result.Errors.FirstOrDefault()?.ErrorMessage ?? "入力項目を見直してください。");
                 IsWorking = false;
                 return;
             }
             var response = await AppUserHttpClient.SignUpAsync(Context);
-
-            if(string.IsNullOrEmpty(response?.Token))
+            if (response.StatusCode == System.Net.HttpStatusCode.Conflict)
             {
-                ErrorMessage = "ペンギンが参加の邪魔をしたようです！";
+                SetErrorMessage($"すでに @{Context.DisplayId} は使用されているようです。他のアカウントIDを使用してください。");
+                IsWorking = false;
+                return;
+            }
+            else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            {
+                SetErrorMessage($"アカウントIDは必ず入力する必要があります。");
+                IsWorking = false;
+                return;
+            }
+            else if (!response.IsSuccessStatusCode)
+            {
+                SetErrorMessage($"申し訳ありません。サーバーでエラーが発生しました。({response.StatusCode})");
                 IsWorking = false;
                 return;
             }
 
-            await ((TwiHighAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsAuthenticatedAsync(response.Token);
+            var loginContext = new PostAuthorizationContext
+            {
+                DisplayId = Context.DisplayId,
+                PlanePassword = Context.Password
+            };
+
+            var loginResponse = await AppUserHttpClient.LoginAsync(loginContext);
+            if (loginResponse == null || string.IsNullOrEmpty(loginResponse.Token))
+            {
+                SetErrorMessage($"ログインに失敗しました。");
+                IsWorking = false;
+                return;
+            }
+
+            await ((TwiHighAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsAuthenticatedAsync(loginResponse.Token);
             IsWorking = false;
             Navigation.NavigateTo(DefinePaths.PAGE_PATH_HOME);
         }
