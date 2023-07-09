@@ -15,7 +15,13 @@
 </head>
 
 <body>
-    <div id="app">Loading...</div>
+    <div id="app">
+        <div class="loader-wrapper show" style="height: 100vh;">
+            <div class="loader-content">
+                <div class="loader">Loading...</div>
+            </div>
+        </div>
+    </div>
 
     <div id="blazor-error-ui">
         うちのペンギンがまたやらかしたようです！
@@ -62,6 +68,7 @@
         }
     </script>
     <script>
+        
         if (window.location.hostname.includes("dev")
             || window.location.hostname.includes("092c09b00")) {
             Blazor.start({
