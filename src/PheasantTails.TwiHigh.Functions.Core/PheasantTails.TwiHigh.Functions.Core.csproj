@@ -10,5 +10,6 @@
 		<PackageReference Include="Microsoft.Azure.Cosmos" Version="3.32.0" />
 		<PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.1.0" />
 		<PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.4-preview.84" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.26.1" />
 	</ItemGroup>
 </Project>

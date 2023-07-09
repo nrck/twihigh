@@ -4,6 +4,7 @@ using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using PheasantTails.TwiHigh.Data.Model.Followers;
 using PheasantTails.TwiHigh.Data.Model.Queues;
 using PheasantTails.TwiHigh.Data.Model.Timelines;
@@ -23,18 +24,20 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
     {
         private readonly ILogger<TimelineFunction> _logger;
         private readonly CosmosClient _client;
+        private readonly TokenValidationParameters _tokenValidationParameters;
 
-        public TimelineFunction(CosmosClient client, ILogger<TimelineFunction> log)
+        public TimelineFunction(CosmosClient client, ILogger<TimelineFunction> log, TokenValidationParameters tokenValidationParameters)
         {
             _logger = log;
             _client = client;
+            _tokenValidationParameters = tokenValidationParameters;
         }
 
         [FunctionName("GetMyTimeline")]
         public async Task<IActionResult> GetMyTimelineAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "Get", Route = null)] HttpRequest req)
         {
-            if (!req.TryGetUserId(out var id))
+            if (!req.TryGetUserId(_tokenValidationParameters, out var id))
             {
                 return new UnauthorizedResult();
             }
@@ -77,7 +80,7 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
         public async Task<IActionResult> GetMyTimelineV2Async(
             [HttpTrigger(AuthorizationLevel.Anonymous, "Get", Route = "timeline")] HttpRequest req)
         {
-            if (!req.TryGetUserId(out var id))
+            if (!req.TryGetUserId(_tokenValidationParameters, out var id))
             {
                 return new UnauthorizedResult();
             }

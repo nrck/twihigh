@@ -4,6 +4,7 @@ using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using PheasantTails.TwiHigh.Data.Model.Followers;
 using PheasantTails.TwiHigh.Data.Store.Entity;
 using PheasantTails.TwiHigh.Functions.Core;
@@ -20,11 +21,13 @@ namespace PheasantTails.TwiHigh.Functions.Follows
     {
         private readonly ILogger<FollowFunction> _logger;
         private readonly CosmosClient _client;
+        private readonly TokenValidationParameters _tokenValidationParameters;
 
-        public FollowFunction(CosmosClient client, ILogger<FollowFunction> log)
+        public FollowFunction(CosmosClient client, ILogger<FollowFunction> log, TokenValidationParameters tokenValidationParameters)
         {
             _logger = log;
             _client = client;
+            _tokenValidationParameters = tokenValidationParameters;
         }
 
         [FunctionName("AddFollow")]
@@ -32,7 +35,7 @@ namespace PheasantTails.TwiHigh.Functions.Follows
             [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "{followeeUserId}")] HttpRequest req,
             string followeeUserId)
         {
-            if (!req.TryGetUserId(out var followerUserId))
+            if (!req.TryGetUserId(_tokenValidationParameters, out var followerUserId))
             {
                 return new UnauthorizedResult();
             }
@@ -69,7 +72,7 @@ namespace PheasantTails.TwiHigh.Functions.Follows
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "{followeeUserId}")] HttpRequest req,
             string followeeUserId)
         {
-            if (!req.TryGetUserId(out var followerUserId))
+            if (!req.TryGetUserId(_tokenValidationParameters, out var followerUserId))
             {
                 return new UnauthorizedResult();
             }

@@ -4,6 +4,7 @@ using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using PheasantTails.TwiHigh.Data.Model;
 using PheasantTails.TwiHigh.Data.Model.Queues;
 using PheasantTails.TwiHigh.Data.Model.Timelines;
@@ -21,11 +22,13 @@ namespace PheasantTails.TwiHigh.Functions.Tweets
     {
         private readonly ILogger<TweetFunction> _logger;
         private readonly CosmosClient _client;
+        private readonly TokenValidationParameters _tokenValidationParameters;
 
-        public TweetFunction(CosmosClient client, ILogger<TweetFunction> log)
+        public TweetFunction(CosmosClient client, ILogger<TweetFunction> log, TokenValidationParameters tokenValidationParameters)
         {
             _logger = log;
             _client = client;
+            _tokenValidationParameters = tokenValidationParameters;
         }
 
         [FunctionName("PostTweet")]
@@ -36,7 +39,7 @@ namespace PheasantTails.TwiHigh.Functions.Tweets
             {
                 _logger.LogInformation("Tweet投稿処理を開始します。");
 
-                if (!req.TryGetUserId(out var id))
+                if (!req.TryGetUserId(_tokenValidationParameters, out var id))
                 {
                     _logger.LogWarning("ユーザIDを取得できませんでした。");
                     return new UnauthorizedResult();
@@ -108,7 +111,7 @@ namespace PheasantTails.TwiHigh.Functions.Tweets
         {
             try
             {
-                if (!req.TryGetUserId(out var userId))
+                if (!req.TryGetUserId(_tokenValidationParameters, out var userId))
                 {
                     _logger.LogWarning("ユーザIDを取得できませんでした。");
                     return new UnauthorizedResult();
