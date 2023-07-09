@@ -19,6 +19,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
         private string Biography { get; set; } = string.Empty;
         private byte[] LocalRowAvatarData { get; set; } = Array.Empty<byte>();
         private string LocalRowAvatarContentType { get; set; } = string.Empty;
+        private bool IsWorking { get; set; } = false;
 
         protected override async Task OnInitializedAsync()
         {
@@ -76,7 +77,18 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
         private async Task OnClickSaveButtonAsync()
         {
-            AdjustPatchContext();
+            if (IsWorking)
+            {
+                return;
+            }
+
+            IsWorking = true;
+            if (!AdjustPatchContext())
+            {
+                IsWorking = false;
+                SetInfoMessage("プロフィールを変更してから保存するボタンを押してください。");
+                return;
+            }
             // 送信する
             var tmp = await AppUserHttpClient.PatchTwiHighUserAsync(PatchContext);
             if (tmp == null)
@@ -91,26 +103,35 @@ namespace PheasantTails.TwiHigh.Client.Pages
                 SetDisplayVariables();
             }
             StateHasChanged();
+            IsWorking = false;
         }
 
-        private void AdjustPatchContext()
+        private bool AdjustPatchContext()
         {
+            var isChanged = false;
+            PatchContext = new PatchTwiHighUserContext();
             if (DisplayName != User?.DisplayName)
             {
                 PatchContext.DisplayName = DisplayName;
+                isChanged = true;
             }
             if (DisplayId != User?.DisplayId)
             {
                 PatchContext.DisplayId = DisplayId;
+                isChanged = true;
             }
             if (Biography != User?.Biography)
             {
                 PatchContext.Biography = Biography;
+                isChanged = true;
             }
             if (0 < LocalRowAvatarData.LongLength && !string.IsNullOrEmpty(LocalRowAvatarContentType))
             {
                 PatchContext.EncodeAvaterImage(LocalRowAvatarContentType, LocalRowAvatarData);
+                isChanged = true;
             }
+
+            return isChanged;
         }
 
         private void OnClickAvatarResetButton()
