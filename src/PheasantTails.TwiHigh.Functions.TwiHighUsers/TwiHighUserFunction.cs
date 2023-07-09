@@ -31,18 +31,21 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
         private readonly IConfiguration _configuration;
         private readonly IAzureBlobStorageService _azureBlobStorageService;
         private readonly IImageProcesserService _imageProcesserService;
+        private readonly TokenValidationParameters _tokenValidationParameters;
 
         public TwiHighUserFunction(CosmosClient client,
             IConfiguration configuration,
             ILogger<TwiHighUserFunction> log,
             IAzureBlobStorageService azureBlobStorageService,
-            IImageProcesserService imageProcesserService)
+            IImageProcesserService imageProcesserService,
+            TokenValidationParameters tokenValidationParameters)
         {
             _logger = log;
             _client = client;
             _configuration = configuration;
             _azureBlobStorageService = azureBlobStorageService;
             _imageProcesserService = imageProcesserService;
+            _tokenValidationParameters = tokenValidationParameters;
         }
 
         [FunctionName("SignUp")]
@@ -201,7 +204,7 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
         public async Task<IActionResult> RefreshAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req)
         {
-            if (!req.TryGetUserId(out var id))
+            if (!req.TryGetUserId(_tokenValidationParameters, out var id))
             {
                 return new UnauthorizedResult();
             }
@@ -230,7 +233,7 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
         {
             try
             {
-                if (!req.TryGetUserId(out var id))
+                if (!req.TryGetUserId(_tokenValidationParameters, out var id))
                 {
                     return new UnauthorizedResult();
                 }

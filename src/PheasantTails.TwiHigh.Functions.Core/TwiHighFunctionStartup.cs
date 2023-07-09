@@ -3,6 +3,7 @@ using Microsoft.Azure.Cosmos.Fluent;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 
 namespace PheasantTails.TwiHigh.Functions.Core
 {
@@ -44,6 +45,23 @@ namespace PheasantTails.TwiHigh.Functions.Core
                         .WithSerializerOptions(new CosmosSerializationOptions { PropertyNamingPolicy = CosmosPropertyNamingPolicy.CamelCase })
                         .WithBulkExecution(true)
                         .Build();
+            });
+
+            builder.Services.AddSingleton(() =>
+            {
+                var tokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = configuration["JwtIssuer"],
+
+                    ValidateAudience = true,
+                    ValidAudience = configuration["JwtAudience"],
+
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
+                };
+
+                return tokenValidationParameters;
             });
         }
     }
