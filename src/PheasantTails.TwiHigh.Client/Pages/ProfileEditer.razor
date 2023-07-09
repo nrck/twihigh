@@ -18,7 +18,7 @@ else
         <div class="profile-header">
             @* アイコン *@
             <div class="file-input-button">
-                <img src="@AvatarUrl" />
+                <img src="@AvatarUrl" loading="lazy" />
                 <InputFile id="avatar-data" style="display: none;" OnChange="LoadFiles" accept="image/png, image/jpeg" />
                 @if (0 < LocalRowAvatarData.LongLength)
                 {
