@@ -59,7 +59,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
                 return;
             }
 
-            if (1 * 1024 * 1024 < file.Size)
+            if (5 * 1024 * 1024 < file.Size)
             {
                 SetWarnMessage("画像の最大サイズは5MBです。リサイズするなど、ファイルサイズを小さくしてください。");
                 return;
