@@ -4,6 +4,7 @@ using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace PheasantTails.TwiHigh.Functions.Core
 {
@@ -47,8 +48,9 @@ namespace PheasantTails.TwiHigh.Functions.Core
                         .Build();
             });
 
-            builder.Services.AddSingleton(() =>
+            builder.Services.AddSingleton((s) =>
             {
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSecurityKey"]));
                 var tokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
@@ -58,7 +60,9 @@ namespace PheasantTails.TwiHigh.Functions.Core
                     ValidAudience = configuration["JwtAudience"],
 
                     ValidateLifetime = true,
-                    ClockSkew = TimeSpan.Zero
+                    ClockSkew = TimeSpan.Zero,
+
+                    IssuerSigningKey = key
                 };
 
                 return tokenValidationParameters;
