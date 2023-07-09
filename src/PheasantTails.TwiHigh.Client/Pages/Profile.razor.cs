@@ -12,7 +12,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
     public partial class Profile : PageBase
     {
         [Parameter]
-        public string Id { get; set; } = string.Empty;
+        public string? Id { get; set; }
 
         private ResponseTwiHighUserContext? User { get; set; }
 
@@ -45,15 +45,29 @@ namespace PheasantTails.TwiHigh.Client.Pages
             User = null;
             Tweets = null;
 
+            // ID指定なしでログインユーザーのプロフィールページへ遷移
+            if (string.IsNullOrEmpty(Id))
+            {
+                Navigation.NavigateTo(string.Format(DefinePaths.PAGE_PATH_PROFILE, MyTwiHithUserId), false, true);
+                return;
+            }
+
             User = await AppUserHttpClient.GetTwiHighUserAsync(Id);
             if (User == null)
             {
                 Title = "プロフィールを読み込めませんでした。";
             }
+            else if (User.DisplayId != Id)
+            {
+                // GuidからDisplayIdのページへ遷移
+                Navigation.NavigateTo(string.Format(DefinePaths.PAGE_PATH_PROFILE, User.DisplayId), false, true);
+                return;
+            }
             else
             {
                 Title = $"{User.DisplayName}（@{User.DisplayId}）";
             }
+
             StateHasChanged();
             if (User != null)
             {
@@ -64,6 +78,10 @@ namespace PheasantTails.TwiHigh.Client.Pages
                     Tweets = tweets!.Select(t => new TweetViewModel(t) { IsReaded = true })
                         .OrderByDescending(t => t.CreateAt)
                         .ToList();
+                }
+                else
+                {
+                    Tweets = new List<TweetViewModel>();
                 }
             }
             await SetFollowButtonAsync();
