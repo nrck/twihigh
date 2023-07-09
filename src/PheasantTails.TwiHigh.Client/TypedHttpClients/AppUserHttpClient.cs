@@ -67,24 +67,9 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
             }
         }
 
-        public async Task<ResponseJwtContext?> SignUpAsync(AddTwiHighUserContext context)
+        public Task<HttpResponseMessage> SignUpAsync(AddTwiHighUserContext context)
         {
-            try
-            {
-                var res = await _httpClient.PostAsJsonAsync(_apiUrlSignin, context);
-                res.EnsureSuccessStatusCode();
-                var login = new PostAuthorizationContext
-                {
-                    DisplayId = context.DisplayId,
-                    PlanePassword = context.Password
-                };
-
-                return await LoginAsync(login);
-            }
-            catch (Exception)
-            {
-                return await Task.FromResult<ResponseJwtContext?>(new ResponseJwtContext { Token = string.Empty });
-            }
+            return _httpClient.PostAsJsonAsync(_apiUrlSignin, context);
         }
 
         public async Task<ResponseTwiHighUserContext?> GetTwiHighUserAsync(string id)

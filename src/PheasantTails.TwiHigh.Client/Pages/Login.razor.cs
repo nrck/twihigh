@@ -8,8 +8,6 @@ namespace PheasantTails.TwiHigh.Client.Pages
     {
         private PostAuthorizationContext PostAuthorizationContext { get; set; } = new PostAuthorizationContext();
 
-        private string ErrorMessage { get; set; } = string.Empty;
-
         private bool IsLoginWorking { get; set; } = false;
 
         protected override async Task OnInitializedAsync()
@@ -28,7 +26,6 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
         private async Task OnClickLoginButtonAsync(MouseEventArgs _)
         {
-            ErrorMessage = string.Empty;
             if (IsLoginWorking == true)
             {
                 return;
@@ -37,13 +34,13 @@ namespace PheasantTails.TwiHigh.Client.Pages
             IsLoginWorking = true;
             if (string.IsNullOrEmpty(PostAuthorizationContext.DisplayId))
             {
-                ErrorMessage = "ユーザ名を入力してください。";
+                SetErrorMessage("ユーザ名を入力してください。");
                 IsLoginWorking = false;
                 return;
             }
             if (string.IsNullOrEmpty(PostAuthorizationContext.PlanePassword))
             {
-                ErrorMessage = "パスワードを入力してください。";
+                SetErrorMessage("パスワードを入力してください。");
                 IsLoginWorking = false;
                 return;
             }
@@ -51,7 +48,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
             var res = await AppUserHttpClient.LoginAsync(PostAuthorizationContext);
             if (string.IsNullOrEmpty(res?.Token))
             {
-                ErrorMessage = "ログインできませんでした。ユーザ名とパスワードを確認してください。";
+                SetErrorMessage("ログインできませんでした。ユーザ名とパスワードを確認してください。");
                 IsLoginWorking = false;
                 return;
             }

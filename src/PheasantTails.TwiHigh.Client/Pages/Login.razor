@@ -6,9 +6,9 @@
 <PageTitle>ログイン - ツイハイ！</PageTitle>
 <section>
     <div class="login-form">
-        <h2>TwiHighにログイン</h2>
+        <h2>ツイハイにログイン</h2>
         <div class="login-form-group">
-            <label for="user-display-id" class="login-form-user-display-id-label">ユーザ名</label>
+            <label for="user-display-id" class="login-form-user-display-id-label">アカウントID</label>
             <input type="text" name="user-display-id" class="login-form-user-display-id-input" @bind-value=PostAuthorizationContext.DisplayId />
         </div>
         <div class="login-form-group">
@@ -31,11 +31,5 @@
                 }
             </button>
         </div>
-        @if (!string.IsNullOrEmpty(ErrorMessage))
-        {
-            <div class="login-form-group">
-                <span class="error-message">@ErrorMessage</span>
-            </div>
-        }
     </div>
 </section>
