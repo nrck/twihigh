@@ -44,6 +44,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
         {
             User = null;
             Tweets = null;
+            IsMyTwiHighUser = false;
 
             // ID指定なしでログインユーザーのプロフィールページへ遷移
             if (string.IsNullOrEmpty(Id))
@@ -67,8 +68,6 @@ namespace PheasantTails.TwiHigh.Client.Pages
             {
                 Title = $"{User.DisplayName}（@{User.DisplayId}）";
             }
-
-            StateHasChanged();
             if (User != null)
             {
                 var res = await TweetHttpClient.GetUserTweetsAsync(User.Id);
