@@ -1,6 +1,6 @@
 {
-  "name": "TwiHigh - ツイハイ！",
-  "short_name": "TwiHigh",
+  "name": "ツイハイ！",
+  "short_name": "ツイハイ！",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",
