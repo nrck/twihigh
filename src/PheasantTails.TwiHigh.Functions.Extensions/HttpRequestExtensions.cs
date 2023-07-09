@@ -31,11 +31,12 @@ namespace PheasantTails.TwiHigh.Functions.Extensions
 
         public static bool TryGetUserId(this HttpRequest request, TokenValidationParameters tokenValidationParameters, out string id)
         {
+            id = string.Empty;
+
             // Authorization ヘッダーの取得
             string authorizationHeader = request.Headers["Authorization"];
             if (string.IsNullOrEmpty(authorizationHeader))
             {
-                id = string.Empty;
                 return false;
             }
 
@@ -43,7 +44,15 @@ namespace PheasantTails.TwiHigh.Functions.Extensions
             var bearerToken = authorizationHeader.Replace("Bearer ", "");
             var handler = new JwtSecurityTokenHandler();
             var jwt = handler.ReadJwtToken(bearerToken);
-            handler.ValidateToken(bearerToken, tokenValidationParameters, out var _);
+            try
+            {
+                handler.ValidateToken(bearerToken, tokenValidationParameters, out var _);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
             id = jwt.Payload.Claims.FirstOrDefault(c => c.Type == "Id")?.Value ?? string.Empty;
             return !string.IsNullOrEmpty(id);
         }
