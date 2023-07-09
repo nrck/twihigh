@@ -53,7 +53,16 @@ else
             <textarea @bind=@Biography />
         </div>
         <div class="profile-save">
-            <button class="profile-save-button" @onclick=OnClickSaveButtonAsync>保存する</button>
+            <button class="profile-save-button" @onclick=OnClickSaveButtonAsync>
+                @if (IsWorking)
+                {
+                    @("更新中...")
+                }
+                else
+                {
+                    @("保存する")
+                }
+            </button>
         </div>
     </section>
 }
