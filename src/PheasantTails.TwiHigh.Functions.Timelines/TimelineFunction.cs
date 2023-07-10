@@ -281,7 +281,6 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
             }
         }
 
-
         [FunctionName("UpdateReplyToTimelinesTweetTrigger")]
         public async Task UpdateReplyToTimelinesTweetTriggerAsync([QueueTrigger(AZURE_STORAGE_UPDATE_REPLYTO_TIMELINES_TWEET_TRIGGER_QUEUE_NAME, Connection = QUEUE_STORAGE_CONNECTION_STRINGS_ENV_NAME)] string myQueueItem)
         {
@@ -292,6 +291,32 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
                 var patch = new[]
                 {
                     PatchOperation.Remove("/replyTo"),
+                    PatchOperation.Set("/updateAt", que.Tweet.UpdateAt)
+                };
+                await PatchTimelineAsync(que.Tweet.Id, patch);
+            }
+            catch (CosmosException ex)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        [FunctionName("UpdateUserInfoTriggeredTweetUpdated")]
+        public async Task UpdateUserInfoTriggeredTweetUpdatedAsync([QueueTrigger(AZURE_STORAGE_UPDATE_USER_INFO_IN_TIMELINE_QUEUE_NAME, Connection = QUEUE_STORAGE_CONNECTION_STRINGS_ENV_NAME)] string myQueueItem)
+        {
+            try
+            {
+                if (myQueueItem == null) return;
+                var que = JsonSerializer.Deserialize<UpdateTimelineQueue>(myQueueItem);
+                var patch = new[]
+                {
+                    PatchOperation.Set("/userDisplayId", que.Tweet.UserDisplayId),
+                    PatchOperation.Set("/userDisplayName", que.Tweet.UserDisplayName),
+                    PatchOperation.Set("/userAvatarUrl", que.Tweet.UserAvatarUrl),
                     PatchOperation.Set("/updateAt", que.Tweet.UpdateAt)
                 };
                 await PatchTimelineAsync(que.Tweet.Id, patch);
@@ -318,7 +343,7 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
 
             var iterator = timelines.GetItemQueryIterator<TimelineIdOwnerUserIdPair>(query);
 
-            var tasks = new List<Task>();
+            var tasks = new List<Task<ItemResponse<Timeline>>>();
             while (iterator.HasMoreResults)
             {
                 var result = await iterator.ReadNextAsync();
@@ -333,8 +358,11 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
                         );
                 }
             }
-
-            await Task.WhenAll(tasks);
+            var batchResult = await Task.WhenAll(tasks);
+            _logger.LogInformation("PatchTimelineAsync batch finish. RU:{0}, Task Count:{1}, Success:{2}",
+                batchResult.Sum(r => r.RequestCharge),
+                batchResult.LongLength,
+                batchResult.LongCount(r => 200 <= (int)r.StatusCode && (int)r.StatusCode < 300));
         }
 
         [FunctionName("DeleteTimelinesFollowTrigger")]
