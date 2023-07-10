@@ -7,8 +7,10 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using PheasantTails.TwiHigh.Data.Model.Queues;
 using PheasantTails.TwiHigh.Data.Model.TwiHighUsers;
 using PheasantTails.TwiHigh.Data.Store.Entity;
+using PheasantTails.TwiHigh.Functions.Core;
 using PheasantTails.TwiHigh.Functions.Core.Services;
 using PheasantTails.TwiHigh.Functions.Extensions;
 using SkiaSharp;
@@ -21,6 +23,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using static PheasantTails.TwiHigh.Functions.Core.StaticStrings;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
 {
@@ -266,6 +269,9 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
                 }
 
                 TwiHighUser result = await users.PatchItemAsync<TwiHighUser>(id, new PartitionKey(id), operations, requestOptions: new PatchItemRequestOptions { IfMatchEtag = user.ETag });
+                await QueueStorages.InsertMessageAsync(
+                        AZURE_STORAGE_UPDATE_USER_INFO_IN_TWEET_QUEUE_NAME,
+                        new UpdateUserQueue(result));
                 return new OkObjectResult(new ResponseTwiHighUserContext(result));
             }
             catch (Exception ex)
