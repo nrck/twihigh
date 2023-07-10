@@ -173,7 +173,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
             if (response != null && response.Tweets.Any())
             {
                 MergeTimeline(response.Tweets.Select(t => new TweetViewModel(t)).ToList());
-                if (response.Tweets.Length == 50)
+                if (response.Tweets.Length == 100)
                 {
                     var systemTweet = TweetViewModel.SystemTweet;
                     systemTweet.Id = Guid.NewGuid();
