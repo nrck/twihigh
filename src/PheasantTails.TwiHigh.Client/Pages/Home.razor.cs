@@ -122,10 +122,15 @@ namespace PheasantTails.TwiHigh.Client.Pages
                 Tweets = source;
                 return;
             }
+            // ローカルキャッシュの既読フラグをリスト化
+            var isReadedList = Tweets.Where(t => t.IsReaded).Select(t => t.Id).ToList();
 
+            // 新しいツイートとの重複を排除して新しいツイート側をタイムラインに取り込む
             Tweets = source.UnionBy(Tweets, keySelector: tweet => tweet.Id)
                 .OrderByDescending(tweet => tweet.CreateAt)
                 .ToList();
+
+            // 新しいタイムラインにリプライ先ID情報を設定し、削除済みのものを排除
             Tweets = Tweets.Where(tweet => tweet.ReplyTo.HasValue && string.IsNullOrEmpty(tweet.ReplyToUserDisplayId))
                 .Select(tweet =>
                 {
@@ -136,6 +141,12 @@ namespace PheasantTails.TwiHigh.Client.Pages
                 .Where(tweet => !tweet.IsDeleted)
                 .OrderByDescending(tweet => tweet.CreateAt)
                 .ToList();
+
+            // 既読フラグの復元
+            Tweets.ForEach(tweet =>
+            {
+                tweet.IsReaded = isReadedList.Contains(tweet.Id);
+            });
         }
 
         private async Task GetTweetsAndMergeAsync(DateTimeOffset since, DateTimeOffset until)
