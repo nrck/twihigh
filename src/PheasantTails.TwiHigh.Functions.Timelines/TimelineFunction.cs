@@ -101,7 +101,7 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
             var query = new QueryDefinition(
                 "SELECT TOP 50 * FROM c " +
                 "WHERE (@SinceDatetime < c.updateAt AND c.updateAt <= @UntilDatetime) " +
-                "OR (NOT IS_DEFINED(c.updateAt) AND (@SinceDatetime < c.createAt AND c.createAt <= @UntilDatetime))" +
+                "OR (NOT IS_DEFINED(c.updateAt) AND (@SinceDatetime < c.createAt AND c.createAt <= @UntilDatetime)) " +
                 "ORDER BY c.createAt DESC")
                 .WithParameter("@OwnerUserId", id)
                 .WithParameter("@SinceDatetime", sinceDatetime)
@@ -343,14 +343,14 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
 
             var iterator = timelines.GetItemQueryIterator<TimelineIdOwnerUserIdPair>(query);
 
-            var tasks = new List<Task<ItemResponse<Timeline>>>();
+            var tasks = new List<Task<ResponseMessage>>();
             while (iterator.HasMoreResults)
             {
                 var result = await iterator.ReadNextAsync();
-                foreach (var pair in result.Resource)
+                foreach (var pair in result)
                 {
                     tasks.Add(timelines
-                        .PatchItemAsync<Timeline>(
+                        .PatchItemStreamAsync(
                             id: pair.Id.ToString(),
                             partitionKey: new PartitionKey(pair.OwnerUserId.ToString()),
                             patchOperations: patch,
@@ -360,9 +360,9 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
             }
             var batchResult = await Task.WhenAll(tasks);
             _logger.LogInformation("PatchTimelineAsync batch finish. RU:{0}, Task Count:{1}, Success:{2}",
-                batchResult.Sum(r => r.RequestCharge),
+                batchResult.Sum(r => r.Headers.RequestCharge),
                 batchResult.LongLength,
-                batchResult.LongCount(r => 200 <= (int)r.StatusCode && (int)r.StatusCode < 300));
+                batchResult.LongCount(r => r.IsSuccessStatusCode));
         }
 
         [FunctionName("DeleteTimelinesFollowTrigger")]

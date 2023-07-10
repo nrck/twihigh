@@ -63,7 +63,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
             var since = DateTimeOffset.MinValue;
             if (Tweets != null && Tweets.Any())
             {
-                since = Tweets.Max(tweet => tweet.UpdateAt);
+                since = Tweets.Where(tweet => tweet.IsSystemTweet == false).Max(tweet => tweet.UpdateAt);
             }
             var until = DateTimeOffset.MaxValue;
             while (true)
@@ -75,7 +75,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
                 await GetTweetsAndMergeAsync(since, until);
                 if (Tweets != null && Tweets.Any())
                 {
-                    since = Tweets.Max(tweet => tweet.UpdateAt);
+                    since = Tweets.Where(tweet => tweet.IsSystemTweet == false).Max(tweet => tweet.UpdateAt);
                 }
                 else
                 {
@@ -167,8 +167,9 @@ namespace PheasantTails.TwiHigh.Client.Pages
                     var systemTweet = TweetViewModel.SystemTweet;
                     systemTweet.Id = Guid.NewGuid();
                     systemTweet.Since = DateTimeOffset.MinValue;
-                    systemTweet.Until = response.Oldest.AddTicks(-1);
+                    systemTweet.Until = response.Oldest;
                     systemTweet.CreateAt = response.Oldest.AddTicks(-1);
+                    systemTweet.UpdateAt = response.Oldest.AddTicks(-1);
                     var tmp = new List<TweetViewModel> { systemTweet };
                     MergeTimeline(tmp);
                 }
