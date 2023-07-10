@@ -1,18 +1,22 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos;
+using Microsoft.Azure.Cosmos.Serialization.HybridRow;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Linq;
 using PheasantTails.TwiHigh.Data.Model;
 using PheasantTails.TwiHigh.Data.Model.Queues;
 using PheasantTails.TwiHigh.Data.Model.Timelines;
 using PheasantTails.TwiHigh.Data.Store.Entity;
 using PheasantTails.TwiHigh.Functions.Core;
 using PheasantTails.TwiHigh.Functions.Extensions;
+using SkiaSharp;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using static PheasantTails.TwiHigh.Functions.Core.StaticStrings;
 
@@ -243,6 +247,64 @@ namespace PheasantTails.TwiHigh.Functions.Tweets
             }
             catch (Exception ex)
             {
+                throw;
+            }
+        }
+
+        [FunctionName("UpdateTweetByUpdatedUserInfoTrigger")]
+        public async Task UpdateTweetByUpdatedUserInfoTriggerAsync([QueueTrigger(AZURE_STORAGE_UPDATE_USER_INFO_IN_TWEET_QUEUE_NAME, Connection = QUEUE_STORAGE_CONNECTION_STRINGS_ENV_NAME)] string myQueueItem)
+        {
+            try
+            {
+                if (myQueueItem == null)
+                {
+                    return;
+                }
+
+                var user = JsonSerializer.Deserialize<UpdateUserQueue>(myQueueItem).TwiHighUser;
+                var patch = new[]
+                {
+                    PatchOperation.Set("/userDisplayId", user.DisplayId),
+                    PatchOperation.Set("/userDisplayName", user.DisplayName),
+                    PatchOperation.Set("/userAvatarUrl", user.AvatarUrl),
+                    PatchOperation.Set("/updateAt", user.UpdateAt)
+                };
+
+                var query = new QueryDefinition("SELECT VALUE c.id FROM c");
+                var tweets = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TWEET_CONTAINER_NAME);
+                var iterator = tweets.GetItemQueryIterator<Guid>(query, requestOptions: new QueryRequestOptions
+                {
+                    PartitionKey = new PartitionKey(user.Id.ToString())
+                });
+                var batch = tweets.CreateTransactionalBatch(new(user.Id.ToString()));
+                while (iterator.HasMoreResults)
+                {
+                    var response = await iterator.ReadNextAsync();
+                    foreach (var tweetId in response)
+                    {
+                        batch.PatchItem(tweetId.ToString(), patch);
+                    }
+                }
+                var batchResult = await batch.ExecuteAsync();
+                foreach (var result in batchResult)
+                {
+                    if (!result.IsSuccessStatusCode)
+                    {
+                        continue;
+                    }
+
+                    var tweet = await JsonSerializer.DeserializeAsync<Tweet>(result.ResourceStream);
+                    await QueueStorages.InsertMessageAsync(
+                        AZURE_STORAGE_UPDATE_USER_INFO_IN_TIMELINE_QUEUE_NAME,
+                        new UpdateTimelineQueue(tweet));
+                }
+
+                _logger.LogInformation("Batch finish. RU:{0}, Count:{1}", batchResult.RequestCharge, batchResult.Count);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                _logger.LogError(ex, ex.StackTrace);
                 throw;
             }
         }
