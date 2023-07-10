@@ -99,9 +99,9 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
 
             // ÉNÉGÉäÇÃçÏê¨
             var query = new QueryDefinition(
-                "SELECT TOP 50 * FROM c " +
+                "SELECT TOP 100 * FROM c " +
                 "WHERE (@SinceDatetime < c.updateAt AND c.updateAt <= @UntilDatetime) " +
-                "OR (NOT IS_DEFINED(c.updateAt) AND (@SinceDatetime < c.createAt AND c.createAt <= @UntilDatetime)) " +
+                "OR (@SinceDatetime < c.createAt AND c.createAt <= @UntilDatetime)) " +
                 "ORDER BY c.createAt DESC")
                 .WithParameter("@OwnerUserId", id)
                 .WithParameter("@SinceDatetime", sinceDatetime)
