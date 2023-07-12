@@ -16,6 +16,7 @@ using PheasantTails.TwiHigh.Functions.Extensions;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using static PheasantTails.TwiHigh.Functions.Core.StaticStrings;
@@ -267,7 +268,8 @@ namespace PheasantTails.TwiHigh.Functions.Tweets
                     PatchOperation.Set("/userDisplayId", user.DisplayId),
                     PatchOperation.Set("/userDisplayName", user.DisplayName),
                     PatchOperation.Set("/userAvatarUrl", user.AvatarUrl),
-                    PatchOperation.Set("/updateAt", user.UpdateAt)
+                    // あえてDateTimeOffset.UtcNowにしてる。タイムラインの更新時刻が同時刻であると。タイムライン取得時に50件を超過する。
+                    PatchOperation.Set("/updateAt", DateTimeOffset.UtcNow)
                 };
 
                 var query = new QueryDefinition("SELECT VALUE c.id FROM c");
@@ -276,30 +278,37 @@ namespace PheasantTails.TwiHigh.Functions.Tweets
                 {
                     PartitionKey = new PartitionKey(user.Id.ToString())
                 });
-                var batch = tweets.CreateTransactionalBatch(new(user.Id.ToString()));
+                var batchTasks = new List<Task<ItemResponse<Tweet>>>();
                 while (iterator.HasMoreResults)
                 {
                     var response = await iterator.ReadNextAsync();
                     foreach (var tweetId in response)
                     {
-                        batch.PatchItem(tweetId.ToString(), patch);
+                        patch[3] = PatchOperation.Set("/updateAt", DateTimeOffset.UtcNow);
+                        var task = tweets.PatchItemAsync<Tweet>(
+                            tweetId.ToString(),
+                            new PartitionKey(user.Id.ToString()),
+                            patch);
+                        batchTasks.Add(task);
                     }
                 }
-                var batchResult = await batch.ExecuteAsync();
+                var batchResult = await Task.WhenAll(batchTasks);
                 foreach (var result in batchResult)
                 {
-                    if (!result.IsSuccessStatusCode)
+                    if ((int)result.StatusCode < 200 || 300 <= (int)result.StatusCode)
                     {
                         continue;
                     }
 
-                    var tweet = await JsonSerializer.DeserializeAsync<Tweet>(result.ResourceStream);
                     await QueueStorages.InsertMessageAsync(
                         AZURE_STORAGE_UPDATE_USER_INFO_IN_TIMELINE_QUEUE_NAME,
-                        new UpdateTimelineQueue(tweet));
+                        new UpdateTimelineQueue(result));
                 }
 
-                _logger.LogInformation("Batch finish. RU:{0}, Count:{1}", batchResult.RequestCharge, batchResult.Count);
+                _logger.LogInformation("Batch finish. RU:{0}, Count:{1}, Success:{2}",
+                    batchResult.Sum(r => r.Headers.RequestCharge),
+                    batchResult.Length,
+                    batchResult.LongCount(r => 200 <= (int)r.StatusCode && (int)r.StatusCode < 300));
             }
             catch (Exception ex)
             {

@@ -267,11 +267,17 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
                 {
                     return new BadRequestObjectResult(patch);
                 }
+                operations.Add(PatchOperation.Set("/updateAt", DateTimeOffset.UtcNow));
 
                 TwiHighUser result = await users.PatchItemAsync<TwiHighUser>(id, new PartitionKey(id), operations, requestOptions: new PatchItemRequestOptions { IfMatchEtag = user.ETag });
-                await QueueStorages.InsertMessageAsync(
-                        AZURE_STORAGE_UPDATE_USER_INFO_IN_TWEET_QUEUE_NAME,
-                        new UpdateUserQueue(result));
+                
+                if (operations.Any(o => o.Path == "/displayId" || o.Path == "/displayName" || o.Path == "/avatarUrl"))
+                {
+                    // アカウントIDかアカウント名かアイコンの更新時のみタイムラインを更新する。
+                    await QueueStorages.InsertMessageAsync(
+                            AZURE_STORAGE_UPDATE_USER_INFO_IN_TWEET_QUEUE_NAME,
+                            new UpdateUserQueue(result));
+                }
                 return new OkObjectResult(new ResponseTwiHighUserContext(result));
             }
             catch (Exception ex)
