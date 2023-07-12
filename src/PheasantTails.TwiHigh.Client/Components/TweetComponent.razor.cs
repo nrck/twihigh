@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using PheasantTails.TwiHigh.Client.Pages;
 using PheasantTails.TwiHigh.Client.ViewModels;
 using PheasantTails.TwiHigh.Data.Model;
 
@@ -61,6 +62,9 @@ namespace PheasantTails.TwiHigh.Client.Components
         [Parameter]
         public bool IsMyTweet { get; set; }
 
+        [Inject]
+        private NavigationManager NavigationManager { get; set; }
+
         private bool IsOpendReplyPostForm { get; set; }
 
         private ReplyToContext? _replyToContext;
@@ -83,6 +87,12 @@ namespace PheasantTails.TwiHigh.Client.Components
 
         private string ArticleId => $"tweet-{Tweet?.Id}";
 
+        protected override void OnParametersSet()
+        {
+            IsOpendReplyPostForm = Tweet?.IsOpendReplyPostForm ?? false;
+            base.OnParametersSet();
+        }
+
         private Task OnClickAvatar(MouseEventArgs _) => OnClickProfile.InvokeAsync(Tweet);
 
         private Task OnClickUserDisplayName(MouseEventArgs _) => OnClickProfile.InvokeAsync(Tweet);
@@ -91,9 +101,15 @@ namespace PheasantTails.TwiHigh.Client.Components
 
         private Task OnClickDeleteButton(MouseEventArgs _) => OnClickDelete.InvokeAsync(Tweet);
 
-        private void OnClickReplyButton(MouseEventArgs _) => IsOpendReplyPostForm = true;
-
-        private void OnClickReplyPostCloseButton(MouseEventArgs _) => IsOpendReplyPostForm = false;
+        private void OnClickReplyButton(MouseEventArgs _)
+        {
+            if (Tweet == null)
+            {
+                return;
+            }
+            var url = string.Format(DefinePaths.PAGE_PATH_STATUS, Tweet.UserDisplayId, Tweet.Id);
+            NavigationManager.NavigateTo($"{url}/reply");
+        }
 
         private async Task OnClickPostTweet(PostTweetContext postTweet)
         {

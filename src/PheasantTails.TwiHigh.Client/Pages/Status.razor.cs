@@ -85,6 +85,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
                 if (tmp.Id == tweetId)
                 {
                     tmp.IsEmphasized = true;
+                    tmp.IsOpendReplyPostForm = Navigation.Uri.ToLower().EndsWith("reply");
                 }
                 return tmp;
             }).OrderBy(t => t.CreateAt).ToList();

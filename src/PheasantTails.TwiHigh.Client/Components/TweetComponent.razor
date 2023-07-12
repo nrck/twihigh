@@ -55,20 +55,10 @@
                 }
                 @if (!Tweet.IsDeleted)
                 {
-                    @if (IsOpendReplyPostForm)
-                    {
-                        <button class="link-button" @onclick=OnClickReplyPostCloseButton>
-                            <span class="icon oi oi-circle-x"></span>
-                            <span class="number">@Tweet.ReplyFrom.Length</span>
-                        </button>
-                    }
-                    else
-                    {
-                        <button class="link-button" @onclick=OnClickReplyButton>
-                            <span class="icon oi oi-comment-square"></span>
-                            <span class="number">@Tweet.ReplyFrom.Length</span>
-                        </button>
-                    }
+                    <button class="link-button" @onclick=OnClickReplyButton>
+                        <span class="icon oi oi-comment-square"></span>
+                        <span class="number">@Tweet.ReplyFrom.Length</span>
+                    </button>
                     @*
             <button class="link-button">
             <span class="icon oi oi-star"></span>
