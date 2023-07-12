@@ -89,6 +89,12 @@ namespace PheasantTails.TwiHigh.Client.Pages
                 }
                 return tmp;
             }).OrderBy(t => t.CreateAt).ToList();
+
+            if (Navigation.Uri.ToLower().EndsWith("reply"))
+            {
+                var url = string.Format(DefinePaths.PAGE_PATH_STATUS, UserDisplayId, TweetId);
+                Navigation.NavigateTo(url, false, true);
+            }
         }
 
         private async Task OnClickDeleteButtonAsync(TweetViewModel model)
@@ -133,6 +139,16 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
         private void OnClickProfile(TweetViewModel tweetViewModel) => Navigation.NavigateTo(string.Format(DefinePaths.PAGE_PATH_PROFILE, tweetViewModel.UserDisplayId));
 
-        private void OnClickDetail(TweetViewModel tweetViewModel) => Navigation.NavigateTo(string.Format(DefinePaths.PAGE_PATH_STATUS, tweetViewModel.UserDisplayId, tweetViewModel.Id));
+        private void OnClickDetail(TweetViewModel tweetViewModel)
+        {
+            if (tweetViewModel.UserDisplayId == UserDisplayId &&
+               tweetViewModel.Id.ToString() == TweetId)
+            {
+                // 同じページへの遷移はしない。
+                return;
+            }
+
+            Navigation.NavigateTo(string.Format(DefinePaths.PAGE_PATH_STATUS, tweetViewModel.UserDisplayId, tweetViewModel.Id));
+        }
     }
 }

@@ -107,6 +107,11 @@ namespace PheasantTails.TwiHigh.Client.Components
             {
                 return;
             }
+            if (Tweet.IsEmphasized)
+            {
+                IsOpendReplyPostForm = !IsOpendReplyPostForm;
+                return;
+            }
             var url = string.Format(DefinePaths.PAGE_PATH_STATUS, Tweet.UserDisplayId, Tweet.Id);
             NavigationManager.NavigateTo($"{url}/reply");
         }
