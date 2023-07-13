@@ -272,7 +272,7 @@ namespace PheasantTails.TwiHigh.Functions.Tweets
                     PatchOperation.Set("/updateAt", DateTimeOffset.UtcNow)
                 };
 
-                var query = new QueryDefinition("SELECT VALUE c.id FROM c");
+                var query = new QueryDefinition("SELECT VALUE c.id FROM c ORDER BY c.createAt DESC");
                 var tweets = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TWEET_CONTAINER_NAME);
                 var iterator = tweets.GetItemQueryIterator<Guid>(query, requestOptions: new QueryRequestOptions
                 {
