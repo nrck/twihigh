@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Linq;
+using Microsoft.Azure.Cosmos.Serialization.HybridRow;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
@@ -199,19 +200,47 @@ namespace PheasantTails.TwiHigh.Functions.Tweets
         {
             try
             {
-                // 対象のツイート＋遡りツイート5件の最大6件を取る
-                const int THREAD_MAX_LENGTH = 6;
+                // 遡りツイートを最大5件取る
+                const int THREAD_MAX_LENGTH = 5;
+                // リプライツイートを最大5件取る
+                const int REPLY_FROM_MAX_LENGTH = 5;
                 var tweets = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TWEET_CONTAINER_NAME);
                 var thread = new List<Tweet>();
-                Guid? id = tweetId;
 
+                // 対象のツイートを取得する
+                var iterator = tweets.GetItemLinqQueryable<Tweet>().Where(t => t.Id == tweetId && t.IsDeleted != true).ToFeedIterator();
+                var result = await iterator.ReadNextAsync();
+                var tweet = result.FirstOrDefault();
+                if (tweet == null)
+                {
+                    // ツイートが存在しないときは404でリターン
+                    return new NotFoundResult();
+                }
+                thread.Add(tweet);
+
+                // 対象のツイートへのリプライを取得する。
+                var replayFromIds = tweet.ReplyFrom.Length < REPLY_FROM_MAX_LENGTH ?
+                    tweet.ReplyFrom :
+                    tweet.ReplyFrom.Skip(tweet.ReplyFrom.Length - REPLY_FROM_MAX_LENGTH).ToArray();
+                iterator = tweets.GetItemLinqQueryable<Tweet>()
+                    .Where(t => replayFromIds.Contains(t.Id) && t.IsDeleted != true)
+                    .ToFeedIterator();
+                while (iterator.HasMoreResults)
+                {
+                    thread.AddRange(await iterator.ReadNextAsync());
+                }
+
+                // リプライ先を遡って取得する
+                Guid? id = tweet.ReplyTo;
                 while (id != null && thread.Count <= THREAD_MAX_LENGTH)
                 {
                     // tweets.GetItemLinqQueryable<Tweet>().FirstOrDefault(t => t.Id == id);
                     // 👆は多分未対応
-                    var iterator = tweets.GetItemLinqQueryable<Tweet>().Where(t => t.Id == id).ToFeedIterator();
-                    var result = await iterator.ReadNextAsync();
-                    var tweet = result.FirstOrDefault();
+                    iterator = tweets.GetItemLinqQueryable<Tweet>()
+                        .Where(t => t.Id == id && t.IsDeleted != true)
+                        .ToFeedIterator();
+                    result = await iterator.ReadNextAsync();
+                    tweet = result.FirstOrDefault();
 
                     if (tweet == null)
                     {
