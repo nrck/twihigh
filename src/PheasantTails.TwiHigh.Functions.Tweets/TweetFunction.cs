@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos;
+using Microsoft.Azure.Cosmos.Linq;
 using Microsoft.Azure.Cosmos.Serialization.HybridRow;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -52,6 +53,7 @@ namespace PheasantTails.TwiHigh.Functions.Tweets
 
                 var user = (await _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_USER_CONTAINER_NAME).ReadItemAsync<TwiHighUser>(id, new PartitionKey(id))).Resource;
                 var context = await req.JsonDeserializeAsync<PostTweetContext>();
+                var now = DateTimeOffset.UtcNow;
                 var tweet = new Tweet
                 {
                     Id = Guid.NewGuid(),
@@ -62,8 +64,8 @@ namespace PheasantTails.TwiHigh.Functions.Tweets
                     UserDisplayName = user.DisplayName,
                     UserAvatarUrl = user.AvatarUrl,
                     IsDeleted = false,
-                    UpdateAt = DateTimeOffset.UtcNow,
-                    CreateAt = DateTimeOffset.UtcNow
+                    UpdateAt = now,
+                    CreateAt = now
                 };
 
                 // ツイートの作成
@@ -157,7 +159,7 @@ namespace PheasantTails.TwiHigh.Functions.Tweets
 
         [FunctionName("GetTweetById")]
         public async Task<IActionResult> GetTweetByIdAsync(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "tweets/{tweetId}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "tweetsV2/{tweetId}")] HttpRequest req,
             Guid tweetId)
         {
             try
@@ -169,6 +171,41 @@ namespace PheasantTails.TwiHigh.Functions.Tweets
                     "AND c.isDeleted != true " +
                     "ORDER BY c.creatAt")
                     .WithParameter("@TweetId", tweetId);
+
+                var iterator = tweets.GetItemQueryIterator<Tweet>(query);
+
+                var tweet = new List<Tweet>();
+                while (iterator.HasMoreResults)
+                {
+                    var res = await iterator.ReadNextAsync();
+                    tweet.AddRange(res);
+                }
+                if (tweet.Count > 0)
+                {
+                    return new OkObjectResult(tweet);
+                }
+                else
+                {
+                    return new NotFoundResult();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        [FunctionName("GetTweetByIdV2")]
+        public async Task<IActionResult> GetTweetByIdV2Async(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "tweets/{tweetId}")] HttpRequest req,
+            Guid tweetId)
+        {
+            try
+            {
+                var tweets = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TWEET_CONTAINER_NAME);
+                var query = tweets.GetItemLinqQueryable<Tweet>()
+                    .Where(t => t.Id == tweetId || t.ReplyTo == tweetId)
+                    .ToQueryDefinition();
 
                 var iterator = tweets.GetItemQueryIterator<Tweet>(query);
 
