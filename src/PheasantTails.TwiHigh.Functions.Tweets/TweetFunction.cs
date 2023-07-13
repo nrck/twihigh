@@ -1,20 +1,17 @@
-using Microsoft.AspNetCore.Http;
+ï»¿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Linq;
-using Microsoft.Azure.Cosmos.Serialization.HybridRow;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json.Linq;
 using PheasantTails.TwiHigh.Data.Model;
 using PheasantTails.TwiHigh.Data.Model.Queues;
 using PheasantTails.TwiHigh.Data.Model.Timelines;
 using PheasantTails.TwiHigh.Data.Store.Entity;
 using PheasantTails.TwiHigh.Functions.Core;
 using PheasantTails.TwiHigh.Functions.Extensions;
-using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,11 +40,11 @@ namespace PheasantTails.TwiHigh.Functions.Tweets
         {
             try
             {
-                _logger.LogInformation("Tweet“Šeˆ—‚ğŠJn‚µ‚Ü‚·B");
+                _logger.LogInformation("TweetæŠ•ç¨¿å‡¦ç†ã‚’é–‹å§‹ã—ã¾ã™ã€‚");
 
                 if (!req.TryGetUserId(_tokenValidationParameters, out var id))
                 {
-                    _logger.LogWarning("ƒ†[ƒUID‚ğæ“¾‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½B");
+                    _logger.LogWarning("ãƒ¦ãƒ¼ã‚¶IDã‚’å–å¾—ã§ãã¾ã›ã‚“ã§ã—ãŸã€‚");
                     return new UnauthorizedResult();
                 }
 
@@ -68,11 +65,11 @@ namespace PheasantTails.TwiHigh.Functions.Tweets
                     CreateAt = now
                 };
 
-                // ƒcƒC[ƒg‚Ìì¬
+                // ãƒ„ã‚¤ãƒ¼ãƒˆã®ä½œæˆ
                 var tweets = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TWEET_CONTAINER_NAME);
                 var res = await tweets.CreateItemAsync(tweet);
 
-                // ƒŠƒvƒ‰ƒCæ‚ª‚ ‚ê‚ÎÀs
+                // ãƒªãƒ—ãƒ©ã‚¤å…ˆãŒã‚ã‚Œã°å®Ÿè¡Œ
                 if (context.ReplyTo != null)
                 {
                     var patch = new[]
@@ -86,7 +83,7 @@ namespace PheasantTails.TwiHigh.Functions.Tweets
                     {
                         await _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TWEET_CONTAINER_NAME).PatchItemAsync<Tweet>(tweetid, key, patch);
 
-                        // ¬Œ÷‚ÍƒŠƒvƒ‰ƒCæ‚ğXV
+                        // æˆåŠŸæ™‚ã¯ãƒªãƒ—ãƒ©ã‚¤å…ˆã‚’æ›´æ–°
                         await QueueStorages.InsertMessageAsync(
                             AZURE_STORAGE_UPDATE_REPLYFROM_TIMELINES_TWEET_TRIGGER_QUEUE_NAME,
                             new UpdateTimelineQueue(tweet));
@@ -94,7 +91,7 @@ namespace PheasantTails.TwiHigh.Functions.Tweets
                     catch (CosmosException ex)
                     {
                         _logger.LogError(ex, "PostTweet throw CosmosException.");
-                        // ¸”s‚Í©ƒcƒC[ƒg‚ÌreplyTo‚ğíœ‚·‚é
+                        // å¤±æ•—æ™‚ã¯è‡ªãƒ„ã‚¤ãƒ¼ãƒˆã®replyToã‚’å‰Šé™¤ã™ã‚‹
                         await QueueStorages.InsertMessageAsync(
                             AZURE_STORAGE_UPDATE_REPLYTO_TIMELINES_TWEET_TRIGGER_QUEUE_NAME,
                             new UpdateTimelineQueue(tweet));
@@ -120,26 +117,26 @@ namespace PheasantTails.TwiHigh.Functions.Tweets
             {
                 if (!req.TryGetUserId(_tokenValidationParameters, out var userId))
                 {
-                    _logger.LogWarning("ƒ†[ƒUID‚ğæ“¾‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½B");
+                    _logger.LogWarning("ãƒ¦ãƒ¼ã‚¶IDã‚’å–å¾—ã§ãã¾ã›ã‚“ã§ã—ãŸã€‚");
                     return new UnauthorizedResult();
                 }
 
-                // íœ‘ÎÛ‚ÌƒcƒC[ƒg‚Éíœƒtƒ‰ƒO‚ğ—§‚Ä‚é
+                // å‰Šé™¤å¯¾è±¡ã®ãƒ„ã‚¤ãƒ¼ãƒˆã«å‰Šé™¤ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
                 var patch = new[]
                 {
-                    // íœƒtƒ‰ƒO
+                    // å‰Šé™¤ãƒ•ãƒ©ã‚°
                     PatchOperation.Set("/isDeleted", true),
-                    // XV“ú‚ğŒ»İ‚É
+                    // æ›´æ–°æ—¥æ™‚ã‚’ç¾åœ¨æ™‚åˆ»ã«
                     PatchOperation.Set("/updateAt", DateTimeOffset.Now)
                 };
 
-                // ©•ª‚ÌƒcƒC[ƒgˆÈŠO‚ÌID‚ªw’è‚³‚ê‚Ä‚àA‚±‚±‚Å—áŠO‚ª”­¶‚·‚é‚Í‚¸
+                // è‡ªåˆ†ã®ãƒ„ã‚¤ãƒ¼ãƒˆä»¥å¤–ã®IDãŒæŒ‡å®šã•ã‚Œã¦ã‚‚ã€ã“ã“ã§ä¾‹å¤–ãŒç™ºç”Ÿã™ã‚‹ã¯ãš
                 try
                 {
                     var tweet = await _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TWEET_CONTAINER_NAME)
                         .PatchItemAsync<Tweet>(id, new PartitionKey(userId), patch);
 
-                    // ƒtƒHƒƒ[‚Ìƒ^ƒCƒ€ƒ‰ƒCƒ“‚©‚çíœ‚·‚é
+                    // ãƒ•ã‚©ãƒ­ãƒ¯ãƒ¼ã®ã‚¿ã‚¤ãƒ ãƒ©ã‚¤ãƒ³ã‹ã‚‰å‰Šé™¤ã™ã‚‹
                     await QueueStorages.InsertMessageAsync(
                         AZURE_STORAGE_DELETE_TIMELINES_TWEET_TRIGGER_QUEUE_NAME,
                         new DeleteTimelineQueue(tweet));
@@ -157,9 +154,9 @@ namespace PheasantTails.TwiHigh.Functions.Tweets
             }
         }
 
-        [FunctionName("GetTweetById")]
+        [FunctionName("GetTweetByIdV1")]
         public async Task<IActionResult> GetTweetByIdAsync(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "tweetsV2/{tweetId}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "tweetsV1/{tweetId}")] HttpRequest req,
             Guid tweetId)
         {
             try
@@ -195,29 +192,45 @@ namespace PheasantTails.TwiHigh.Functions.Tweets
             }
         }
 
-        [FunctionName("GetTweetByIdV2")]
+        [FunctionName("GetTweetById")]
         public async Task<IActionResult> GetTweetByIdV2Async(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "tweets/{tweetId}")] HttpRequest req,
             Guid tweetId)
         {
             try
             {
+                // å¯¾è±¡ã®ãƒ„ã‚¤ãƒ¼ãƒˆï¼‹é¡ã‚Šãƒ„ã‚¤ãƒ¼ãƒˆ5ä»¶ã®æœ€å¤§6ä»¶ã‚’å–ã‚‹
+                const int THREAD_MAX_LENGTH = 6;
                 var tweets = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TWEET_CONTAINER_NAME);
-                var query = tweets.GetItemLinqQueryable<Tweet>()
-                    .Where(t => t.Id == tweetId || t.ReplyTo == tweetId)
-                    .ToQueryDefinition();
+                var thread = new List<Tweet>();
+                Guid? id = tweetId;
 
-                var iterator = tweets.GetItemQueryIterator<Tweet>(query);
-
-                var tweet = new List<Tweet>();
-                while (iterator.HasMoreResults)
+                while (id != null && thread.Count <= THREAD_MAX_LENGTH)
                 {
-                    var res = await iterator.ReadNextAsync();
-                    tweet.AddRange(res);
+                    // tweets.GetItemLinqQueryable<Tweet>().FirstOrDefault(t => t.Id == id);
+                    // ğŸ‘†ã¯å¤šåˆ†æœªå¯¾å¿œ
+                    var iterator = tweets.GetItemLinqQueryable<Tweet>().Where(t => t.Id == id).ToFeedIterator();
+                    var result = await iterator.ReadNextAsync();
+                    var tweet = result.FirstOrDefault();
+
+                    if (tweet == null)
+                    {
+                        // å¯¾è±¡ã®ãƒ„ã‚¤ãƒ¼ãƒˆãŒãªã‘ã‚Œã°ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
+                        break;
+                    }
+
+                    // ã‚¹ãƒ¬ãƒƒãƒ‰ã«è¿½åŠ 
+                    thread.Add(tweet);
+
+                    // æ¬¡ã«å–å¾—ã™ã‚‹ãƒ„ã‚¤ãƒ¼ãƒˆã®IDã‚’è¨­å®š
+                    id = tweet.ReplyTo;
                 }
-                if (tweet.Count > 0)
+
+                if (thread.Any())
                 {
-                    return new OkObjectResult(tweet);
+                    // æŠ•ç¨¿æ—¥æ™‚ãŒå¤ã„é †ã«ä¸¦ã¹ã‚‹
+                    thread = thread.OrderBy(t => t.CreateAt).ToList();
+                    return new OkObjectResult(thread);
                 }
                 else
                 {
@@ -237,7 +250,7 @@ namespace PheasantTails.TwiHigh.Functions.Tweets
         {
             try
             {
-                // ŒŸõ”ÍˆÍ‚ğİ’è
+                // æ¤œç´¢ç¯„å›²ã‚’è¨­å®š
                 var sinceDatetime = DateTimeOffset.MinValue;
                 var untilDatetime = DateTimeOffset.MaxValue;
                 if (req.Query.TryGetValue("since", out var since) && DateTimeOffset.TryParse(since, out var tmpSinceDatetime))
@@ -305,7 +318,7 @@ namespace PheasantTails.TwiHigh.Functions.Tweets
                     PatchOperation.Set("/userDisplayId", user.DisplayId),
                     PatchOperation.Set("/userDisplayName", user.DisplayName),
                     PatchOperation.Set("/userAvatarUrl", user.AvatarUrl),
-                    // ‚ ‚¦‚ÄDateTimeOffset.UtcNow‚É‚µ‚Ä‚éBƒ^ƒCƒ€ƒ‰ƒCƒ“‚ÌXV‚ª“¯‚Å‚ ‚é‚ÆBƒ^ƒCƒ€ƒ‰ƒCƒ“æ“¾‚É50Œ‚ğ’´‰ß‚·‚éB
+                    // ã‚ãˆã¦DateTimeOffset.UtcNowã«ã—ã¦ã‚‹ã€‚ã‚¿ã‚¤ãƒ ãƒ©ã‚¤ãƒ³ã®æ›´æ–°æ™‚åˆ»ãŒåŒæ™‚åˆ»ã§ã‚ã‚‹ã¨ã€‚ã‚¿ã‚¤ãƒ ãƒ©ã‚¤ãƒ³å–å¾—æ™‚ã«50ä»¶ã‚’è¶…éã™ã‚‹ã€‚
                     PatchOperation.Set("/updateAt", DateTimeOffset.UtcNow)
                 };
 
