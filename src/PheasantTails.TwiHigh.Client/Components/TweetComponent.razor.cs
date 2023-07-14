@@ -87,10 +87,36 @@ namespace PheasantTails.TwiHigh.Client.Components
 
         private string ArticleId => $"tweet-{Tweet?.Id}";
 
+        private PostFormComponent ReplySection { get; set; }
+
+        private bool IsAuthenticated { get; set; }
+
+        protected override Task OnInitializedAsync()
+        {
+            return Task.Run(async () =>
+            {
+                IsAuthenticated = await GetIsAuthenticatedAsync();
+                await base.OnInitializedAsync();
+            });
+        }
+
         protected override void OnParametersSet()
         {
-            IsOpendReplyPostForm = Tweet?.IsOpendReplyPostForm ?? false;
+            IsOpendReplyPostForm = IsAuthenticated && (Tweet?.IsOpendReplyPostForm ?? false);
             base.OnParametersSet();
+        }
+
+        protected override Task OnAfterRenderAsync(bool firstRender)
+        {
+            return Task.Run(async () =>
+            {
+                if (IsOpendReplyPostForm)
+                {
+                    await Task.Delay(500);
+                    await ReplySection.TextAreaFocusAsync();
+                }
+                await base.OnAfterRenderAsync(firstRender);
+            });
         }
 
         private Task OnClickAvatar(MouseEventArgs _) => OnClickProfile.InvokeAsync(Tweet);
@@ -109,7 +135,7 @@ namespace PheasantTails.TwiHigh.Client.Components
             }
             if (Tweet.IsEmphasized)
             {
-                IsOpendReplyPostForm = !IsOpendReplyPostForm;
+                IsOpendReplyPostForm = IsAuthenticated && !IsOpendReplyPostForm;
                 return;
             }
             var url = string.Format(DefinePaths.PAGE_PATH_STATUS, Tweet.UserDisplayId, Tweet.Id);

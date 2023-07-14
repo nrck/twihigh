@@ -31,6 +31,8 @@ namespace PheasantTails.TwiHigh.Client.Components
 
         private ElementReference TextArea { get; set; }
 
+        public ValueTask TextAreaFocusAsync() => TextArea.FocusAsync();
+
         protected override async Task OnInitializedAsync()
         {
             if (AuthenticationState != null)

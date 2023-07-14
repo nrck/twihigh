@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Routing;
 using PheasantTails.TwiHigh.Client.ViewModels;
 using PheasantTails.TwiHigh.Data.Model;
 using PheasantTails.TwiHigh.Data.Model.TwiHighUsers;
@@ -21,6 +22,8 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
         private Guid MyTwiHithUserId { get; set; }
 
+        private bool IsScrolling { get; set; }
+
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
@@ -29,6 +32,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
             {
                 MyTwiHithUserId = result;
             }
+            Navigation.LocationChanged += OnLocationChanged;
         }
 
         protected override async Task OnParametersSetAsync()
@@ -97,6 +101,21 @@ namespace PheasantTails.TwiHigh.Client.Pages
             }
         }
 
+        protected override Task OnAfterRenderAsync(bool firstRender)
+        {
+            return Task.Run(async () =>
+            {
+                await ScrollAsync();
+                await base.OnAfterRenderAsync(firstRender);
+            });
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            Navigation.LocationChanged -= OnLocationChanged;
+            base.Dispose(disposing);
+        }
+
         private async Task OnClickDeleteButtonAsync(TweetViewModel model)
         {
             await DeleteMyTweet(model.Id);
@@ -149,6 +168,23 @@ namespace PheasantTails.TwiHigh.Client.Pages
             }
 
             Navigation.NavigateTo(string.Format(DefinePaths.PAGE_PATH_STATUS, tweetViewModel.UserDisplayId, tweetViewModel.Id));
+        }
+
+        private async void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+        {
+            await ScrollAsync();
+        }
+
+        private async Task ScrollAsync()
+        {
+            if (IsScrolling)
+            {
+                return;
+            }
+            IsScrolling = true;
+            await Task.Delay(300);
+            await ScrollToTweet(TweetId);
+            IsScrolling = false;
         }
     }
 }
