@@ -99,6 +99,17 @@
     -->
     <script src="_content/Toolbelt.Blazor.PWA.Updater.Service/script.min.js"></script>
     <script>
+        function BlazorScrollToId(id) {
+            const element = document.getElementById(id);
+            if (element instanceof HTMLElement) {
+                element.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                    inline: "nearest"
+                });
+            }
+        }
+
         const onScrollEventHandler = function (event) {
             if (window.myScrollInfoService != null) {
                 var timelineElement = document.getElementById('timeline');
