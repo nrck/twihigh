@@ -11,7 +11,7 @@
             @Body
         </article>
 
-        <section style="position: fixed; bottom: 0; z-index: 100; width: 100%; max-width: -webkit-fill-available;">
+        <section style="position: fixed; bottom: 0; z-index: 100; width: 100%; max-width: 640px;">
             @foreach (var item in MessageService.Messages)
             {
                 <MessageComponent Context="item" />
