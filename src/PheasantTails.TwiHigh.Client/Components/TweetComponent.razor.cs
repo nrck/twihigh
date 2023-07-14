@@ -110,7 +110,7 @@ namespace PheasantTails.TwiHigh.Client.Components
         {
             return Task.Run(async () =>
             {
-                if (IsOpendReplyPostForm)
+                if (IsOpendReplyPostForm && ReplySection != null)
                 {
                     await Task.Delay(500);
                     await ReplySection.TextAreaFocusAsync();
