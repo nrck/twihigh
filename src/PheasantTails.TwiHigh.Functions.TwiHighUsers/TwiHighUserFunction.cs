@@ -23,7 +23,6 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using static PheasantTails.TwiHigh.Functions.Core.StaticStrings;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
 {

@@ -16,5 +16,8 @@
       "maxDequeueCount": 5,
       "newBatchThreshold": 8
     }
+  },
+  "logLevel": {
+    "TimelineFunction": "Information"
   }
 }

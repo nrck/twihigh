@@ -16,7 +16,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
         /// </summary>
         private const int LOCAL_CACHE_MAXIMUM_SIZE = 10000;
 
-        private List<TweetViewModel>? Tweets { get; set; }
+        private List<TweetViewModel>? Tweets { get; set; } = new List<TweetViewModel>();
 
         private CancellationTokenSource? WorkerCancellationTokenSource { get; set; } = null;
 
@@ -185,6 +185,11 @@ namespace PheasantTails.TwiHigh.Client.Pages
                     MergeTimeline(tmp);
                 }
                 await SaveTimelineToLocalStorageAsync();
+                StateHasChanged();
+            }
+            else
+            {
+                Tweets = new List<TweetViewModel>();
                 StateHasChanged();
             }
         }
