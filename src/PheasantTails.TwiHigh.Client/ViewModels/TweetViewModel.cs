@@ -87,7 +87,5 @@ namespace PheasantTails.TwiHigh.Client.ViewModels
         }
 
         public TweetViewModel() { }
-
-        public string GetTextWithNewline() => Text.TrimStart('\r', '\n').TrimEnd('\r', '\n').Replace(Environment.NewLine, "<br />");
     }
 }
