@@ -1,6 +1,11 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using Microsoft.AspNetCore.Components.WebAssembly.Hosting
+@using PheasantTails.TwiHigh.Client.Pages;
+@using PheasantTails.TwiHigh.Data.Model.TwiHighUsers;
+@inject IWebAssemblyHostEnvironment HostEnvironment;
+@inherits SharedBase;
+<div class="top-row ps-3 navbar navbar-light">
     <div class="container-fluid">
-        <a class="navbar-brand" href="/">ツイハイ！</a>
+        <a class="twihigh-brand" href="@DefinePaths.PAGE_PATH_INDEX">ツイハイ！ <span class="ea">(Early Access)</span></a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -12,27 +17,30 @@
         <div class="nav-item px-3">
             <AuthorizeView>
                 <NotAuthorized>
-                    <NavLink class="nav-link" href="signup">
+                    <NavLink class="nav-link" href="@DefinePaths.PAGE_PATH_SIGNUP">
                         <span class="oi oi-check" aria-hidden="true"></span> 参加する
                     </NavLink>
-                    <NavLink class="nav-link" href="login">
+                    <NavLink class="nav-link" href="@DefinePaths.PAGE_PATH_LOGIN">
                         <span class="oi oi-account-login" aria-hidden="true"></span> ログイン
                     </NavLink>
                 </NotAuthorized>
                 <Authorized>
-                    <NavLink class="nav-link" href="home">
+                    <NavLink class="nav-link" href="@DefinePaths.PAGE_PATH_HOME">
                         <span class="oi oi-home" aria-hidden="true"></span> ホーム
                     </NavLink>
-                    <NavLink class="nav-link" href="clear">
+                    <NavLink class="nav-link" href="@(string.Format(DefinePaths.PAGE_PATH_PROFILE, string.Empty))">
+                        <span class="oi oi-image" aria-hidden="true"></span> プロフィール
+                    </NavLink>
+                    <NavLink class="nav-link" href="@DefinePaths.PAGE_PATH_CLEAR_LOCALDATA">
                         <span class="oi oi-delete" aria-hidden="true"></span> キャッシュクリア
                     </NavLink>
-                    <NavLink class="nav-link" href="logout">
+                    <NavLink class="nav-link" href="@DefinePaths.PAGE_PATH_LOGOUT">
                         <span class="oi oi-account-logout" aria-hidden="true"></span> ログアウト
                     </NavLink>
                 </Authorized>
             </AuthorizeView>
             <span class="version">
-                Version @Program.TwiHighVersion
+                Version @Program.TwiHighVersion (@HostEnvironment.Environment)
             </span>
         </div>
     </nav>

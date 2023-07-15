@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -28,19 +29,29 @@ namespace PheasantTails.TwiHigh.Functions.Extensions
             return await JsonSerializer.DeserializeAsync<T>(request.Body, options, cancellationToken);
         }
 
-        public static bool TryGetUserId(this HttpRequest request, out string id)
+        public static bool TryGetUserId(this HttpRequest request, TokenValidationParameters tokenValidationParameters, out string id)
         {
+            id = string.Empty;
+
             // Authorization ヘッダーの取得
             string authorizationHeader = request.Headers["Authorization"];
             if (string.IsNullOrEmpty(authorizationHeader))
             {
-                id = string.Empty;
                 return false;
             }
 
             // jwtの取得
             var bearerToken = authorizationHeader.Replace("Bearer ", "");
-            var jwt = new JwtSecurityTokenHandler().ReadJwtToken(bearerToken);
+            var handler = new JwtSecurityTokenHandler();
+            var jwt = handler.ReadJwtToken(bearerToken);
+            try
+            {
+                handler.ValidateToken(bearerToken, tokenValidationParameters, out var _);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
 
             id = jwt.Payload.Claims.FirstOrDefault(c => c.Type == "Id")?.Value ?? string.Empty;
             return !string.IsNullOrEmpty(id);

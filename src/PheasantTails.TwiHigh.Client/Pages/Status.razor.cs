@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Routing;
 using PheasantTails.TwiHigh.Client.ViewModels;
 using PheasantTails.TwiHigh.Data.Model;
 using PheasantTails.TwiHigh.Data.Model.TwiHighUsers;
@@ -15,11 +16,13 @@ namespace PheasantTails.TwiHigh.Client.Pages
         [Parameter]
         public string TweetId { get; set; }
 
-        private List<TweetViewModel> Tweets { get; set; } = new List<TweetViewModel>();
+        private List<TweetViewModel>? Tweets { get; set; }
 
         private string Title { get; set; } = "ツイートを読込中";
 
         private Guid MyTwiHithUserId { get; set; }
+
+        private bool IsScrolling { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
@@ -29,10 +32,15 @@ namespace PheasantTails.TwiHigh.Client.Pages
             {
                 MyTwiHithUserId = result;
             }
+            Navigation.LocationChanged += OnLocationChanged;
         }
 
         protected override async Task OnParametersSetAsync()
         {
+            // ツイートページ内で他のツイートが選択されたときのための初期化
+            Title = "ツイートを読込中";
+            Tweets = null;
+
             await base.OnParametersSetAsync();
             if (!Guid.TryParse(TweetId, out var tweetId))
             {
@@ -81,9 +89,31 @@ namespace PheasantTails.TwiHigh.Client.Pages
                 if (tmp.Id == tweetId)
                 {
                     tmp.IsEmphasized = true;
+                    tmp.IsOpendReplyPostForm = Navigation.Uri.ToLower().EndsWith("reply");
                 }
                 return tmp;
             }).OrderBy(t => t.CreateAt).ToList();
+
+            if (Navigation.Uri.ToLower().EndsWith("reply"))
+            {
+                var url = string.Format(DefinePaths.PAGE_PATH_STATUS, UserDisplayId, TweetId);
+                Navigation.NavigateTo(url, false, true);
+            }
+        }
+
+        protected override Task OnAfterRenderAsync(bool firstRender)
+        {
+            return Task.Run(async () =>
+            {
+                await ScrollAsync();
+                await base.OnAfterRenderAsync(firstRender);
+            });
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            Navigation.LocationChanged -= OnLocationChanged;
+            base.Dispose(disposing);
         }
 
         private async Task OnClickDeleteButtonAsync(TweetViewModel model)
@@ -111,7 +141,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
             {
                 SetSucessMessage("ツイートを送信しました！");
                 var tweet = await res.Content.ReadFromJsonAsync<Tweet>();
-                if (tweet != null)
+                if (tweet != null && Tweets != null)
                 {
                     var viewModel = new TweetViewModel(tweet);
                     Tweets.Add(viewModel);
@@ -128,6 +158,33 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
         private void OnClickProfile(TweetViewModel tweetViewModel) => Navigation.NavigateTo(string.Format(DefinePaths.PAGE_PATH_PROFILE, tweetViewModel.UserDisplayId));
 
-        private void OnClickDetail(TweetViewModel tweetViewModel) => Navigation.NavigateTo(string.Format(DefinePaths.PAGE_PATH_STATUS, tweetViewModel.UserDisplayId, tweetViewModel.Id));
+        private void OnClickDetail(TweetViewModel tweetViewModel)
+        {
+            if (tweetViewModel.UserDisplayId == UserDisplayId &&
+               tweetViewModel.Id.ToString() == TweetId)
+            {
+                // 同じページへの遷移はしない。
+                return;
+            }
+
+            Navigation.NavigateTo(string.Format(DefinePaths.PAGE_PATH_STATUS, tweetViewModel.UserDisplayId, tweetViewModel.Id));
+        }
+
+        private async void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+        {
+            await ScrollAsync();
+        }
+
+        private async Task ScrollAsync()
+        {
+            if (IsScrolling)
+            {
+                return;
+            }
+            IsScrolling = true;
+            await Task.Delay(300);
+            await ScrollToTweet(TweetId);
+            IsScrolling = false;
+        }
     }
 }

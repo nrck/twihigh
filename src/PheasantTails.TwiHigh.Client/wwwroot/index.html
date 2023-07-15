@@ -4,8 +4,73 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>TwiHigh - ツイハイ！</title>
+    <title>ツイハイ！ (Early Access)</title>
     <base href="/" />
+    <style>
+        .loader,
+        .loader:before,
+        .loader:after {
+            background: lightblue;
+            -webkit-animation: load1 1s infinite ease-in-out;
+            animation: load1 1s infinite ease-in-out;
+            width: 1.5em;
+            height: 4em;
+        }
+
+        .loader {
+            color: lightblue;
+            text-indent: -9999em;
+            margin: 88px 2.5rem;
+            position: relative;
+            font-size: 11px;
+            -webkit-transform: translateZ(0);
+            -ms-transform: translateZ(0);
+            transform: translateZ(0);
+            -webkit-animation-delay: -0.16s;
+            animation-delay: -0.16s;
+        }
+
+            .loader:before,
+            .loader:after {
+                position: absolute;
+                top: 0;
+                content: '';
+            }
+
+            .loader:before {
+                left: -2.5em;
+                -webkit-animation-delay: -0.32s;
+                animation-delay: -0.32s;
+            }
+
+            .loader:after {
+                left: 2.5em;
+            }
+
+        @-webkit-keyframes load1 {
+            0%, 80%, 100% {
+                box-shadow: 0 0;
+                height: 4em;
+            }
+
+            40% {
+                box-shadow: 0 -2em;
+                height: 6em;
+            }
+        }
+
+        @keyframes load1 {
+            0%, 80%, 100% {
+                box-shadow: 0 0;
+                height: 4em;
+            }
+
+            40% {
+                box-shadow: 0 -2em;
+                height: 6em;
+            }
+        }
+    </style>
     <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
     <link href="css/app.css" rel="stylesheet" />
     <link href="PheasantTails.TwiHigh.Client.styles.css" rel="stylesheet" />
@@ -15,21 +80,36 @@
 </head>
 
 <body>
-    <div id="app">Loading...</div>
+    <div id="app" style="min-height: 100vh;">
+        <div style="display: flex; width: 100%; height: 100vh; justify-content: center; align-items: center; ">
+            <div style="margin-left: auto; margin-right: auto; ">
+                <div class="loader">Loading...</div>
+            </div>
+        </div>
+    </div>
 
     <div id="blazor-error-ui">
-        うちのペンギンがまたやらかしたようです！
+        ごめんなさい。うちのペンギンがまたやらかしたようです！
         <a href="" class="reload">ページを更新してエラーを解消する</a>
         <a class="dismiss">🗙</a>
     </div>
-    <script src="_content/Microsoft.AspNetCore.Components.WebAssembly.Authentication/AuthenticationService.js"></script>
-    <script src="_framework/blazor.webassembly.js"></script>
+    <script src="_framework/blazor.webassembly.js" autostart="false"></script>
     <!--
         <script>navigator.serviceWorker.register('service-worker.js');</script>
     -->
     <script src="_content/Toolbelt.Blazor.PWA.Updater.Service/script.min.js"></script>
-
     <script>
+        function BlazorScrollToId(id) {
+            const element = document.getElementById(id);
+            if (element instanceof HTMLElement) {
+                element.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                    inline: "nearest"
+                });
+            }
+        }
+
         const onScrollEventHandler = function (event) {
             if (window.myScrollInfoService != null) {
                 var timelineElement = document.getElementById('timeline');
@@ -61,6 +141,22 @@
 
         window.RegisterScrollInfoService = function (scrollInfoService) {
             window.myScrollInfoService = scrollInfoService;
+        }
+    </script>
+    <script>
+        if (window.location.hostname.includes("dev")
+            || window.location.hostname.includes("092c09b00")) {
+            Blazor.start({
+                environment: "Development"
+            });
+        } else if (window.location.hostname.includes("localhost")) {
+            Blazor.start({
+                environment: "Local"
+            });
+        } else {
+            Blazor.start({
+                environment: "Production"
+            });
         }
     </script>
 </body>

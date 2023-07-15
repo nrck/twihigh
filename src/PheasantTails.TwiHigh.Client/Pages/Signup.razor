@@ -6,14 +6,14 @@
 <PageTitle>参加する - ツイハイ！</PageTitle>
 <section>
     <div class="login-form">
-        <h2>TwiHighに参加する</h2>
+        <h2>ツイハイに参加する</h2>
         <div class="login-form-group">
             <label for="user-display-id" class="login-form-user-display-id-label">E-mail</label>
             <input type="text" name="user-display-id" class="login-form-user-display-id-input" @bind-value=Context.Email />
         </div>
         <div class="login-form-group">
-            <label for="user-display-id" class="login-form-user-display-id-label">表示名</label>
-            <input type="text" name="user-display-id" class="login-form-user-display-id-input" @bind-value=Context.DisplayName />
+            <label for="user-display-id" class="login-form-user-display-id-label">アカウントID</label>
+            <input type="text" name="user-display-id" class="login-form-user-display-id-input" @bind-value=Context.DisplayId />
         </div>
         <div class="login-form-group">
             <label for="user-password" class="login-form-user-password-label">パスワード</label>
@@ -30,16 +30,10 @@
                 else
                 {
                     <span>
-                        参加する
+                        アカウントを作成する
                     </span>
                 }
             </button>
         </div>
-        @if (!string.IsNullOrEmpty(ErrorMessage))
-        {
-            <div class="login-form-group">
-                <span class="error-message">@ErrorMessage</span>
-            </div>
-        }
     </div>
 </section>

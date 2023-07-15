@@ -12,7 +12,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
     public partial class Profile : PageBase
     {
         [Parameter]
-        public string Id { get; set; } = string.Empty;
+        public string? Id { get; set; }
 
         private ResponseTwiHighUserContext? User { get; set; }
 
@@ -24,9 +24,11 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
         private string Title { get; set; } = "プロフィール読み込み中";
 
-        private List<TweetViewModel> Tweets { get; set; } = new List<TweetViewModel>();
+        private List<TweetViewModel>? Tweets { get; set; }
 
         private Guid MyTwiHithUserId { get; set; }
+
+        private bool IsProcessing { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
@@ -40,16 +42,32 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
         protected override async Task OnParametersSetAsync()
         {
+            User = null;
+            Tweets = null;
+            IsMyTwiHighUser = false;
+
+            // ID指定なしでログインユーザーのプロフィールページへ遷移
+            if (string.IsNullOrEmpty(Id))
+            {
+                Navigation.NavigateTo(string.Format(DefinePaths.PAGE_PATH_PROFILE, MyTwiHithUserId), false, true);
+                return;
+            }
+
             User = await AppUserHttpClient.GetTwiHighUserAsync(Id);
             if (User == null)
             {
                 Title = "プロフィールを読み込めませんでした。";
             }
+            else if (User.DisplayId != Id)
+            {
+                // GuidからDisplayIdのページへ遷移
+                Navigation.NavigateTo(string.Format(DefinePaths.PAGE_PATH_PROFILE, User.DisplayId), false, true);
+                return;
+            }
             else
             {
                 Title = $"{User.DisplayName}（@{User.DisplayId}）";
             }
-            StateHasChanged();
             if (User != null)
             {
                 var res = await TweetHttpClient.GetUserTweetsAsync(User.Id);
@@ -59,6 +77,10 @@ namespace PheasantTails.TwiHigh.Client.Pages
                     Tweets = tweets!.Select(t => new TweetViewModel(t) { IsReaded = true })
                         .OrderByDescending(t => t.CreateAt)
                         .ToList();
+                }
+                else
+                {
+                    Tweets = new List<TweetViewModel>();
                 }
             }
             await SetFollowButtonAsync();
@@ -71,20 +93,55 @@ namespace PheasantTails.TwiHigh.Client.Pages
             {
                 return;
             }
+            if (IsProcessing)
+            {
+                return;
+            }
+            IsProcessing = true;
             try
             {
-                var res = await FollowHttpClient.PutNewFollowee(User.Id.ToString());
-            }
-            catch (HttpRequestException ex)
-            {
-            }
-
-            try
-            {
+                var res = await FollowHttpClient.PutNewFolloweeAsync(User.Id.ToString());
+                res.EnsureSuccessStatusCode();
+                SetSucessMessage($"@{User.DisplayId}さんをフォローしました！");
                 User = await AppUserHttpClient.GetTwiHighUserAsync(Id);
             }
             catch (HttpRequestException ex)
             {
+                SetErrorMessage("フォローできませんでした。");
+            }
+            finally
+            {
+                IsProcessing = false;
+            }
+            await SetFollowButtonAsync();
+            StateHasChanged();
+        }
+
+        private async Task OnClickRemoveButton()
+        {
+            if (User == null)
+            {
+                return;
+            }
+            if (IsProcessing)
+            {
+                return;
+            }
+            IsProcessing = true;
+            try
+            {
+                var res = await FollowHttpClient.DeleteFolloweeAsync(User.Id.ToString());
+                res.EnsureSuccessStatusCode();
+                SetInfoMessage($"@{User.DisplayId}さんをリムーブしました！");
+                User = await AppUserHttpClient.GetTwiHighUserAsync(Id);
+            }
+            catch (HttpRequestException ex)
+            {
+                SetErrorMessage("リムーブできませんでした。");
+            }
+            finally
+            {
+                IsProcessing = false;
             }
             await SetFollowButtonAsync();
             StateHasChanged();

@@ -38,7 +38,7 @@ jobs:
       shell: bash
       run: |
         pushd './${{ inputs.function-project-path }}'
-        dotnet build --configuration Release --output ./output
+        dotnet publish --configuration Release --runtime linux-x64 --output ./output --no-self-contained
         popd
 
     - name: '[ ${{ inputs.function-app-name }} ]Run Azure Functions Action'

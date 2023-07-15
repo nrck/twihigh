@@ -16,6 +16,9 @@ namespace PheasantTails.TwiHigh.Client.Pages
         private string DisplayId { get; set; } = string.Empty;
         private string DisplayName { get; set; } = string.Empty;
         private string Biography { get; set; } = string.Empty;
+        private byte[] LocalRowAvatarData { get; set; } = Array.Empty<byte>();
+        private string LocalRowAvatarContentType { get; set; } = string.Empty;
+        private bool IsWorking { get; set; } = false;
 
         protected override async Task OnInitializedAsync()
         {
@@ -46,59 +49,94 @@ namespace PheasantTails.TwiHigh.Client.Pages
                 file.ContentType != "image/jpeg"
             )
             {
+                SetWarnMessage("画像はPNGもしくはJPEGのみがサポートされています。他の画像を使用してください。");
                 return;
             }
 
-            if (1 * 1024 * 1024 < file.Size)
+            if (file.Size <= 0)
             {
+                SetErrorMessage("画像データを読み込めませんでした。");
                 return;
             }
-            byte[] data = new byte[file.Size];
-            var stream = file.OpenReadStream(1 * 1024 * 1024);
-            await stream.ReadAsync(data);
 
-            var base64string = Convert.ToBase64String(data);
-            AvatarUrl = $"data:{file.ContentType};base64,{base64string}";
-            PatchContext.EncodeAvaterImage(file.ContentType, data);
+            if (5 * 1024 * 1024 < file.Size)
+            {
+                SetWarnMessage("画像の最大サイズは5MBです。リサイズするなど、ファイルサイズを小さくしてください。");
+                return;
+            }
+            LocalRowAvatarData = new byte[file.Size];
+            LocalRowAvatarContentType = file.ContentType;
+            var stream = file.OpenReadStream(5 * 1024 * 1024);
+            await stream.ReadAsync(LocalRowAvatarData);
+
+            var base64string = Convert.ToBase64String(LocalRowAvatarData);
+            AvatarUrl = $"data:{LocalRowAvatarContentType};base64,{base64string}";
             StateHasChanged();
         }
 
         private async Task OnClickSaveButtonAsync()
         {
-            AdjustPatchContext();
+            if (IsWorking)
+            {
+                return;
+            }
+
+            IsWorking = true;
+            if (!AdjustPatchContext())
+            {
+                IsWorking = false;
+                SetInfoMessage("プロフィールを変更してから保存するボタンを押してください。");
+                return;
+            }
             // 送信する
-            User = await AppUserHttpClient.PatchTwiHighUserAsync(PatchContext);
-            if (User == null)
+            var tmp = await AppUserHttpClient.PatchTwiHighUserAsync(PatchContext);
+            if (tmp == null)
             {
                 SetErrorMessage("プロフィールの更新に失敗しました。");
             }
             else
             {
                 SetSucessMessage("プロフィールを更新しました！");
+                await ((TwiHighAuthenticationStateProvider)AuthenticationStateProvider).RefreshAuthenticationStateAsync();
+                User = tmp;
+                SetDisplayVariables();
             }
-            SetDisplayVariables();
             StateHasChanged();
+            IsWorking = false;
         }
 
-        private void AdjustPatchContext()
+        private bool AdjustPatchContext()
         {
+            var isChanged = false;
+            PatchContext = new PatchTwiHighUserContext();
             if (DisplayName != User?.DisplayName)
             {
                 PatchContext.DisplayName = DisplayName;
+                isChanged = true;
             }
             if (DisplayId != User?.DisplayId)
             {
                 PatchContext.DisplayId = DisplayId;
+                isChanged = true;
             }
             if (Biography != User?.Biography)
             {
                 PatchContext.Biography = Biography;
+                isChanged = true;
             }
+            if (0 < LocalRowAvatarData.LongLength && !string.IsNullOrEmpty(LocalRowAvatarContentType))
+            {
+                PatchContext.EncodeAvaterImage(LocalRowAvatarContentType, LocalRowAvatarData);
+                isChanged = true;
+            }
+
+            return isChanged;
         }
 
         private void OnClickAvatarResetButton()
         {
-            PatchContext.Base64EncodedAvatarImage = null;
+            LocalRowAvatarContentType = string.Empty;
+            LocalRowAvatarData = Array.Empty<byte>();
             AvatarUrl = User!.AvatarUrl;
         }
 

@@ -7,9 +7,13 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using PheasantTails.TwiHigh.Data.Model.Queues;
 using PheasantTails.TwiHigh.Data.Model.TwiHighUsers;
 using PheasantTails.TwiHigh.Data.Store.Entity;
+using PheasantTails.TwiHigh.Functions.Core;
+using PheasantTails.TwiHigh.Functions.Core.Services;
 using PheasantTails.TwiHigh.Functions.Extensions;
+using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -19,6 +23,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using static PheasantTails.TwiHigh.Functions.Core.StaticStrings;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
 {
@@ -27,12 +32,23 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
         private readonly ILogger<TwiHighUserFunction> _logger;
         private readonly CosmosClient _client;
         private readonly IConfiguration _configuration;
+        private readonly IAzureBlobStorageService _azureBlobStorageService;
+        private readonly IImageProcesserService _imageProcesserService;
+        private readonly TokenValidationParameters _tokenValidationParameters;
 
-        public TwiHighUserFunction(CosmosClient client, IConfiguration configuration, ILogger<TwiHighUserFunction> log)
+        public TwiHighUserFunction(CosmosClient client,
+            IConfiguration configuration,
+            ILogger<TwiHighUserFunction> log,
+            IAzureBlobStorageService azureBlobStorageService,
+            IImageProcesserService imageProcesserService,
+            TokenValidationParameters tokenValidationParameters)
         {
             _logger = log;
             _client = client;
             _configuration = configuration;
+            _azureBlobStorageService = azureBlobStorageService;
+            _imageProcesserService = imageProcesserService;
+            _tokenValidationParameters = tokenValidationParameters;
         }
 
         [FunctionName("SignUp")]
@@ -191,7 +207,7 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
         public async Task<IActionResult> RefreshAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req)
         {
-            if (req.TryGetUserId(out var id))
+            if (!req.TryGetUserId(_tokenValidationParameters, out var id))
             {
                 return new UnauthorizedResult();
             }
@@ -218,28 +234,59 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
         public async Task<IActionResult> PatchTwiHighUserAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "TwiHighUser")] HttpRequest req)
         {
-            if (!req.TryGetUserId(out var id))
+            try
             {
-                return new UnauthorizedResult();
-            }
+                if (!req.TryGetUserId(_tokenValidationParameters, out var id))
+                {
+                    return new UnauthorizedResult();
+                }
+                PatchTwiHighUserContext patch;
+                try
+                {
+                    patch = await req.JsonDeserializeAsync<PatchTwiHighUserContext>();
+                }
+                catch (Exception)
+                {
+                    return new BadRequestResult();
+                }
 
-            var patch = await req.JsonDeserializeAsync<PatchTwiHighUserContext>();
-            var users = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_USER_CONTAINER_NAME);
-            var user = await users.ReadItemAsync<TwiHighUser>(id, new PartitionKey(id));
-            if (!string.IsNullOrWhiteSpace(patch.Password))
+                var users = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_USER_CONTAINER_NAME);
+                var user = await users.ReadItemAsync<TwiHighUser>(id, new PartitionKey(id));
+                if (!string.IsNullOrWhiteSpace(patch.Password))
+                {
+                    patch.Password = new PasswordHasher<TwiHighUser>().HashPassword(user, patch.Password);
+                }
+
+                if (!string.IsNullOrWhiteSpace(patch.DisplayId) && await IsExistDisplayIdAsync(patch.DisplayId))
+                {
+                    return new ConflictResult();
+                }
+
+                var operations = await GetPatchOperationsAsync(patch);
+                if (!operations.Any())
+                {
+                    return new BadRequestObjectResult(patch);
+                }
+                operations.Add(PatchOperation.Set("/updateAt", DateTimeOffset.UtcNow));
+
+                TwiHighUser result = await users.PatchItemAsync<TwiHighUser>(id, new PartitionKey(id), operations, requestOptions: new PatchItemRequestOptions { IfMatchEtag = user.ETag });
+                
+                if (operations.Any(o => o.Path == "/displayId" || o.Path == "/displayName" || o.Path == "/avatarUrl"))
+                {
+                    // アカウントIDかアカウント名かアイコンの更新時のみタイムラインを更新する。
+                    await QueueStorages.InsertMessageAsync(
+                            AZURE_STORAGE_UPDATE_USER_INFO_IN_TWEET_QUEUE_NAME,
+                            new UpdateUserQueue(result));
+                }
+                return new OkObjectResult(new ResponseTwiHighUserContext(result));
+            }
+            catch (Exception ex)
             {
-                patch.Password = new PasswordHasher<TwiHighUser>().HashPassword(user, patch.Password);
+                _logger.LogError(ex, "Exception happend at {0}", ex.Source);
+                _logger.LogError(ex.Message);
+                _logger.LogError(ex.StackTrace);
+                throw;
             }
-
-            if (!string.IsNullOrWhiteSpace(patch.DisplayId) && await IsExistDisplayIdAsync(patch.DisplayId))
-            {
-                return new ConflictResult();
-            }
-
-            var operations = GetPatchOperations(patch);
-            var result = await users.PatchItemAsync<TwiHighUser>(id, new PartitionKey(id), operations, requestOptions: new PatchItemRequestOptions { IfMatchEtag = user.ETag });
-
-            return new OkObjectResult(new ResponseTwiHighUserContext(result));
         }
 
         private List<Claim> GenerateClaims(TwiHighUser user)
@@ -258,14 +305,14 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
         private JwtSecurityToken GenerateJwt(IEnumerable<Claim> claims = null)
         {
             // JWTの元ネタ
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSecurityKey"]));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT_SECURITY_KEY"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expiry = DateTime.UtcNow.AddDays(Convert.ToInt32(_configuration["JwtExpiryInDays"]));
+            var expiry = DateTime.UtcNow.AddDays(Convert.ToInt32(_configuration["JWT_EXPIRY_IN_DAYS"]));
 
             // JWTの作成
             var token = new JwtSecurityToken(
-                _configuration["JwtIssuer"],
-                _configuration["JwtAudience"],
+                _configuration["JWT_ISSUER"],
+                _configuration["JWT_AUDIENCE"],
                 claims,
                 expires: expiry,
                 signingCredentials: creds
@@ -313,35 +360,45 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
             return result.ToArray();
         }
 
-        private List<PatchOperation> GetPatchOperations(PatchTwiHighUserContext context)
+        private async Task<List<PatchOperation>> GetPatchOperationsAsync(PatchTwiHighUserContext context)
         {
             var operations = new List<PatchOperation>();
             if (!string.IsNullOrWhiteSpace(context.DisplayId))
             {
                 operations.Add(PatchOperation.Set("/displayId", context.DisplayId));
                 operations.Add(PatchOperation.Set("/lowerDisplayId", context.DisplayId.ToLower()));
+                _logger.LogInformation("Patch:: {0}: {1}", nameof(context.DisplayId), context.DisplayId);
             }
             if (!string.IsNullOrWhiteSpace(context.DisplayName))
             {
                 operations.Add(PatchOperation.Set("/displayName", context.DisplayName));
+                _logger.LogInformation("Patch:: {0}: {1}", nameof(context.DisplayName), context.DisplayName);
             }
             if (!string.IsNullOrWhiteSpace(context.Password))
             {
                 operations.Add(PatchOperation.Set("/hashedPassword", context.Password));
+                _logger.LogInformation("Patch:: {0}: {1}", nameof(context.Password), context.Password);
             }
             if (!string.IsNullOrWhiteSpace(context.Email))
             {
                 operations.Add(PatchOperation.Set("/email", context.Email));
+                _logger.LogInformation("Patch:: {0}: {1}", nameof(context.Email), context.Email);
             }
             if (!string.IsNullOrEmpty(context.Biography))
             {
                 operations.Add(PatchOperation.Set("/biography", context.Biography));
+                _logger.LogInformation("Patch:: {0}: {1}", nameof(context.Biography), context.Biography);
             }
             if (context.Base64EncodedAvatarImage != null)
             {
                 // アップロード処理
-                //var url = string.Empty;
-                //operations.Add(PatchOperation.Set("/avatarUrl", url));
+                var rawData = context.DecodeAvaterImage();
+                var filetype = context.Base64EncodedAvatarImage.ContentType.Split("/")[1];
+                var format = filetype == "png" ? SKEncodedImageFormat.Png : SKEncodedImageFormat.Jpeg;
+                var data = _imageProcesserService.TrimmingToSquare(rawData, format);
+                var url = await _azureBlobStorageService.UploadAsync(
+                    "twihigh-images", $"icon/{Guid.NewGuid()}.{filetype}", new BinaryData(data));
+                operations.Add(PatchOperation.Set("/avatarUrl", url.OriginalString));
             }
 
             return operations;

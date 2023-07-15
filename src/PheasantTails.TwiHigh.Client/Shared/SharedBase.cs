@@ -40,5 +40,14 @@ namespace PheasantTails.TwiHigh.Client.Shared
         {
             MessageService.Set(MessageLevel.Info, text);
         }
+
+        protected async Task<bool> GetIsAuthenticatedAsync()
+        {
+            if(AuthenticationState == null)
+            {
+                return false;
+            }
+            return (await AuthenticationState).User.Identity?.IsAuthenticated ?? false;
+        }
     }
 }

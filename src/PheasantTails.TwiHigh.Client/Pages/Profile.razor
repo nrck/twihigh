@@ -1,4 +1,4 @@
-﻿@page "/profile/{Id}"
+﻿@page "/profile/{Id?}"
 @inherits PageBase
 @*
     ユーザページ
@@ -8,6 +8,7 @@
 
 @if (User == null)
 {
+    <Loading />
 }
 else
 {
@@ -19,11 +20,11 @@ else
             @* フォローボタン *@
             @if (IsMyTwiHighUser)
             {
-
+                <button class="profile-edit-button" @onclick=OnClickProfileEditor>プロフィールを編集</button>
             }
             else
             {
-                <FollowButtonComponent IsFollowing=@IsFollowing OnClickFollowButton="OnClickFollowButton" />
+                <FollowButtonComponent IsFollowing=@IsFollowing OnClickFollowButton="OnClickFollowButton" OnClickRemoveButton="OnClickRemoveButton" />
             }
         </div>
 

@@ -1,6 +1,7 @@
 ﻿using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.JSInterop;
 using PheasantTails.TwiHigh.Client.Extensions;
 using PheasantTails.TwiHigh.Client.Shared;
 using PheasantTails.TwiHigh.Client.TypedHttpClients;
@@ -126,6 +127,12 @@ namespace PheasantTails.TwiHigh.Client.Pages
             Logger.LogFinish();
         }
 
+        protected async Task ScrollToTweet(string tweetId)
+        {
+            var elementId = $"tweet-{tweetId}";
+            await JSRuntime.InvokeVoidAsync("BlazorScrollToId", elementId);
+        }
+
         private void OnChangeTwiHighJwt(object? _, ChangedEventArgs e)
         {
             Logger.LogStart();
@@ -155,5 +162,6 @@ namespace PheasantTails.TwiHigh.Client.Pages
             TweetHttpClient.SetToken(token);
             Logger.LogFinish();
         }
+
     }
 }

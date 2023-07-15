@@ -4,6 +4,7 @@ using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using PheasantTails.TwiHigh.Data.Model.Followers;
 using PheasantTails.TwiHigh.Data.Model.Queues;
 using PheasantTails.TwiHigh.Data.Model.Timelines;
@@ -11,6 +12,7 @@ using PheasantTails.TwiHigh.Data.Store.Entity;
 using PheasantTails.TwiHigh.Functions.Extensions;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -22,18 +24,20 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
     {
         private readonly ILogger<TimelineFunction> _logger;
         private readonly CosmosClient _client;
+        private readonly TokenValidationParameters _tokenValidationParameters;
 
-        public TimelineFunction(CosmosClient client, ILogger<TimelineFunction> log)
+        public TimelineFunction(CosmosClient client, ILogger<TimelineFunction> log, TokenValidationParameters tokenValidationParameters)
         {
             _logger = log;
             _client = client;
+            _tokenValidationParameters = tokenValidationParameters;
         }
 
         [FunctionName("GetMyTimeline")]
         public async Task<IActionResult> GetMyTimelineAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "Get", Route = null)] HttpRequest req)
         {
-            if (!req.TryGetUserId(out var id))
+            if (!req.TryGetUserId(_tokenValidationParameters, out var id))
             {
                 return new UnauthorizedResult();
             }
@@ -76,7 +80,7 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
         public async Task<IActionResult> GetMyTimelineV2Async(
             [HttpTrigger(AuthorizationLevel.Anonymous, "Get", Route = "timeline")] HttpRequest req)
         {
-            if (!req.TryGetUserId(out var id))
+            if (!req.TryGetUserId(_tokenValidationParameters, out var id))
             {
                 return new UnauthorizedResult();
             }
@@ -95,11 +99,10 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
 
             // クエリの作成
             var query = new QueryDefinition(
-                "SELECT TOP 50 * FROM c " +
+                "SELECT TOP 100 * FROM c " +
                 "WHERE (@SinceDatetime < c.updateAt AND c.updateAt <= @UntilDatetime) " +
-                "OR (NOT IS_DEFINED(c.updateAt) AND (@SinceDatetime < c.createAt AND c.createAt <= @UntilDatetime))" +
+                "OR (@SinceDatetime < c.createAt AND c.createAt <= @UntilDatetime) " +
                 "ORDER BY c.createAt DESC")
-                .WithParameter("@OwnerUserId", id)
                 .WithParameter("@SinceDatetime", sinceDatetime)
                 .WithParameter("@UntilDatetime", untilDatetime);
 
@@ -173,31 +176,56 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
             }
 
             // キューの取得
-            var context = JsonSerializer.Deserialize<AddNewFolloweeTweetContext>(myQueueItem);
+            var que = JsonSerializer.Deserialize<AddNewFolloweeTweetContext>(myQueueItem);
+            _logger.LogInformation("{0} remove to {1} at {2}.", que.UserId, que.FolloweeId, DateTimeOffset.UtcNow.ToString("yyyy/MM/dd HH:mm:ss"));
+
+            // 自身のタイムラインにの対象ユーザの既存のツイートがある場合は削除する
+            var query = new QueryDefinition(
+                "SELECT c.id, c.ownerUserId FROM c " +
+                "WHERE c.userId = @FolloweeId " +
+                "AND c.ownerUserId = @OwnerUserId")
+                .WithParameter("@FolloweeId", que.FolloweeId)
+                .WithParameter("@OwnerUserId", que.UserId);
+
+            var timelines = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TIMELINE_CONTAINER_NAME);
+            var batch = timelines.CreateTransactionalBatch(new PartitionKey(que.UserId.ToString()));
+            var timelineIterator = timelines.GetItemQueryIterator<TimelineIdOwnerUserIdPair>(query);
+            while (timelineIterator.HasMoreResults)
+            {
+                var result = await timelineIterator.ReadNextAsync();
+                foreach (var pair in result.Resource)
+                {
+                    batch.DeleteItem(pair.Id.ToString());
+                }
+            }
 
             // 対象ユーザのツイートを取得
             var tweets = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TWEET_CONTAINER_NAME);
-            var iterator = tweets.GetItemQueryIterator<Tweet>(
+            var tweetIterator = tweets.GetItemQueryIterator<Tweet>(
                 "SELECT * FROM c " +
                 "WHERE c.isDeleted = false OR NOT IS_DEFINED(c.isDeleted)",
                 requestOptions: new QueryRequestOptions
                 {
-                    PartitionKey = new PartitionKey(context.FolloweeId.ToString())
+                    PartitionKey = new PartitionKey(que.FolloweeId.ToString())
                 });
 
+
             // 自身のタイムラインに加える
-            var timelines = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TIMELINE_CONTAINER_NAME);
-            var batch = timelines.CreateTransactionalBatch(new PartitionKey(context.UserId.ToString()));
-            while (iterator.HasMoreResults)
+            while (tweetIterator.HasMoreResults)
             {
-                var result = await iterator.ReadNextAsync();
+                var result = await tweetIterator.ReadNextAsync();
                 foreach (var tweet in result.Resource)
                 {
-                    var timeline = new Timeline(context.UserId, tweet);
+                    var timeline = new Timeline(que.UserId, tweet)
+                    {
+                        UpdateAt = DateTimeOffset.UtcNow
+                    };
                     batch.CreateItem(timeline);
                 }
-                await batch.ExecuteAsync();
             }
+
+            var response = await batch.ExecuteAsync();
+            _logger.LogInformation("Batch status code:{0}, RU:{1}", response.StatusCode, response.RequestCharge);
         }
 
         [FunctionName("DeleteTimelinesTweetTrigger")]
@@ -252,7 +280,6 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
             }
         }
 
-
         [FunctionName("UpdateReplyToTimelinesTweetTrigger")]
         public async Task UpdateReplyToTimelinesTweetTriggerAsync([QueueTrigger(AZURE_STORAGE_UPDATE_REPLYTO_TIMELINES_TWEET_TRIGGER_QUEUE_NAME, Connection = QUEUE_STORAGE_CONNECTION_STRINGS_ENV_NAME)] string myQueueItem)
         {
@@ -263,6 +290,32 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
                 var patch = new[]
                 {
                     PatchOperation.Remove("/replyTo"),
+                    PatchOperation.Set("/updateAt", que.Tweet.UpdateAt)
+                };
+                await PatchTimelineAsync(que.Tweet.Id, patch);
+            }
+            catch (CosmosException ex)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        [FunctionName("UpdateUserInfoTriggeredTweetUpdated")]
+        public async Task UpdateUserInfoTriggeredTweetUpdatedAsync([QueueTrigger(AZURE_STORAGE_UPDATE_USER_INFO_IN_TIMELINE_QUEUE_NAME, Connection = QUEUE_STORAGE_CONNECTION_STRINGS_ENV_NAME)] string myQueueItem)
+        {
+            try
+            {
+                if (myQueueItem == null) return;
+                var que = JsonSerializer.Deserialize<UpdateTimelineQueue>(myQueueItem);
+                var patch = new[]
+                {
+                    PatchOperation.Set("/userDisplayId", que.Tweet.UserDisplayId),
+                    PatchOperation.Set("/userDisplayName", que.Tweet.UserDisplayName),
+                    PatchOperation.Set("/userAvatarUrl", que.Tweet.UserAvatarUrl),
                     PatchOperation.Set("/updateAt", que.Tweet.UpdateAt)
                 };
                 await PatchTimelineAsync(que.Tweet.Id, patch);
@@ -289,14 +342,14 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
 
             var iterator = timelines.GetItemQueryIterator<TimelineIdOwnerUserIdPair>(query);
 
-            var tasks = new List<Task>();
+            var tasks = new List<Task<ResponseMessage>>();
             while (iterator.HasMoreResults)
             {
                 var result = await iterator.ReadNextAsync();
-                foreach (var pair in result.Resource)
+                foreach (var pair in result)
                 {
                     tasks.Add(timelines
-                        .PatchItemAsync<Timeline>(
+                        .PatchItemStreamAsync(
                             id: pair.Id.ToString(),
                             partitionKey: new PartitionKey(pair.OwnerUserId.ToString()),
                             patchOperations: patch,
@@ -304,8 +357,59 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
                         );
                 }
             }
+            var batchResult = await Task.WhenAll(tasks);
+            _logger.LogInformation("PatchTimelineAsync batch finish. RU:{0}, Task Count:{1}, Success:{2}",
+                batchResult.Sum(r => r.Headers.RequestCharge),
+                batchResult.LongLength,
+                batchResult.LongCount(r => r.IsSuccessStatusCode));
+        }
 
-            await Task.WhenAll(tasks);
+        [FunctionName("DeleteTimelinesFollowTrigger")]
+        public async Task DeleteTimelinesFollowTriggerAsync([QueueTrigger(AZURE_STORAGE_DELETE_TIMELINES_FOLLOW_TRIGGER_QUEUE_NAME, Connection = QUEUE_STORAGE_CONNECTION_STRINGS_ENV_NAME)] string myQueueItem)
+        {
+            if (myQueueItem == null)
+            {
+                return;
+            }
+
+            // キューの取得
+            var que = JsonSerializer.Deserialize<RemoveFolloweeTweetContext>(myQueueItem);
+            var now = DateTimeOffset.UtcNow;
+
+            _logger.LogInformation("{0} remove to {1} at {2}.", que.UserId, que.FolloweeId, now.ToString("yyyy/MM/dd HH:mm:ss"));
+            var patch = new PatchOperation[]
+            {
+                PatchOperation.Set("/text", "This tweet has been deleted."),
+                PatchOperation.Set("/isDeleted", true),
+                PatchOperation.Set("/updateAt", now)
+            };
+
+            // フォローを外した人のツイートを取得する
+            var query = new QueryDefinition(
+                "SELECT c.id, c.ownerUserId FROM c " +
+                "WHERE c.userId = @FolloweeId " +
+                "AND c.ownerUserId = @OwnerUserId")
+                .WithParameter("@FolloweeId", que.FolloweeId)
+                .WithParameter("@OwnerUserId", que.UserId);
+
+            var timelines = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TIMELINE_CONTAINER_NAME);
+            var batch = timelines.CreateTransactionalBatch(new PartitionKey(que.UserId.ToString()));
+            var iterator = timelines.GetItemQueryIterator<TimelineIdOwnerUserIdPair>(query);
+            while (iterator.HasMoreResults)
+            {
+                var result = await iterator.ReadNextAsync();
+                foreach (var pair in result.Resource)
+                {
+                    batch.PatchItem(
+                        id: pair.Id.ToString(),
+                        patchOperations: patch,
+                        requestOptions: new TransactionalBatchPatchItemRequestOptions { IfMatchEtag = result.ETag }
+                    );
+                    _logger.LogInformation("id: {0}, ownerUserId:{1}", pair.Id, pair.OwnerUserId);
+                }
+            }
+            var response = await batch.ExecuteAsync();
+            _logger.LogInformation("Batch status code:{0}, RU:{1}", response.StatusCode, response.RequestCharge);
         }
 
         private class TimelineIdOwnerUserIdPair

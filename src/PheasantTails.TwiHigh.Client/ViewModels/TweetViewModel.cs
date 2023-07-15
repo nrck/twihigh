@@ -68,6 +68,8 @@ namespace PheasantTails.TwiHigh.Client.ViewModels
             }
         }
 
+        public bool IsOpendReplyPostForm { get; set; } = false;
+
         public TweetViewModel(Tweet tweet)
         {
             CreateAt = tweet.CreateAt;

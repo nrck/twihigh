@@ -16,7 +16,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
         /// </summary>
         private const int LOCAL_CACHE_MAXIMUM_SIZE = 10000;
 
-        private List<TweetViewModel> Tweets { get; set; } = new List<TweetViewModel>();
+        private List<TweetViewModel>? Tweets { get; set; }
 
         private CancellationTokenSource? WorkerCancellationTokenSource { get; set; } = null;
 
@@ -28,7 +28,11 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
         public override async ValueTask DisposeAsync()
         {
-            WorkerCancellationTokenSource?.Cancel();
+            if (WorkerCancellationTokenSource != null)
+            {
+                WorkerCancellationTokenSource.Cancel();
+                WorkerCancellationTokenSource.Dispose();
+            }
             ScrollInfoService.OnScroll -= MarkAsReadedTweet;
             await ScrollInfoService.Disable();
             await base.DisposeAsync();
@@ -59,15 +63,19 @@ namespace PheasantTails.TwiHigh.Client.Pages
             var since = DateTimeOffset.MinValue;
             if (Tweets != null && Tweets.Any())
             {
-                since = Tweets.Max(tweet => tweet.UpdateAt);
+                since = Tweets.Where(tweet => tweet.IsSystemTweet == false).Max(tweet => tweet.UpdateAt);
             }
             var until = DateTimeOffset.MaxValue;
-            while (!cancellationToken.IsCancellationRequested)
+            while (true)
             {
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    break;
+                }
                 await GetTweetsAndMergeAsync(since, until);
                 if (Tweets != null && Tweets.Any())
                 {
-                    since = Tweets.Max(tweet => tweet.UpdateAt);
+                    since = Tweets.Where(tweet => tweet.IsSystemTweet == false).Max(tweet => tweet.UpdateAt);
                 }
                 else
                 {
@@ -75,6 +83,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
                 }
                 await Task.Delay(5000, cancellationToken);
             }
+            Logger.LogInformation("Timeline polling canceled");
         }
 
         private async Task<string> GetMyAvatarUrlAsync()
@@ -97,6 +106,10 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
         private async Task SaveTimelineToLocalStorageAsync()
         {
+            if (Tweets == null)
+            {
+                return;
+            }
             var id = (await AuthenticationState!).User.Claims.FirstOrDefault(c => c.Type == nameof(ResponseTwiHighUserContext.Id))?.Value ?? string.Empty;
             var key = string.Format(LOCAL_STORAGE_KEY_TWEETS, id);
             await LocalStorageService.SetItemAsync(key, Tweets.Take(LOCAL_CACHE_MAXIMUM_SIZE).ToArray());
@@ -109,10 +122,15 @@ namespace PheasantTails.TwiHigh.Client.Pages
                 Tweets = source;
                 return;
             }
+            // ローカルキャッシュの既読フラグをリスト化
+            var isReadedList = Tweets.Where(t => t.IsReaded).Select(t => t.Id).ToList();
 
+            // 新しいツイートとの重複を排除して新しいツイート側をタイムラインに取り込む
             Tweets = source.UnionBy(Tweets, keySelector: tweet => tweet.Id)
                 .OrderByDescending(tweet => tweet.CreateAt)
                 .ToList();
+
+            // 新しいタイムラインにリプライ先ID情報を設定し、削除済みのものを排除
             Tweets = Tweets.Where(tweet => tweet.ReplyTo.HasValue && string.IsNullOrEmpty(tweet.ReplyToUserDisplayId))
                 .Select(tweet =>
                 {
@@ -123,6 +141,12 @@ namespace PheasantTails.TwiHigh.Client.Pages
                 .Where(tweet => !tweet.IsDeleted)
                 .OrderByDescending(tweet => tweet.CreateAt)
                 .ToList();
+
+            // 既読フラグの復元
+            Tweets.ForEach(tweet =>
+            {
+                tweet.IsReaded = isReadedList.Contains(tweet.Id);
+            });
         }
 
         private async Task GetTweetsAndMergeAsync(DateTimeOffset since, DateTimeOffset until)
@@ -149,13 +173,14 @@ namespace PheasantTails.TwiHigh.Client.Pages
             if (response != null && response.Tweets.Any())
             {
                 MergeTimeline(response.Tweets.Select(t => new TweetViewModel(t)).ToList());
-                if (response.Tweets.Length == 50)
+                if (response.Tweets.Length == 100)
                 {
                     var systemTweet = TweetViewModel.SystemTweet;
                     systemTweet.Id = Guid.NewGuid();
                     systemTweet.Since = DateTimeOffset.MinValue;
-                    systemTweet.Until = response.Oldest.AddTicks(-1);
+                    systemTweet.Until = response.Oldest;
                     systemTweet.CreateAt = response.Oldest.AddTicks(-1);
+                    systemTweet.UpdateAt = response.Oldest.AddTicks(-1);
                     var tmp = new List<TweetViewModel> { systemTweet };
                     MergeTimeline(tmp);
                 }
@@ -166,6 +191,11 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
         private async Task OnClickGetGapTweets(TweetViewModel tweet)
         {
+            if (Tweets == null)
+            {
+                SetWarnMessage("タイムラインがありません。");
+                return;
+            }
             await GetTweetsAndMergeAsync(tweet.Since, tweet.Until);
             Tweets.Remove(tweet);
             await SaveTimelineToLocalStorageAsync();
@@ -217,7 +247,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
 
         private async void MarkAsReadedTweet(object? sender, string[] ids)
         {
-            if (IsProcessingMarkAsReaded)
+            if (IsProcessingMarkAsReaded || Tweets == null)
             {
                 return;
             }

@@ -6,20 +6,27 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
 {
     public class AppUserHttpClient
     {
-        //private const string API_URL_BASE = "http://localhost:5002/api";
-        private const string API_URL_BASE = "https://twihigh-dev-apim.azure-api.net/twihighusers";
-        private const string API_URL_LOGIN = $"{API_URL_BASE}/Login";
-        private const string API_URL_REFRESH = $"{API_URL_BASE}/Refresh";
-        private const string API_URL_SIGNIN = $"{API_URL_BASE}/SignUp";
-        private const string API_URL_PATCH_TWIHIGH_USER = $"{API_URL_BASE}/TwiHighUser/";
-        private const string API_URL_GET_TWIHIGH_USER = $"{API_URL_BASE}/TwiHighUser/{{0}}";
-        private const string API_URL_GET_TWIHIGH_USER_FOLLOWS = $"{API_URL_BASE}/TwiHighUser/{{0}}/Follows";
-        private const string API_URL_GET_TWIHIGH_USER_FOLLOWERS = $"{API_URL_BASE}/TwiHighUser/{{0}}/Followers";
+        private readonly string _apiUrlBase;
+        private readonly string _apiUrlLogin;
+        private readonly string _apiUrlRefresh;
+        private readonly string _apiUrlSignin;
+        private readonly string _apiUrlPatchTwihighUser;
+        private readonly string _apiUrlGetTwihighUser;
+        private readonly string _apiUrlGetTwihighUserFollows;
+        private readonly string _apiUrlGetTwihighUserFollowes;
         private readonly HttpClient _httpClient;
 
-        public AppUserHttpClient(HttpClient httpClient)
+        public AppUserHttpClient(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
+            _apiUrlBase = $"{configuration["AppUserApiUrl"]}";
+            _apiUrlLogin = $"{_apiUrlBase}/Login";
+            _apiUrlRefresh = $"{_apiUrlBase}/Refresh";
+            _apiUrlSignin = $"{_apiUrlBase}/SignUp";
+            _apiUrlPatchTwihighUser = $"{_apiUrlBase}/TwiHighUser/";
+            _apiUrlGetTwihighUser = $"{_apiUrlBase}/TwiHighUser/{{0}}";
+            _apiUrlGetTwihighUserFollows = $"{_apiUrlBase}/TwiHighUser/{{0}}/Follows";
+            _apiUrlGetTwihighUserFollowes = $"{_apiUrlBase}/TwiHighUser/{{0}}/Followers";
         }
 
         public void SetToken(string token)
@@ -36,7 +43,7 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
         {
             try
             {
-                var res = await _httpClient.PostAsJsonAsync(API_URL_LOGIN, authorizationContext);
+                var res = await _httpClient.PostAsJsonAsync(_apiUrlLogin, authorizationContext);
                 return await res.Content.ReadFromJsonAsync<ResponseJwtContext>();
             }
             catch (Exception)
@@ -45,13 +52,11 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
             }
         }
 
-        public async Task<ResponseJwtContext?> RefreshAsync(string token)
+        public async Task<ResponseJwtContext?> RefreshAsync()
         {
             try
             {
-                var mes = new HttpRequestMessage(HttpMethod.Get, API_URL_REFRESH);
-                mes.Headers.Authorization = new AuthenticationHeaderValue("bearer", token);
-                var res = await _httpClient.SendAsync(mes);
+                var res = await _httpClient.GetAsync(_apiUrlRefresh);
                 res.EnsureSuccessStatusCode();
 
                 return await res.Content.ReadFromJsonAsync<ResponseJwtContext>();
@@ -62,31 +67,16 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
             }
         }
 
-        public async Task<ResponseJwtContext?> SignUpAsync(AddTwiHighUserContext context)
+        public Task<HttpResponseMessage> SignUpAsync(AddTwiHighUserContext context)
         {
-            try
-            {
-                var res = await _httpClient.PostAsJsonAsync(API_URL_SIGNIN, context);
-                res.EnsureSuccessStatusCode();
-                var login = new PostAuthorizationContext
-                {
-                    DisplayId = context.DisplayId,
-                    PlanePassword = context.Password
-                };
-
-                return await LoginAsync(login);
-            }
-            catch (Exception)
-            {
-                return await Task.FromResult<ResponseJwtContext?>(new ResponseJwtContext { Token = string.Empty });
-            }
+            return _httpClient.PostAsJsonAsync(_apiUrlSignin, context);
         }
 
         public async Task<ResponseTwiHighUserContext?> GetTwiHighUserAsync(string id)
         {
             try
             {
-                var url = string.Format(API_URL_GET_TWIHIGH_USER, id);
+                var url = string.Format(_apiUrlGetTwihighUser, id);
                 return await _httpClient.GetFromJsonAsync<ResponseTwiHighUserContext>(url);
             }
             catch (Exception ex)
@@ -100,7 +90,7 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
         {
             try
             {
-                var url = string.Format(API_URL_GET_TWIHIGH_USER_FOLLOWS, id);
+                var url = string.Format(_apiUrlGetTwihighUserFollows, id);
                 return await _httpClient.GetFromJsonAsync<ResponseTwiHighUserContext[]>(url);
             }
             catch (Exception ex)
@@ -113,7 +103,7 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
         {
             try
             {
-                var url = string.Format(API_URL_GET_TWIHIGH_USER_FOLLOWERS, id);
+                var url = string.Format(_apiUrlGetTwihighUserFollowes, id);
                 return await _httpClient.GetFromJsonAsync<ResponseTwiHighUserContext[]>(url);
             }
             catch (Exception ex)
@@ -126,7 +116,7 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
         {
             try
             {
-                var res = await _httpClient.PatchAsync(API_URL_PATCH_TWIHIGH_USER, JsonContent.Create(patchTwiHighUserContext));
+                var res = await _httpClient.PatchAsync(_apiUrlPatchTwihighUser, JsonContent.Create(patchTwiHighUserContext));
                 res.EnsureSuccessStatusCode();
                 return await res.Content.ReadFromJsonAsync<ResponseTwiHighUserContext>();
             }

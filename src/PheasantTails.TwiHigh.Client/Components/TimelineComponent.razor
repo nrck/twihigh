@@ -5,6 +5,10 @@
     {
         <Loading />
     }
+    else if (!Tweets.Any())
+    {
+        <NoContentsComponent />
+    }
     else
     {
         <Virtualize Items="@Tweets" Context="Tweet" ItemSize="72" OverscanCount="15">

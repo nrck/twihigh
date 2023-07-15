@@ -53,34 +53,23 @@
                     </div>
                     <div style="width: 100%; height: 8px;"></div>
                 }
-                @if (!Tweet.IsDeleted)
-                {
-                    @if (IsOpendReplyPostForm)
-                    {
-                        <button class="link-button" @onclick=OnClickReplyPostCloseButton>
-                            <span class="icon oi oi-circle-x"></span>
-                            <span class="number">@Tweet.ReplyFrom.Length</span>
-                        </button>
-                    }
-                    else
-                    {
-                        <button class="link-button" @onclick=OnClickReplyButton>
-                            <span class="icon oi oi-comment-square"></span>
-                            <span class="number">@Tweet.ReplyFrom.Length</span>
-                        </button>
-                    }
-                    @*
+                <button class="link-button" @onclick=OnClickReplyButton>
+                    <span class="icon oi oi-comment-square"></span>
+                    <span class="number">@Tweet.ReplyFrom.Length</span>
+                </button>
+                @*
             <button class="link-button">
             <span class="icon oi oi-star"></span>
             <span class="number">----</span>
             </button>
             *@
-                    @if (IsMyTweet)
-                    {
-                        <button class="link-button" @onclick=OnClickDeleteButton>
-                            <span class="icon oi oi-trash"></span>
-                        </button>
-                    }
+                <button class="link-button"></button>
+                <button class="link-button"></button>
+                @if (IsMyTweet)
+                {
+                    <button class="link-button" @onclick=OnClickDeleteButton>
+                        <span class="icon oi oi-trash" style="margin-left: auto; margin-right:4px;"></span>
+                    </button>
                 }
             </div>
         </div>
@@ -89,6 +78,6 @@
 @if (IsOpendReplyPostForm)
 {
     <section class="reply-section">
-        <PostFormComponent ReplyToContext=ReplyToContext TweetText="@($"@{Tweet?.UserDisplayId} ")" OnPostTweet="OnClickPostTweet" />
+        <PostFormComponent ReplyToContext=ReplyToContext TweetText="@($"@{Tweet?.UserDisplayId} ")" OnPostTweet="OnClickPostTweet" @ref="ReplySection" />
     </section>
 }
