@@ -22,6 +22,7 @@ using System.Net;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Http;
 using static PheasantTails.TwiHigh.Functions.Core.StaticStrings;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -55,40 +56,49 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
         public async Task<IActionResult> SignUpAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req)
         {
-            var context = await req.JsonDeserializeAsync<AddTwiHighUserContext>();
-
-            // DisplayIdがnullか空白ならエラー
-            if (string.IsNullOrWhiteSpace(context.DisplayId))
+            try
             {
-                return new BadRequestObjectResult(context);
+                var context = await req.JsonDeserializeAsync<AddTwiHighUserContext>();
+
+                // DisplayIdがnullか空白ならエラー
+                if (string.IsNullOrWhiteSpace(context.DisplayId))
+                {
+                    return new BadRequestObjectResult(context);
+                }
+
+                // 重複確認
+                if (await IsExistDisplayIdAsync(context.DisplayId))
+                {
+                    return new ConflictObjectResult(context);
+                }
+
+                // ユーザの作成
+                var user = new TwiHighUser
+                {
+                    Id = Guid.NewGuid(),
+                    DisplayId = context.DisplayId,
+                    LowerDisplayId = context.DisplayId.ToLower(),
+                    DisplayName = context.DisplayName,
+                    Biography = string.Empty,
+                    Email = context.Email,
+                    Followers = Array.Empty<Guid>(),
+                    Follows = Array.Empty<Guid>(),
+                    CreateAt = DateTimeOffset.UtcNow,
+                    AvatarUrl = "https://twihighdevstorageaccount.blob.core.windows.net/twihigh-images/pengin.jpeg"
+                };
+                user.HashedPassword = new PasswordHasher<TwiHighUser>().HashPassword(user, context.Password);
+
+                var users = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_USER_CONTAINER_NAME);
+                var created = await users.CreateItemAsync(user);
+
+                return new CreatedResult("", created.Resource);
             }
-
-            // 重複確認
-            if (await IsExistDisplayIdAsync(context.DisplayId))
+            catch (Exception ex)
             {
-                return new ConflictObjectResult(context);
+                _logger.LogError(ex, ex.Message);
+                _logger.LogError(ex, ex.StackTrace);
+                return new InternalServerErrorResult();
             }
-
-            // ユーザの作成
-            var user = new TwiHighUser
-            {
-                Id = Guid.NewGuid(),
-                DisplayId = context.DisplayId,
-                LowerDisplayId = context.DisplayId.ToLower(),
-                DisplayName = context.DisplayName,
-                Biography = string.Empty,
-                Email = context.Email,
-                Followers = Array.Empty<Guid>(),
-                Follows = Array.Empty<Guid>(),
-                CreateAt = DateTimeOffset.UtcNow,
-                AvatarUrl = "https://twihighdevstorageaccount.blob.core.windows.net/twihigh-images/pengin.jpeg"
-            };
-            user.HashedPassword = new PasswordHasher<TwiHighUser>().HashPassword(user, context.Password);
-
-            var users = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_USER_CONTAINER_NAME);
-            var created = await users.CreateItemAsync(user);
-
-            return new CreatedResult("", created.Resource);
         }
 
         [FunctionName("Login")]
