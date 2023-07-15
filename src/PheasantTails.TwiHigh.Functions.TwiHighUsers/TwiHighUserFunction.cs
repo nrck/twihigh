@@ -22,7 +22,6 @@ using System.Net;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Http;
 using static PheasantTails.TwiHigh.Functions.Core.StaticStrings;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -97,7 +96,7 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
             {
                 _logger.LogError(ex, ex.Message);
                 _logger.LogError(ex, ex.StackTrace);
-                return new InternalServerErrorResult();
+                throw;
             }
         }
 
@@ -280,7 +279,7 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
                 operations.Add(PatchOperation.Set("/updateAt", DateTimeOffset.UtcNow));
 
                 TwiHighUser result = await users.PatchItemAsync<TwiHighUser>(id, new PartitionKey(id), operations, requestOptions: new PatchItemRequestOptions { IfMatchEtag = user.ETag });
-                
+
                 if (operations.Any(o => o.Path == "/displayId" || o.Path == "/displayName" || o.Path == "/avatarUrl"))
                 {
                     // アカウントIDかアカウント名かアイコンの更新時のみタイムラインを更新する。
