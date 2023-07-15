@@ -108,15 +108,17 @@ namespace PheasantTails.TwiHigh.Client.Components
 
         protected override Task OnAfterRenderAsync(bool firstRender)
         {
-            return Task.Run(async () =>
+            var focusTask = Task.Run(async () =>
             {
+                await Task.Delay(500);
                 if (IsOpendReplyPostForm && ReplySection != null)
                 {
-                    await Task.Delay(500);
                     await ReplySection.TextAreaFocusAsync();
                 }
-                await base.OnAfterRenderAsync(firstRender);
             });
+            var baseTask = base.OnAfterRenderAsync(firstRender);
+
+            return Task.WhenAll(focusTask, baseTask);
         }
 
         private Task OnClickAvatar(MouseEventArgs _) => OnClickProfile.InvokeAsync(Tweet);
