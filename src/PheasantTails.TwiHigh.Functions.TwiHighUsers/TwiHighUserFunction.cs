@@ -407,6 +407,7 @@ namespace PheasantTails.TwiHigh.Functions.TwiHighUsers
                 var url = await _azureBlobStorageService.UploadAsync(
                     "twihigh-images", $"icon/{Guid.NewGuid()}.{filetype}", new BinaryData(data));
                 operations.Add(PatchOperation.Set("/avatarUrl", url.OriginalString));
+                _logger.LogInformation("Patch:: {0}: {1}", nameof(TwiHighUser.AvatarUrl), url);
             }
 
             return operations;
