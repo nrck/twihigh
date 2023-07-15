@@ -1,17 +1,18 @@
-﻿@inherits UIComponentBase
+﻿@using PheasantTails.TwiHigh.Client.Extensions;
+@inherits UIComponentBase
 @* ツイート外枠 *@
-<article id="@ArticleId" class="tweet-article fadein @(Tweet == null ? "" : (Tweet.IsReaded ? "readed" : "unread-border"))">
+<article id="@ArticleId" class="twi-high-article fadein @(Tweet == null ? "" : (Tweet.IsReaded ? "readed" : "unread-border"))">
     @if (Tweet != null)
     {
         @* 左 *@
-        <div class="tweet-article-left">
+        <div class="twi-high-article-left">
             @* アイコン *@
             <AvatarComponent UserAvatarUrl="@Tweet.UserAvatarUrl" OnClick=OnClickAvatar />
         </div>
         @* 右 *@
-        <div class="tweet-article-right">
+        <div class="twi-high-article-right">
             @* ヘッダー *@
-            <div class="tweet-article-right-header @(Tweet.IsEmphasized ? "emphasized" : "")">
+            <div class="twi-high-article-right-header @(Tweet.IsEmphasized ? "emphasized" : "")">
                 @* ユーザー名 *@
                 <div class="user-display-name">
                     <span class="@(Tweet.IsEmphasized ? "emphasized" : "")" @onclick=OnClickUserDisplayName>@Tweet.UserDisplayName</span>
@@ -33,7 +34,7 @@
                 }
             </div>
             @* ボディ*@
-            <div class="tweet-article-right-body" @onclick="OnClickTweetArea">
+            <div class="twi-high-article-right-body" @onclick="OnClickTweetArea">
                 @* テキスト本文 *@
                 <div class="user-tweet-text @(Tweet.IsEmphasized ? "emphasized" : "")">
                     @if (!string.IsNullOrEmpty(Tweet.ReplyToUserDisplayId) && !Tweet.IsDeleted)
@@ -41,10 +42,10 @@
                         <span class="reply"><AutoLink Text="@($"Replying to @{Tweet.ReplyToUserDisplayId}")" ReplaceUrl=false /></span>
                         <br />
                     }
-                    <span class="@(Tweet.IsEmphasized ? "emphasized" : "")"><AutoLink Text="@Tweet.GetTextWithNewline()" ReplaceDisplayId=true /></span>
+                    <span class="@(Tweet.IsEmphasized ? "emphasized" : "")"><AutoLink Text="@Tweet.Text.GetTextWithNewline()" ReplaceDisplayId=true /></span>
                 </div>
             </div>
-            <div class="tweet-article-right-footer  @(Tweet.IsEmphasized ? "emphasized" : "")">
+            <div class="twi-high-article-right-footer  @(Tweet.IsEmphasized ? "emphasized" : "")">
                 @if (Tweet.IsEmphasized)
                 {
                     @* 投稿時刻 *@

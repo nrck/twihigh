@@ -1,4 +1,4 @@
-﻿.tweet-article {
+﻿.twi-high-article {
     display: flex;
     padding-top: 12px;
     padding-right: 12px;
@@ -25,25 +25,25 @@
     padding-left: 12px;
 }
 
-.tweet-article-left {
+.twi-high-article-left {
     width: 48px;
     margin-right: 12px;
 }
 
-.tweet-article-right {
+.twi-high-article-right {
     width: calc(100% - 12px - 48px);
 }
 
-    .tweet-article-right .emphasized {
+    .twi-high-article-right .emphasized {
         flex-wrap: wrap;
     }
 
-.tweet-article-right-header {
+.twi-high-article-right-header {
     display: flex;
     max-width: 100%;
 }
 
-.tweet-article-right-body:hover {
+.twi-high-article-right-body:hover {
     cursor: pointer;
 }
 
@@ -106,7 +106,7 @@
     margin-right: auto;
 }
 
-.tweet-article-right-body .emphasized {
+.twi-high-article-right-body .emphasized {
     margin-top: 12px;
     margin-bottom: 12px;
 }
@@ -133,7 +133,7 @@
         font-size: 10px;
     }
 
-.tweet-article-right-footer {
+.twi-high-article-right-footer {
     display: flex;
     width: 100%;
     margin-top: 4px;
@@ -141,7 +141,7 @@
     line-height: 16px;
 }
 
-    .tweet-article-right-footer .link-button {
+    .twi-high-article-right-footer .link-button {
         display: flex;
         height: 20px;
         width: calc(100% / 4);
@@ -152,7 +152,7 @@
         color: rgb(83, 100, 113);
     }
 
-        .tweet-article-right-footer .link-button .icon {
+        .twi-high-article-right-footer .link-button .icon {
             height: 20px;
             width: 30%;
             text-align: right;
@@ -160,7 +160,7 @@
             padding-right: 4px;
         }
 
-        .tweet-article-right-footer .link-button .number {
+        .twi-high-article-right-footer .link-button .number {
             height: 20px;
             width: 70%;
             text-align: left;

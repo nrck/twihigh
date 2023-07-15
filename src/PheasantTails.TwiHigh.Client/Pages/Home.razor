@@ -17,7 +17,14 @@
                        IsForceForcus=true />
 </section>
 @* タイムライン *@
-<TimelineComponent @key="MyTwiHithUserId"
+@if (Tweets == null)
+{
+    <NoContentsComponent />
+}
+else
+{
+
+    <TimelineComponent @key="MyTwiHithUserId"
                    Tweets="Tweets"
                    MyTwiHithUserId=MyTwiHithUserId
                    OnClickDelete="OnClickDeleteButtonAsync"
@@ -26,3 +33,4 @@
                    OnClickProfile="OnClickProfile"
                    OnClickGapTweetsLoad="OnClickGetGapTweets"
                    OnClickDetail="OnClickDetail" />
+}

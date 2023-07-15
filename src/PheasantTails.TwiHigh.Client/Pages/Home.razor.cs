@@ -187,11 +187,6 @@ namespace PheasantTails.TwiHigh.Client.Pages
                 await SaveTimelineToLocalStorageAsync();
                 StateHasChanged();
             }
-            else if (Tweets == null)
-            {
-                Tweets = new List<TweetViewModel>();
-                StateHasChanged();
-            }
         }
 
         private async Task OnClickGetGapTweets(TweetViewModel tweet)
