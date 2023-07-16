@@ -23,19 +23,25 @@
                     <NavLink class="nav-link" href="@DefinePaths.PAGE_PATH_LOGIN">
                         <span class="oi oi-account-login" aria-hidden="true"></span> ログイン
                     </NavLink>
+                    <NavLink class="nav-link" href="@DefinePaths.PAGE_PATH_LICENCE">
+                        <span class="oi oi-badge" aria-hidden="true" style="padding-left: 6px; padding-top: 4px;"></span> ライセンス
+                    </NavLink>
                 </NotAuthorized>
                 <Authorized>
                     <NavLink class="nav-link" href="@DefinePaths.PAGE_PATH_HOME">
                         <span class="oi oi-home" aria-hidden="true"></span> ホーム
                     </NavLink>
                     <NavLink class="nav-link" href="@(string.Format(DefinePaths.PAGE_PATH_PROFILE, string.Empty))">
-                        <span class="oi oi-image" aria-hidden="true"></span> プロフィール
+                        <span class="oi oi-image" aria-hidden="true" style="padding-top: 6px;"></span> プロフィール
                     </NavLink>
                     <NavLink class="nav-link" href="@DefinePaths.PAGE_PATH_CLEAR_LOCALDATA">
-                        <span class="oi oi-delete" aria-hidden="true"></span> キャッシュクリア
+                        <span class="oi oi-delete" aria-hidden="true" style="padding-top: 7px;"></span> キャッシュクリア
+                    </NavLink>
+                    <NavLink class="nav-link" href="@DefinePaths.PAGE_PATH_LICENCE">
+                        <span class="oi oi-badge" aria-hidden="true" style="padding-left: 6px; padding-top: 7px;"></span> ライセンス
                     </NavLink>
                     <NavLink class="nav-link" href="@DefinePaths.PAGE_PATH_LOGOUT">
-                        <span class="oi oi-account-logout" aria-hidden="true"></span> ログアウト
+                        <span class="oi oi-account-logout" aria-hidden="true" style="padding-top: 6px;"></span> ログアウト
                     </NavLink>
                 </Authorized>
             </AuthorizeView>

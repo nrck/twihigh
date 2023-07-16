@@ -11,5 +11,6 @@
         internal const string PAGE_PATH_SIGNUP = "/signup";
         internal const string PAGE_PATH_STATUS = "/{0}/status/{1}";
         internal const string PAGE_PATH_CLEAR_LOCALDATA = "/clear";
+        internal const string PAGE_PATH_LICENCE = "/licence";
     }
 }
