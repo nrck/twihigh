@@ -1,0 +1,41 @@
+﻿@page "/licence"
+@using PheasantTails.TwiHigh.Client.ViewModels;
+@inherits PageBase
+@inject HttpClient client
+
+<PageTitle>ライセンス - ツイハイ！</PageTitle>
+<PageTitleComponent Title="ライセンス" />
+
+@if (Licences == null)
+{
+    <Loading />
+}
+else if (Licences.Any())
+{
+    foreach (var licence in Licences)
+    {
+        <LicenceComponent Licence="licence" />
+    }
+}
+else
+{
+    <NoContentsComponent NoContentsText="表示するライセンスはありません。" />
+}
+
+
+@code {
+    private Licence[]? Licences { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Licences = await client.GetFromJsonAsync<Licence[]>($"{Navigation.BaseUri}licenses.json");
+        }
+        catch (Exception)
+        {
+            Licences = Array.Empty<Licence>();
+        }
+        await base.OnInitializedAsync();
+    }
+}
