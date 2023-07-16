@@ -26,6 +26,13 @@ jobs:
           submodules: true
       - name: Install .NET WebAssembly Tools
         run: dotnet workload install wasm-tools
+      - name: 'create licence list json'
+        shell: bash
+        run: |
+          pushd './src/PheasantTails.TwiHigh.Client/'
+          dotnet tool install --global dotnet-project-licenses
+          dotnet-project-licenses -i . -j true -f wwwroot
+          popd
       - name: Build And Deploy Client
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
@@ -48,6 +55,15 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: true
+      - name: Install .NET WebAssembly Tools
+        run: dotnet workload install wasm-tools
+      - name: 'create licence list json'
+        shell: bash
+        run: |
+          pushd './src/PheasantTails.TwiHigh.Client/'
+          dotnet tool install --global dotnet-project-licenses
+          dotnet-project-licenses -i . -j true -f wwwroot
+          popd
       - name: Build And Deploy Client
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
