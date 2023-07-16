@@ -21,9 +21,19 @@ namespace PheasantTails.TwiHigh.Functions.Core.Services
                     throw new ArgumentNullException(nameof(buffer));
                 }
 
-                // オリジナルの取得
+                // オリジナルのコーデック取得
                 _logger.LogInformation("{0}:: Get origin images.", nameof(TrimmingToSquare));
-                using var originImage = SKBitmap.Decode(buffer);
+                using var ms = new MemoryStream(buffer);
+                using var data = SKData.Create(ms, buffer.Length);
+                using var codec = SKCodec.Create(data);
+                _logger.LogInformation("{0}:: SK Encoded image format: {1}", nameof(TrimmingToSquare), codec.EncodedFormat);
+                if (codec.EncodedFormat != SKEncodedImageFormat.Jpeg || codec.EncodedFormat != SKEncodedImageFormat.Png)
+                {
+                    throw new NotSupportedException("Supported image format is only jpeg, png.");
+                }
+
+                // オリジナルの画像を取得
+                using var originImage = SKBitmap.Decode(codec);
 
                 // 一辺の長さを設定
                 _logger.LogInformation("{0}:: Set side size from origin width or height.", nameof(TrimmingToSquare));
@@ -54,6 +64,16 @@ namespace PheasantTails.TwiHigh.Functions.Core.Services
                 _logger.LogInformation(ex.StackTrace);
                 throw;
             }
+        }
+
+        static private (SKBitmap skbitmap, SKCodec codec) Decode(byte[] buffer)
+        {
+            using var ms = new MemoryStream(buffer);
+            using var data = SKData.Create(ms, buffer.Length);
+            var codec = SKCodec.Create(data);
+            var bitmap = SKBitmap.Decode(codec);
+
+            return (bitmap, codec);
         }
     }
 }
