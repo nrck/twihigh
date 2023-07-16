@@ -32,6 +32,7 @@ jobs:
           pushd './src/PheasantTails.TwiHigh.Client/'
           dotnet tool install --global dotnet-project-licenses
           dotnet-project-licenses -i . -j true -f wwwroot
+          rm -f wwwroot/appsettings.Development.json
           popd
       - name: Build And Deploy Client
         id: builddeploy

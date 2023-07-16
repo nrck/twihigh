@@ -27,7 +27,7 @@ namespace PheasantTails.TwiHigh.Functions.Core.Services
                 using var data = SKData.Create(ms, buffer.Length);
                 using var codec = SKCodec.Create(data);
                 _logger.LogInformation("{0}:: SK Encoded image format: {1}", nameof(TrimmingToSquare), codec.EncodedFormat);
-                if (codec.EncodedFormat != SKEncodedImageFormat.Jpeg || codec.EncodedFormat != SKEncodedImageFormat.Png)
+                if (codec.EncodedFormat != SKEncodedImageFormat.Jpeg && codec.EncodedFormat != SKEncodedImageFormat.Png)
                 {
                     throw new NotSupportedException("Supported image format is only jpeg, png.");
                 }
@@ -53,10 +53,10 @@ namespace PheasantTails.TwiHigh.Functions.Core.Services
 
                 // 400x400にリサイズ
                 _logger.LogInformation("{0}:: Resize 400x400.", nameof(TrimmingToSquare));
-                var data = newImage.Resize(new SKSizeI(400, 400), SKFilterQuality.High)
+                var resizedImage = newImage.Resize(new SKSizeI(400, 400), SKFilterQuality.High)
                     .Encode(format, 80).ToArray();
 
-                return data;
+                return resizedImage;
             }
             catch (Exception ex)
             {
