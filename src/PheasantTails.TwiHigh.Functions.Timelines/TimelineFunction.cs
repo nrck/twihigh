@@ -211,6 +211,7 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
 
 
             // 自身のタイムラインに加える
+            var index = 0;
             while (tweetIterator.HasMoreResults)
             {
                 var result = await tweetIterator.ReadNextAsync();
@@ -221,11 +222,16 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
                         UpdateAt = DateTimeOffset.UtcNow
                     };
                     batch.CreateItem(timeline);
+                    index++;
+                    if (100 <= index)
+                    {
+                        var response = await batch.ExecuteAsync();
+                        _logger.LogInformation("Batch status code:{0}, RU:{1}", response.StatusCode, response.RequestCharge);
+                        batch = timelines.CreateTransactionalBatch(new PartitionKey(que.UserId.ToString()));
+                        index = 0;
+                    }
                 }
             }
-
-            var response = await batch.ExecuteAsync();
-            _logger.LogInformation("Batch status code:{0}, RU:{1}", response.StatusCode, response.RequestCharge);
         }
 
         [FunctionName("DeleteTimelinesTweetTrigger")]
