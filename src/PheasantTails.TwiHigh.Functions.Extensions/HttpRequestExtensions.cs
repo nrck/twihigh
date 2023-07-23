@@ -41,20 +41,20 @@ namespace PheasantTails.TwiHigh.Functions.Extensions
             }
 
             // jwtの取得
-            var bearerToken = authorizationHeader.Replace("Bearer ", "");
-            var handler = new JwtSecurityTokenHandler();
-            var jwt = handler.ReadJwtToken(bearerToken);
             try
             {
+                var bearerToken = authorizationHeader.Replace("Bearer ", "");
+                var handler = new JwtSecurityTokenHandler();
+                var jwt = handler.ReadJwtToken(bearerToken);
                 handler.ValidateToken(bearerToken, tokenValidationParameters, out var _);
+
+                id = jwt.Payload.Claims.FirstOrDefault(c => c.Type == "Id")?.Value ?? string.Empty;
+                return !string.IsNullOrEmpty(id);
             }
             catch (Exception)
             {
                 return false;
             }
-
-            id = jwt.Payload.Claims.FirstOrDefault(c => c.Type == "Id")?.Value ?? string.Empty;
-            return !string.IsNullOrEmpty(id);
         }
     }
 }
