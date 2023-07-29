@@ -177,7 +177,7 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
 
             // キューの取得
             var que = JsonSerializer.Deserialize<AddNewFolloweeTweetContext>(myQueueItem);
-            _logger.LogInformation("{0} remove to {1} at {2}.", que.UserId, que.FolloweeId, DateTimeOffset.UtcNow.ToString("yyyy/MM/dd HH:mm:ss"));
+            _logger.LogInformation("[AddTimelinesFollowTrigger] {0} follow to {1} at {2}.", que.UserId, que.FolloweeId, DateTimeOffset.UtcNow.ToString("yyyy/MM/dd HH:mm:ss"));
 
             // 自身のタイムラインにの対象ユーザの既存のツイートがある場合は削除する
             var query = new QueryDefinition(
@@ -186,6 +186,7 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
                 "AND c.ownerUserId = @OwnerUserId")
                 .WithParameter("@FolloweeId", que.FolloweeId)
                 .WithParameter("@OwnerUserId", que.UserId);
+            _logger.LogInformation("[AddTimelinesFollowTrigger] Remove Query: {0}", query.QueryText);
 
             var timelines = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TIMELINE_CONTAINER_NAME);
             var batch = timelines.CreateTransactionalBatch(new PartitionKey(que.UserId.ToString()));
@@ -203,7 +204,7 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
             var tweets = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TWEET_CONTAINER_NAME);
             var tweetIterator = tweets.GetItemQueryIterator<Tweet>(
                 "SELECT * FROM c " +
-                "WHERE c.isDeleted = false OR NOT IS_DEFINED(c.isDeleted)",
+                "WHERE c.isDeleted != true",
                 requestOptions: new QueryRequestOptions
                 {
                     PartitionKey = new PartitionKey(que.FolloweeId.ToString())
@@ -226,12 +227,15 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
                     if (100 <= index)
                     {
                         var response = await batch.ExecuteAsync();
-                        _logger.LogInformation("Batch status code:{0}, RU:{1}", response.StatusCode, response.RequestCharge);
+                        _logger.LogInformation("[AddTimelinesFollowTrigger] Batch status code:{0}, RU:{1}", response.StatusCode, response.RequestCharge);
                         batch = timelines.CreateTransactionalBatch(new PartitionKey(que.UserId.ToString()));
                         index = 0;
                     }
                 }
             }
+
+            var response2 = await batch.ExecuteAsync();
+            _logger.LogInformation("[AddTimelinesFollowTrigger] Batch status code:{0}, RU:{1}", response2.StatusCode, response2.RequestCharge);
         }
 
         [FunctionName("DeleteTimelinesTweetTrigger")]
