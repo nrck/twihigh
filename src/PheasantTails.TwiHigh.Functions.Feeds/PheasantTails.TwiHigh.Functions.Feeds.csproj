@@ -1,18 +1,29 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <AzureFunctionsVersion>v4</AzureFunctionsVersion>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.1.1" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="host.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="local.settings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </None>
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<AzureFunctionsVersion>v4</AzureFunctionsVersion>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage" Version="4.0.5" />
+		<PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.1.1" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\PheasantTails.TwiHigh.Data.Model\PheasantTails.TwiHigh.Data.Model.csproj" />
+		<ProjectReference Include="..\PheasantTails.TwiHigh.Functions.Core\PheasantTails.TwiHigh.Functions.Core.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<FunctionsPreservedDependencies Include="System.IdentityModel.Tokens.Jwt.dll" />
+		<FunctionsPreservedDependencies Include="System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.dll" />
+		<FunctionsPreservedDependencies Include="Microsoft.IdentityModel.Tokens.dll" />
+		<FunctionsPreservedDependencies Include="Microsoft.IdentityModel.Logging.dll" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Update="host.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="local.settings.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<CopyToPublishDirectory>Never</CopyToPublishDirectory>
+		</None>
+	</ItemGroup>
 </Project>

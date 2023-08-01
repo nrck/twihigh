@@ -23,6 +23,11 @@
         public const string TWIHIGH_USER_CONTAINER_NAME = "Users";
 
         /// <summary>
+        /// 通知情報を格納するコンテナ名称
+        /// </summary>
+        public const string TWIHIGH_FEED_CONTAINER_NAME = "Feeds";
+
+        /// <summary>
         /// キュートリガー用のキューが格納されているBlobStorageの接続文字列を保存している環境変数名
         /// </summary>
         public const string QUEUE_STORAGE_CONNECTION_STRINGS_ENV_NAME = "StorageConnectionString";
@@ -66,5 +71,10 @@
         /// ユーザ情報が更新されたときにタイムラインを更新するキュー名称
         /// </summary>
         public const string AZURE_STORAGE_UPDATE_USER_INFO_IN_TIMELINE_QUEUE_NAME = "update-user-info-in-timeline-trigger";
+
+        /// <summary>
+        /// お気に入り登録されたときにフィードを作成するキュー名称
+        /// </summary>
+        public const string AZURE_STORAGE_FEED_FAVORED_BY_USER_QUEUE_NAME = "feed-facored-by-user-trigger";
     }
 }
