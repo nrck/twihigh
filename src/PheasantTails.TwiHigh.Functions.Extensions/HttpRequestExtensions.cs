@@ -56,5 +56,35 @@ namespace PheasantTails.TwiHigh.Functions.Extensions
                 return false;
             }
         }
+
+        public static DateTimeOffset GetSinceDatetime(this HttpRequest request)
+        {
+            if (request.Query.TryGetDateTimeOffsetFromQuery("since", out var datetimeOffset))
+            {
+                return datetimeOffset;
+            }
+            else
+            {
+                return DateTimeOffset.MinValue;
+            }
+        }
+
+        public static DateTimeOffset GetUntilDatetime(this HttpRequest request)
+        {
+            if (request.Query.TryGetDateTimeOffsetFromQuery("until", out var datetimeOffset))
+            {
+                return datetimeOffset;
+            }
+            else
+            {
+                return DateTimeOffset.MaxValue;
+            }
+        }
+
+        private static bool TryGetDateTimeOffsetFromQuery(this IQueryCollection collection, string key, out DateTimeOffset dateTimeOffset)
+        {
+            dateTimeOffset = default;
+            return collection.TryGetValue("since", out var since) && DateTimeOffset.TryParse(since, out dateTimeOffset);
+        }
     }
 }

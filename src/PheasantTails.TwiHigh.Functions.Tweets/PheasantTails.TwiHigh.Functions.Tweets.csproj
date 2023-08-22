@@ -2,6 +2,7 @@
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<AzureFunctionsVersion>v4</AzureFunctionsVersion>
+		<LangVersion>11</LangVersion>
 	</PropertyGroup>
 	<ItemGroup>
 		<FunctionsPreservedDependencies Include="System.IdentityModel.Tokens.Jwt.dll" />
