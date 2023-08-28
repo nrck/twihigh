@@ -33,7 +33,7 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.HttpTrigger
             _client = client;
         }
 
-        [FunctionName("GetUserTweet")]
+        [FunctionName(FUNCTION_NAME)]
         public async Task<IActionResult> GetUserTweetsAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "user/{userId}")] HttpRequest req,
             Guid userId,
