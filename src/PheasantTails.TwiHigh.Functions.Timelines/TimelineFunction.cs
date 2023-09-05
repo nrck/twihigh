@@ -41,65 +41,8 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
 
         
 
-        [FunctionName("UpdateReplyFromTimelinesTweetTrigger")]
-        public async Task UpdateReplyFromTimelinesTweetTriggerAsync([QueueTrigger(AZURE_STORAGE_UPDATE_REPLYFROM_TIMELINES_TWEET_TRIGGER_QUEUE_NAME, Connection = QUEUE_STORAGE_CONNECTION_STRINGS_ENV_NAME)] string myQueueItem)
-        {
-            try
-            {
-                if (myQueueItem == null) return;
 
-                var que = JsonSerializer.Deserialize<UpdateTimelineQueue>(myQueueItem);
-
-                if (!que.Tweet.ReplyTo.HasValue)
-                {
-                    throw new ArgumentException("ReplyTo property is required.", nameof(myQueueItem));
-                }
-
-                var patch = new[]
-                {
-                    PatchOperation.Add("/replyFrom/-", que.Tweet.Id),
-                    PatchOperation.Set("/updateAt", que.Tweet.UpdateAt)
-                };
-                
-                var batchResult = await _client.PatchTimelineAsync(que.Tweet.ReplyTo.Value, patch);
-                _logger.LogInformation("PatchTimelineAsync batch finish. RU:{0}, Task Count:{1}, Success:{2}",
-                    batchResult.Sum(r => r.Headers.RequestCharge),
-                    batchResult.LongLength,
-                    batchResult.LongCount(r => r.IsSuccessStatusCode));
-            }
-            catch (CosmosException ex)
-            {
-                throw;
-            }
-        }
-
-        [FunctionName("UpdateReplyToTimelinesTweetTrigger")]
-        public async Task UpdateReplyToTimelinesTweetTriggerAsync([QueueTrigger(AZURE_STORAGE_UPDATE_REPLYTO_TIMELINES_TWEET_TRIGGER_QUEUE_NAME, Connection = QUEUE_STORAGE_CONNECTION_STRINGS_ENV_NAME)] string myQueueItem)
-        {
-            try
-            {
-                if (myQueueItem == null) return;
-                var que = JsonSerializer.Deserialize<UpdateTimelineQueue>(myQueueItem);
-                var patch = new[]
-                {
-                    PatchOperation.Remove("/replyTo"),
-                    PatchOperation.Set("/updateAt", que.Tweet.UpdateAt)
-                };
-                var batchResult = await _client.PatchTimelineAsync(que.Tweet.Id, patch);
-                _logger.LogInformation("PatchTimelineAsync batch finish. RU:{0}, Task Count:{1}, Success:{2}",
-                    batchResult.Sum(r => r.Headers.RequestCharge),
-                    batchResult.LongLength,
-                    batchResult.LongCount(r => r.IsSuccessStatusCode));
-            }
-            catch (CosmosException ex)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
+        
 
         [FunctionName("UpdateUserInfoTriggeredTweetUpdated")]
         public async Task UpdateUserInfoTriggeredTweetUpdatedAsync([QueueTrigger(AZURE_STORAGE_UPDATE_USER_INFO_IN_TIMELINE_QUEUE_NAME, Connection = QUEUE_STORAGE_CONNECTION_STRINGS_ENV_NAME)] string myQueueItem)
