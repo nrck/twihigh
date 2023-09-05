@@ -132,16 +132,16 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.HttpTrigger
                     if (ex.StatusCode == HttpStatusCode.BadRequest)
                     {
                         logger.TwiHighLogWarning(FUNCTION_NAME, ex);
-                        logger.TwiHighLogWarning(FUNCTION_NAME, "The delete request is bad request.");
+                        logger.TwiHighLogWarning(FUNCTION_NAME, "The put favorite request is bad request.");
                         return new BadRequestResult();
                     }
                     if (ex.StatusCode == HttpStatusCode.Conflict)
                     {
                         logger.TwiHighLogWarning(FUNCTION_NAME, ex);
-                        logger.TwiHighLogWarning(FUNCTION_NAME, "The delete request is conflict.");
+                        logger.TwiHighLogWarning(FUNCTION_NAME, "The put favorite request is conflict.");
                         return new ConflictResult();
                     }
-                    throw new TweetException($"An error occurred while deleting the tweet.", ex);
+                    throw new TweetException($"An error occurred while put favorite the tweet.", ex);
                 }
 
                 // Insert queue message to timelines function.
