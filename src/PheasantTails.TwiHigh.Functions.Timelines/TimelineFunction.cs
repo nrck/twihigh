@@ -39,34 +39,7 @@ namespace PheasantTails.TwiHigh.Functions.Timelines
 
 
 
-        [FunctionName("DeleteTimelinesTweetTrigger")]
-        public async Task DeleteTimelinesTweetTriggerAsync([QueueTrigger(AZURE_STORAGE_DELETE_TIMELINES_TWEET_TRIGGER_QUEUE_NAME, Connection = QUEUE_STORAGE_CONNECTION_STRINGS_ENV_NAME)] string myQueueItem)
-        {
-            try
-            {
-                if (myQueueItem == null) return;
-                var que = JsonSerializer.Deserialize<DeleteTimelineQueue>(myQueueItem);
-                var patch = new[]
-                {
-                    PatchOperation.Set("/text", "This tweet has been deleted."),
-                    PatchOperation.Set("/isDeleted", true),
-                    PatchOperation.Set("/updateAt", que.Tweet.UpdateAt)
-                };
-                var batchResult = await _client.PatchTimelineAsync(que.Tweet.Id, patch);
-                _logger.LogInformation("PatchTimelineAsync batch finish. RU:{0}, Task Count:{1}, Success:{2}",
-                    batchResult.Sum(r => r.Headers.RequestCharge),
-                    batchResult.LongLength,
-                    batchResult.LongCount(r => r.IsSuccessStatusCode));
-            }
-            catch (CosmosException ex)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
+        
 
         [FunctionName("UpdateReplyFromTimelinesTweetTrigger")]
         public async Task UpdateReplyFromTimelinesTweetTriggerAsync([QueueTrigger(AZURE_STORAGE_UPDATE_REPLYFROM_TIMELINES_TWEET_TRIGGER_QUEUE_NAME, Connection = QUEUE_STORAGE_CONNECTION_STRINGS_ENV_NAME)] string myQueueItem)
