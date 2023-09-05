@@ -59,6 +59,7 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.HttpTrigger
                 {
                     if (ex.StatusCode == HttpStatusCode.NotFound)
                     {
+                        logger.TwiHighLogWarning(FUNCTION_NAME, ex);
                         logger.TwiHighLogWarning(FUNCTION_NAME, "Authroized user is NOT found. ID: {0}", userId);
                         return new UnauthorizedResult();
                     }
@@ -107,9 +108,16 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.HttpTrigger
                 // Create patch operations.
                 var patch = new[]
                 {
-                    PatchOperation.Add("/favoriteFrom/-", favoriteFrom),
                     PatchOperation.Set("/updateAt", DateTimeOffset.UtcNow)
                 };
+                if (targetTweet.FavoriteFrom.Length == 0)
+                {
+                    patch = patch.Append(PatchOperation.Set("/favoriteFrom", new[] { favoriteFrom })).ToArray();
+                }
+                else
+                {
+                    patch = patch.Append(PatchOperation.Add("/favoriteFrom/-", favoriteFrom)).ToArray();
+                }
 
                 // Patch the tweet.
                 ItemResponse<Tweet> tweetPatchResponse;
@@ -122,11 +130,13 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.HttpTrigger
                 {
                     if (ex.StatusCode == HttpStatusCode.BadRequest)
                     {
+                        logger.TwiHighLogWarning(FUNCTION_NAME, ex);
                         logger.TwiHighLogWarning(FUNCTION_NAME, "The delete request is bad request.");
                         return new BadRequestResult();
                     }
                     if (ex.StatusCode == HttpStatusCode.Conflict)
                     {
+                        logger.TwiHighLogWarning(FUNCTION_NAME, ex);
                         logger.TwiHighLogWarning(FUNCTION_NAME, "The delete request is conflict.");
                         return new ConflictResult();
                     }
