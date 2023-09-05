@@ -56,12 +56,12 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.HttpTriggers
                 };
 
                 // Delete the tweet.
-                ItemResponse<Tweet> tweetCreateResponse;
+                ItemResponse<Tweet> tweetPatchResponse;
                 try
                 {
                     // If the UserID of the posting user of the target tweet and the UserID of
                     // the requesting user are different, an exception will occur here.
-                    tweetCreateResponse = await _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TWEET_CONTAINER_NAME)
+                    tweetPatchResponse = await _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TWEET_CONTAINER_NAME)
                         .PatchItemAsync<Tweet>(id, new PartitionKey(userId), patch);
                 }
                 catch (CosmosException ex)
@@ -80,9 +80,19 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.HttpTriggers
                 }
 
                 // Remove from a follower's timeline.
+                var que = new PatchTweetQueue
+                {
+                    TweetId = tweetPatchResponse.Resource.Id,
+                    Operations = new[]
+                    {
+                        PatchOperation.Set("/text", "This tweet has been deleted."),
+                        PatchOperation.Set("/isDeleted", true),
+                        PatchOperation.Set("/updateAt", tweetPatchResponse.Resource.UpdateAt)
+                    }
+                };
                 await QueueStorages.InsertMessageAsync(
-                    AZURE_STORAGE_DELETE_TIMELINES_TWEET_TRIGGER_QUEUE_NAME,
-                    new DeleteTimelineQueue(tweetCreateResponse));
+                    AZURE_STORAGE_PATCH_TWEET_IN_TIMELINES_QUEUE_NAME,
+                    que);
 
                 return new OkResult();
             }

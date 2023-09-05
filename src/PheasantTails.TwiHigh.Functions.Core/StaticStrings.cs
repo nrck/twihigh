@@ -43,11 +43,6 @@
         public const string AZURE_STORAGE_ADD_TIMELINES_FOLLOW_TRIGGER_QUEUE_NAME = "add-timelines-follow-trigger";
 
         /// <summary>
-        /// ツイートが削除されたときにタイムラインに反映するキュー名称
-        /// </summary>
-        public const string AZURE_STORAGE_DELETE_TIMELINES_TWEET_TRIGGER_QUEUE_NAME = "delete-timelines-tweet-trigger";
-
-        /// <summary>
         /// リムーブされたユーザのツイートをタイムラインから削除するキュー名称
         /// </summary>
         public const string AZURE_STORAGE_DELETE_TIMELINES_FOLLOW_TRIGGER_QUEUE_NAME = "delete-timelines-follow-trigger";
