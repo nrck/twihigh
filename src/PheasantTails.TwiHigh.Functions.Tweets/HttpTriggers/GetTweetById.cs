@@ -13,7 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using static PheasantTails.TwiHigh.Functions.Core.StaticStrings;
 
-namespace PheasantTails.TwiHigh.Functions.Tweets.HttpTrigger
+namespace PheasantTails.TwiHigh.Functions.Tweets.HttpTriggers
 {
     public class GetTweetById
     {
