@@ -145,7 +145,7 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.HttpTriggers
                 var patch = new[]
                 {
                     PatchOperation.Add("/replyFrom/-", tweet.Id),
-                    PatchOperation.Set("/updateAt", DateTimeOffset.Now)
+                    PatchOperation.Set("/updateAt", DateTimeOffset.UtcNow)
                 };
 
                 // Do patch operation.
@@ -156,20 +156,34 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.HttpTriggers
                         .PatchItemAsync<Tweet>(tweetid, partitionKey, patch);
                     logger.TwiHighLogInformation(funcName, "Patch a tweet. Total RU: {0:0.00}", tweetPatchResponse.RequestCharge);
 
+                    var que = new PatchTweetQueue
+                    {
+                        TweetId = context.TweetId,
+                        Operations = patch
+                    };
                     await QueueStorages.InsertMessageAsync(
-                        AZURE_STORAGE_UPDATE_REPLYFROM_TIMELINES_TWEET_TRIGGER_QUEUE_NAME,
-                        new UpdateTimelineQueue(tweet));
-                    logger.TwiHighLogInformation(funcName, "Insert queue message to {0}", AZURE_STORAGE_UPDATE_REPLYFROM_TIMELINES_TWEET_TRIGGER_QUEUE_NAME);
+                        AZURE_STORAGE_PATCH_TWEET_IN_TIMELINES_QUEUE_NAME,
+                        que);
+                    logger.TwiHighLogInformation(funcName, "Insert queue message to {0}", AZURE_STORAGE_PATCH_TWEET_IN_TIMELINES_QUEUE_NAME);
                 }
                 catch (CosmosException ex)
                 {
                     logger.TwiHighLogError(FUNCTION_NAME, ex);
 
                     // Delete the replyTo of own tweet when it fails.
+                    var que = new PatchTweetQueue
+                    {
+                        TweetId = context.TweetId,
+                        Operations = new[]
+                        {
+                            PatchOperation.Remove("/replyTo"),
+                            PatchOperation.Set("/updateAt", tweet.UpdateAt)
+                        }
+                    };
                     await QueueStorages.InsertMessageAsync(
-                        AZURE_STORAGE_UPDATE_REPLYTO_TIMELINES_TWEET_TRIGGER_QUEUE_NAME,
-                        new UpdateTimelineQueue(tweet));
-                    logger.TwiHighLogInformation(funcName, "Insert queue message to {0}", AZURE_STORAGE_UPDATE_REPLYTO_TIMELINES_TWEET_TRIGGER_QUEUE_NAME);
+                        AZURE_STORAGE_PATCH_TWEET_IN_TIMELINES_QUEUE_NAME,
+                        que);
+                    logger.TwiHighLogInformation(funcName, "Insert queue message to {0}", AZURE_STORAGE_PATCH_TWEET_IN_TIMELINES_QUEUE_NAME);
                 }
 
                 return tweetPatchResponse;

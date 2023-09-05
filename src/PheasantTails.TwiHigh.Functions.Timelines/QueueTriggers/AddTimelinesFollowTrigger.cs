@@ -32,7 +32,7 @@ namespace PheasantTails.TwiHigh.Functions.Timelines.QueueTriggers
 
         [FunctionName(FUNCTION_NAME)]
         public async Task AddTimelinesFollowTriggerAsync(
-            [QueueTrigger(AZURE_STORAGE_ADD_TIMELINES_FOLLOW_TRIGGER_QUEUE_NAME, Connection = QUEUE_STORAGE_CONNECTION_STRINGS_ENV_NAME)] string myQueueItem
+            [QueueTrigger(AZURE_STORAGE_ADD_TIMELINES_FOLLOW_TRIGGER_QUEUE_NAME, Connection = QUEUE_STORAGE_CONNECTION_STRINGS_ENV_NAME)] string myQueueItem,
             ILogger logger)
         {
             try

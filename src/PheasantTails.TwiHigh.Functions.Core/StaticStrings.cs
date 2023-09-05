@@ -48,16 +48,6 @@
         public const string AZURE_STORAGE_DELETE_TIMELINES_FOLLOW_TRIGGER_QUEUE_NAME = "delete-timelines-follow-trigger";
 
         /// <summary>
-        /// リプライツイートをタイムラインに反映するキュー名称
-        /// </summary>
-        public const string AZURE_STORAGE_UPDATE_REPLYFROM_TIMELINES_TWEET_TRIGGER_QUEUE_NAME = "update-replyfrom-timelines-tweet-trigger";
-
-        /// <summary>
-        /// リプライツイートをタイムラインに反映するキュー名称
-        /// </summary>
-        public const string AZURE_STORAGE_UPDATE_REPLYTO_TIMELINES_TWEET_TRIGGER_QUEUE_NAME = "update-replyto-timelines-tweet-trigger";
-
-        /// <summary>
         /// ユーザ情報が更新されたときにツイートを更新するキュー名称
         /// </summary>
         public const string AZURE_STORAGE_UPDATE_USER_INFO_IN_TWEET_QUEUE_NAME = "update-user-info-in-tweet-trigger";
