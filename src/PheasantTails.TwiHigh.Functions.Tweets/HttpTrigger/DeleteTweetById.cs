@@ -52,7 +52,7 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.HttpTrigger
                     // Sets the deleted flag to true.
                     PatchOperation.Set("/isDeleted", true),
                     // Sets the update time to UTC now.
-                    PatchOperation.Set("/updateAt", DateTimeOffset.Now)
+                    PatchOperation.Set("/updateAt", DateTimeOffset.UtcNow)
                 };
 
                 // Delete the tweet.

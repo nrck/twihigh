@@ -37,8 +37,8 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.QueueTriggers
                 logger.TwiHighLogStart(FUNCTION_NAME);
                 if (myQueueItem == null)
                 {
-                    logger.TwiHighLogWarning(FUNCTION_NAME, "The queue item is null.");
-                    return;
+                    // null check
+                    throw new ArgumentNullException(nameof(myQueueItem), "Queue is Null");
                 }
 
                 // Create patch operation.

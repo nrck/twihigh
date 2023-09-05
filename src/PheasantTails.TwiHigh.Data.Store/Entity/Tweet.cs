@@ -12,5 +12,7 @@
         public bool IsDeleted { get; set; }
         public Guid? ReplyTo { get; set; }
         public Guid[] ReplyFrom { get; set; } = Array.Empty<Guid>();
+        public IdTimeStampPair[]? FavoriteFrom { get; set; } = Array.Empty<IdTimeStampPair>();
+        public IdTimeStampPair[]? RetweetFrom { get; set; } = Array.Empty<IdTimeStampPair>();
     }
 }

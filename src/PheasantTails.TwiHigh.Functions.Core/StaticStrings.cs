@@ -76,5 +76,10 @@
         /// お気に入り登録されたときにフィードを作成するキュー名称
         /// </summary>
         public const string AZURE_STORAGE_FEED_FAVORED_BY_USER_QUEUE_NAME = "feed-facored-by-user-trigger";
+
+        /// <summary>
+        /// タイムライン内のツイートに対するPatchOperationを実行するキュー名称
+        /// </summary>
+        public const string AZURE_STORAGE_PATCH_TWEET_IN_TIMELINES_QUEUE_NAME = "patch-tweet-in-timelines";
     }
 }

@@ -20,6 +20,8 @@
         public bool IsDeleted { get; set; }
         public Guid? ReplyTo { get; set; }
         public Guid[] ReplyFrom { get; set; } = Array.Empty<Guid>();
+        public IdTimeStampPair[]? FavoriteFrom { get; set; } = Array.Empty<IdTimeStampPair>();
+        public IdTimeStampPair[]? RetweetFrom { get; set; } = Array.Empty<IdTimeStampPair>();
 
         public Timeline() { }
 
@@ -38,6 +40,8 @@
             ReplyFrom = tweet.ReplyFrom;
             UpdateAt = tweet.UpdateAt;
             CreateAt = tweet.CreateAt;
+            FavoriteFrom = tweet.FavoriteFrom;
+            RetweetFrom = tweet.RetweetFrom;
         }
 
         public Tweet ToTweet()
@@ -52,9 +56,11 @@
                 Text = Text,
                 ReplyTo = ReplyTo,
                 ReplyFrom = ReplyFrom,
-                IsDeleted= IsDeleted,
-                UpdateAt= UpdateAt,
-                CreateAt = CreateAt
+                IsDeleted = IsDeleted,
+                UpdateAt = UpdateAt,
+                CreateAt = CreateAt,
+                FavoriteFrom = FavoriteFrom,
+                RetweetFrom = RetweetFrom
             };
 
             return tweet;
