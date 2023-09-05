@@ -53,11 +53,6 @@
         public const string AZURE_STORAGE_UPDATE_USER_INFO_IN_TWEET_QUEUE_NAME = "update-user-info-in-tweet-trigger";
 
         /// <summary>
-        /// ユーザ情報が更新されたときにタイムラインを更新するキュー名称
-        /// </summary>
-        public const string AZURE_STORAGE_UPDATE_USER_INFO_IN_TIMELINE_QUEUE_NAME = "update-user-info-in-timeline-trigger";
-
-        /// <summary>
         /// お気に入り登録されたときにフィードを作成するキュー名称
         /// </summary>
         public const string AZURE_STORAGE_FEED_FAVORED_BY_USER_QUEUE_NAME = "feed-facored-by-user-trigger";
