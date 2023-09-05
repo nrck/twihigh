@@ -123,6 +123,7 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.HttpTrigger
                 ItemResponse<Tweet> tweetPatchResponse;
                 try
                 {
+                    // TODO: e-tag
                     tweetPatchResponse = await tweetContainer
                         .PatchItemAsync<Tweet>(targetTweet.Id.ToString(), new PartitionKey(targetTweet.UserId.ToString()), patch);
                 }
