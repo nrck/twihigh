@@ -1,0 +1,40 @@
+#---------------------------------------------------------------------------------------
+#   deploy-dev.yml
+#       refer to https://github.com/Azure/actions-workflow-samples
+#---------------------------------------------------------------------------------------
+name: Deploy Feeds function
+on:
+  push:
+    branches:
+      - main
+      - dev
+    paths:
+      - '.github/workflows/deploy-feeds-function.yml'
+      - 'src/PheasantTails.TwiHigh.Data.Model/**'
+      - 'src/PheasantTails.TwiHigh.Data.Store/**'
+      - 'src/PheasantTails.TwiHigh.Functions.Core/**'
+      - 'src/PheasantTails.TwiHigh.Functions.Extensions/**'
+      - 'src/PheasantTails.TwiHigh.Functions.Feeds/**'
+
+jobs:
+  dev-build-and-deploy-feeds:
+    name: PRO:Build and deploy Feeds
+    if: github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/deploy-azure-function.yml
+    with:
+      function-app-name: twihigh-pro-func-feeds
+      function-project-path: ./src/PheasantTails.TwiHigh.Functions.Feeds
+      deploy-environment-name: pro-func-feeds
+    secrets:
+      publish-profile: ${{ secrets.AZURE_FUNCTION_PUBLISH_PRO_FEEDS }}
+
+  pro-build-and-deploy-feeds:
+    name: DEV:Build and deploy Feeds
+    if: github.ref != 'refs/heads/main'
+    uses: ./.github/workflows/deploy-azure-function.yml
+    with:
+      function-app-name: twihigh-dev-func-feeds
+      function-project-path: ./src/PheasantTails.TwiHigh.Functions.Feeds
+      deploy-environment-name: dev-func-feeds
+    secrets:
+      publish-profile: ${{ secrets.AZURE_FUNCTION_PUBLISH_DEV_FEEDS }}
