@@ -33,7 +33,7 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.HttpTriggers
 
         [FunctionName(FUNCTION_NAME)]
         public async Task<IActionResult> PostTweetAsync(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "tweets/")] HttpRequest req,
             ILogger logger)
         {
             try

@@ -31,7 +31,7 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.HttpTriggers
 
         [FunctionName(FUNCTION_NAME)]
         public async Task<IActionResult> DeleteTweetByIdAsync(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "{id}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "tweets/{id}")] HttpRequest req,
             string id,
             ILogger logger)
         {

@@ -40,7 +40,7 @@ namespace PheasantTails.TwiHigh.Functions.Timelines.HttpTriggers
 
         [FunctionName(FUNCTION_NAME)]
         public async Task<IActionResult> GetMyTimelineAsync(
-           [HttpTrigger(AuthorizationLevel.Anonymous, "Get", Route = "")] HttpRequest req,
+           [HttpTrigger(AuthorizationLevel.Anonymous, "Get", Route = "timelines")] HttpRequest req,
            ILogger logger)
         {
             try

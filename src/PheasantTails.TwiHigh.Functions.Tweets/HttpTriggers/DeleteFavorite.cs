@@ -33,7 +33,7 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.HttpTriggers
 
         [FunctionName(FUNCTION_NAME)]
         public async Task<IActionResult> DeleteFavoriteTweetAsync(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "{tweetId}/favorite")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "tweets/{tweetId}/favorite")] HttpRequest req,
             Guid tweetId,
             ILogger logger)
         {

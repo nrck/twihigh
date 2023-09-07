@@ -33,7 +33,7 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.HttpTriggers
 
         [FunctionName(FUNCTION_NAME)]
         public async Task<IActionResult> PutFavoriteTweetAsync(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "{tweetId}/favorite")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "tweets/{tweetId}/favorite")] HttpRequest req,
             Guid tweetId,
             ILogger logger)
         {

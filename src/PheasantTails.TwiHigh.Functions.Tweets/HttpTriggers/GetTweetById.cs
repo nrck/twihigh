@@ -29,7 +29,7 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.HttpTriggers
 
         [FunctionName(FUNCTION_NAME)]
         public async Task<IActionResult> GetTweetByIdV2Async(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "{tweetId}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "tweets/{tweetId}")] HttpRequest req,
             Guid tweetId,
             ILogger logger)
         {
