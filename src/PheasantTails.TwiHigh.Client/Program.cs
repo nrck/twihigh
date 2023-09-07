@@ -23,6 +23,7 @@ namespace PheasantTails.TwiHigh.Client
             builder.Services.AddHttpClient<AppUserHttpClient>();
             builder.Services.AddHttpClient<TweetHttpClient>();
             builder.Services.AddHttpClient<FollowHttpClient>();
+            builder.Services.AddHttpClient<FeedHttpClient>();
 
             // ƒ~ƒhƒ‹
             builder.Services.AddBlazoredLocalStorage();

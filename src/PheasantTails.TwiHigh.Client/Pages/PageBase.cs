@@ -40,6 +40,9 @@ namespace PheasantTails.TwiHigh.Client.Pages
         protected TweetHttpClient TweetHttpClient { get; set; }
 
         [Inject]
+        protected FeedHttpClient FeedHttpClient { get; set; }
+
+        [Inject]
         protected AuthenticationStateProvider AuthenticationStateProvider { get; set; }
 #pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
 
@@ -160,6 +163,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
             FollowHttpClient.SetToken(token);
             TimelineHttpClient.SetToken(token);
             TweetHttpClient.SetToken(token);
+            FeedHttpClient.SetToken(token);
             Logger.LogFinish();
         }
 
