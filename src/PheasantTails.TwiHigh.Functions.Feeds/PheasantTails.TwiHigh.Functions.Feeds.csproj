@@ -1,8 +1,14 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<AzureFunctionsVersion>v4</AzureFunctionsVersion>
+		<LangVersion>11</LangVersion>
 	</PropertyGroup>
+	<ItemGroup>
+	  <Compile Remove="Properties\**" />
+	  <EmbeddedResource Remove="Properties\**" />
+	  <None Remove="Properties\**" />
+	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage.Queues" Version="5.1.0" />
 		<PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.1.3" />
@@ -10,6 +16,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\PheasantTails.TwiHigh.Data.Model\PheasantTails.TwiHigh.Data.Model.csproj" />
 		<ProjectReference Include="..\PheasantTails.TwiHigh.Functions.Core\PheasantTails.TwiHigh.Functions.Core.csproj" />
+		<ProjectReference Include="..\PheasantTails.TwiHigh.Functions.Extensions\PheasantTails.TwiHigh.Functions.Extensions.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 		<FunctionsPreservedDependencies Include="System.IdentityModel.Tokens.Jwt.dll" />
@@ -25,8 +32,9 @@
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<CopyToPublishDirectory>Never</CopyToPublishDirectory>
 		</None>
-	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="Properties\" />
+		<None Update="local.settings.sample.json">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		  <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+		</None>
 	</ItemGroup>
 </Project>

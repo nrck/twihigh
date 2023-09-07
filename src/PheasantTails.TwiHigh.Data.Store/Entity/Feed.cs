@@ -75,6 +75,11 @@
         /// </summary>
         public string? InformationText { get; set; }
 
+        /// <summary>
+        /// 既読フラグ
+        /// </summary>
+        public bool IsOpened { get; set; }
+
         public Feed() { }
 
         /// <summary>
