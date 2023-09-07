@@ -84,7 +84,7 @@ namespace PheasantTails.TwiHigh.Functions.Extensions
         private static bool TryGetDateTimeOffsetFromQuery(this IQueryCollection collection, string key, out DateTimeOffset dateTimeOffset)
         {
             dateTimeOffset = default;
-            return collection.TryGetValue("since", out var since) && DateTimeOffset.TryParse(since, out dateTimeOffset);
+            return collection.TryGetValue(key, out var since) && DateTimeOffset.TryParse(since, out dateTimeOffset);
         }
     }
 }

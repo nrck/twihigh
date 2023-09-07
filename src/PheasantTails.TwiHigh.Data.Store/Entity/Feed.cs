@@ -64,6 +64,12 @@
         public string? FeedByUserDisplayName { get; set; }
 
         /// <summary>
+        /// <see cref="FeedType"/>の操作をしたアカウントのアイコンURL<br />
+        /// <see cref="FEED_TYPE_INFORMATION"/>では<c>null</c>になる。
+        /// </summary>
+        public string? FeedByUserAvatarUrl { get; set; }
+
+        /// <summary>
         /// <see cref="FeedType"/>の操作に関係するツイートデータID。<br />
         /// <see cref="FEED_TYPE_FOLLOWED"/>と<see cref="FEED_TYPE_INFORMATION"/>では<c>null</c>になる。
         /// </summary>
@@ -159,6 +165,7 @@
             var feed = new Feed
             {
                 CreateAt = now,
+                FeedByUserAvatarUrl = feedByUser.AvatarUrl,
                 FeedByUserDisplayId = feedByUser.DisplayId,
                 FeedByUserDisplayName = feedByUser.DisplayName,
                 FeedByUserId = feedByUser.Id,
