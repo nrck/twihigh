@@ -24,8 +24,8 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: true
-      - name: Install .NET WebAssembly Tools
-        run: dotnet workload install wasm-tools
+      #- name: Install .NET WebAssembly Tools
+      #  run: dotnet workload install wasm-tools
       - name: 'create licence list json'
         shell: bash
         run: |
