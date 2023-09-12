@@ -12,19 +12,19 @@ using static PheasantTails.TwiHigh.Functions.Core.StaticStrings;
 
 namespace PheasantTails.TwiHigh.Functions.Feeds.QueueTriggers
 {
-    public class InsertFavoredFeed
+    public class InsertMentionedFeed
     {
-        private const string FUNCTION_NAME = "QueueTriggerInsertFavoredFeed";
+        private const string FUNCTION_NAME = "QueueTriggerInsertMentionedFeed";
         private readonly CosmosClient _client;
 
-        public InsertFavoredFeed(CosmosClient client)
+        public InsertMentionedFeed(CosmosClient client)
         {
             _client = client;
         }
 
         [FunctionName(FUNCTION_NAME)]
-        public async Task QueueTriggerInsertFavoredFeedAsync(
-            [QueueTrigger(AZURE_STORAGE_FEED_FAVORED_BY_USER_QUEUE_NAME, Connection = QUEUE_STORAGE_CONNECTION_STRINGS_ENV_NAME)] string myQueueItem,
+        public async Task QueueTriggerInsertMentionedFeedAsync(
+            [QueueTrigger(AZURE_STORAGE_FEED_MENTIONED_BY_USER_QUEUE_NAME, Connection = QUEUE_STORAGE_CONNECTION_STRINGS_ENV_NAME)] string myQueueItem,
             ILogger logger)
         {
             try
@@ -76,7 +76,7 @@ namespace PheasantTails.TwiHigh.Functions.Feeds.QueueTriggers
                 logger.TwiHighLogInformation(FUNCTION_NAME, "Feed by {0}", user.Resource.DisplayId);
 
                 // Create a feed item.
-                var feed = Feed.CreateFavored(tweet, user);
+                var feed = Feed.CreateMentioned(tweet, user);
                 var result = await _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_FEED_CONTAINER_NAME)
                     .CreateItemAsync(feed);
                 logger.TwiHighLogInformation(FUNCTION_NAME, "Created Feed. Total RU: {0:0.00}", tweet.RequestCharge + user.RequestCharge + result.RequestCharge);
