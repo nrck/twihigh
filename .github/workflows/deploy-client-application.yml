@@ -75,5 +75,6 @@ jobs:
           # ref: https://aka.ms/swaworkflowconfig
           app_location: "src/PheasantTails.TwiHigh.Client" # App source code path
           output_location: "wwwroot" # Built app content directory - optional
+          build_timeout_in_minutes: 60
           skip_api_build: true
           production_branch: "dev"
