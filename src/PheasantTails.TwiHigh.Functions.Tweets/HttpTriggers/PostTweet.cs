@@ -161,9 +161,23 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.HttpTriggers
                         TweetId = context.TweetId,
                         Operations = patch
                     };
+
+                    // update user timelines
                     await QueueStorages.InsertMessageAsync(
                         AZURE_STORAGE_PATCH_TWEET_IN_TIMELINES_QUEUE_NAME,
                         que);
+                    // insert feed
+                    var feedQueue = new FeedFavoredQueue
+                    {
+                        FeedByUserId = tweet.UserId,
+                        FeedByUserPartitionKey = tweet.UserId.ToString(),
+                        TargetTweetId = context.TweetId,
+                        TargetTweetPartitionKey = context.UserId.ToString()
+                    };
+                    await QueueStorages.InsertMessageAsync(
+                        AZURE_STORAGE_FEED_MENTIONED_BY_USER_QUEUE_NAME,
+                        feedQueue);
+
                     logger.TwiHighLogInformation(funcName, "Insert queue message to {0}", AZURE_STORAGE_PATCH_TWEET_IN_TIMELINES_QUEUE_NAME);
                 }
                 catch (CosmosException ex)
