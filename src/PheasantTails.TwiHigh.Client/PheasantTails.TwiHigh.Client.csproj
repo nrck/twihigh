@@ -8,6 +8,8 @@
 		<!--
 		<IsTrimmable>true</IsTrimmable>
 		-->
+		<PublishTrimmed>true</PublishTrimmed>
+		<RunAOTCompilation>true</RunAOTCompilation>
 	</PropertyGroup>
 
 	<ItemGroup>
