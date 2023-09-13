@@ -1,11 +1,11 @@
 ﻿using PheasantTails.TwiHigh.Client.TypedHttpClients;
-using PheasantTails.TwiHigh.Data.Store.Entity;
+using PheasantTails.TwiHigh.Data.Model.Feeds;
 
 namespace PheasantTails.TwiHigh.Client.Pages
 {
     public partial class Feeds : PageBase
     {
-        private Feed[]? MyFeeds { get; set; }
+        private FeedContext[]? MyFeeds { get; set; }
 
         protected override async Task OnInitializedAsync()
         {

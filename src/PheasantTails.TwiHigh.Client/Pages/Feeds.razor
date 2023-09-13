@@ -1,5 +1,5 @@
 ﻿@page "/Feeds"
-@using PheasantTails.TwiHigh.Data.Store.Entity;
+@using PheasantTails.TwiHigh.Data.Model.Feeds;
 @inherits PageBase
 
 <PageTitle>通知 - ツイハイ！</PageTitle>
@@ -12,51 +12,86 @@
     }
     else if (0 < MyFeeds.LongLength)
     {
-        @foreach (Feed feed in MyFeeds)
+        @foreach (FeedContext feed in MyFeeds)
         {
             var action = feed.FeedType switch
             {
-                Feed.FEED_TYPE_FAVORED => "あなたのツイートをお気に入りに入れました。",
-                Feed.FEED_TYPE_FOLLOWED => "あなたをフォローしました。",
-                Feed.FEED_TYPE_INFORMATION => "",
-                Feed.FEED_TYPE_MENTIONED => "あなたのツイートに返信しました。",
-                Feed.FEED_TYPE_RETWEETED => "あなたのツイートをリツイートしました。",
+                FeedContext.FEED_TYPE_FAVORED => "あなたのツイートをお気に入りに入れました。",
+                FeedContext.FEED_TYPE_FOLLOWED => "あなたをフォローしました。",
+                FeedContext.FEED_TYPE_INFORMATION => "",
+                FeedContext.FEED_TYPE_MENTIONED => "あなたのツイートに返信しました。",
+                FeedContext.FEED_TYPE_RETWEETED => "あなたのツイートをリツイートしました。",
                 _ => ""
             };
 
+            @if (feed.FeedType == FeedContext.FEED_TYPE_MENTIONED)
+            {
+                @if (feed.ReferenceTweet == null)
+                {
+
+                }
+                else
+                {
+                    <TweetComponent Tweet="new (feed.ReferenceTweet)" />
+                }
+            }
+            else
+            {
             <article class="feed-item">
                 @* 左 *@
                 <div class="feed-item-left">
                     @* アイコン *@
-                    <AvatarComponent UserAvatarUrl="@(feed.FeedByUserAvatarUrl)"
-                                     OnClick="@(() => { Navigation.NavigateTo(string.Format(DefinePaths.PAGE_PATH_PROFILE, feed.FeedByUserDisplayId)); })" />
+                    @if (feed.FeedByUser == null)
+                    {
+
+                    }
+                    else
+                    {
+                        <AvatarComponent UserAvatarUrl="@(feed.FeedByUser.AvatarUrl)"
+                                         OnClick="@(() => { Navigation.NavigateTo(string.Format(DefinePaths.PAGE_PATH_PROFILE, feed.FeedByUser.DisplayId)); })" />
+                    }
                 </div>
                 @* 右 *@
                 <div class="feed-item-right">
                     @* ヘッダー *@
-                    <div class="feed-item-right-header">
-                        @* ユーザー名 *@
-                        <div class="user-display-name">
-                            <span @onclick="@(() => { Navigation.NavigateTo(string.Format(DefinePaths.PAGE_PATH_PROFILE, feed.FeedByUserDisplayId)); })">@feed.FeedByUserDisplayName</span>
+                    @if (feed.FeedByUser == null)
+                    {
+
+                    }
+                    else
+                    {
+                        <div class="feed-item-right-header">
+                            @* ユーザー名 *@
+                            <div class="user-display-name">
+                                <span @onclick="@(() => { Navigation.NavigateTo(string.Format(DefinePaths.PAGE_PATH_PROFILE, feed.FeedByUser.DisplayId)); })">@feed.FeedByUser.DisplayName</span>
+                            </div>
+                            @* ユーザーID *@
+                            <div class="user-display-id">
+                                <span @onclick="@(() => { Navigation.NavigateTo(string.Format(DefinePaths.PAGE_PATH_PROFILE, feed.FeedByUser.DisplayId)); })">@@@feed.FeedByUser.DisplayId</span>
+                            </div>
                         </div>
-                        @* ユーザーID *@
-                        <div class="user-display-id">
-                            <span @onclick="@(() => { Navigation.NavigateTo(string.Format(DefinePaths.PAGE_PATH_PROFILE, feed.FeedByUserDisplayId)); })">@@@feed.FeedByUserDisplayId</span>
-                        </div>
-                    </div>
+                    }
                     @* ボディ*@
                     <div class="feed-item-right-body">
-                        @* テキスト本文 *@
-                        <div class="user-tweet-text" @onclick="@(() => { Navigation.NavigateTo(string.Format(DefinePaths.PAGE_PATH_STATUS, feed.FeedToUserId, feed.ReferenceTweetId)); })">
-                            <span>
-                                @(feed.FeedByUserDisplayName)さんが@(action)
-                            </span>
-                        </div>
+                        @if (feed.ReferenceTweet == null)
+                        {
+
+                        }
+                        else
+                        {
+                            @* テキスト本文 *@
+                            <div class="user-tweet-text" @onclick="@(() => { Navigation.NavigateTo(string.Format(DefinePaths.PAGE_PATH_STATUS, feed.ReferenceTweet.UserDisplayId, feed.ReferenceTweet.Id)); })">
+                                <span>
+                                    @(feed.FeedByUser!.DisplayName)さんが@(action)
+                                </span>
+                            </div>
+                        }
                     </div>
                     <div class="feed-item-right-footer">
                     </div>
                 </div>
             </article>
+            }
         }
     }
     else

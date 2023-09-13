@@ -5,10 +5,10 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using PheasantTails.TwiHigh.Data.Model.Feeds;
 using PheasantTails.TwiHigh.Data.Store.Entity;
 using PheasantTails.TwiHigh.Functions.Core.Extensions;
 using PheasantTails.TwiHigh.Functions.Extensions;
+using PheasantTails.TwiHigh.Functions.Feeds.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -115,15 +115,26 @@ namespace PheasantTails.TwiHigh.Functions.Feeds.HttpTriggers
                     return new NoContentResult();
                 }
 
+                // Get tweets
+                var tweetIds = feeds.Where(f => f.ReferenceTweetId.HasValue)
+                    .Select(f => (id: f.ReferenceTweetId.ToString(), partitionKey: new PartitionKey(f.FeedToUserId.ToString())))
+                    .ToArray();
+                var tweets = await _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TWEET_CONTAINER_NAME)
+                    .ReadManyItemsAsync<Tweet>(tweetIds);
+
+                // Get users
+                var userIds = feeds.Where(f => f.FeedByUserId.HasValue)
+                    .Select(f => (id: f.FeedByUserId.ToString(), partitionKey: new PartitionKey(f.FeedByUserId.ToString())))
+                    .ToArray();
+                var users = await _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_USER_CONTAINER_NAME)
+                    .ReadManyItemsAsync<TwiHighUser>(userIds);
+
                 // Create response context
-                var latest = feeds.Max(t => t.CreateAt < t.UpdateAt ? t.UpdateAt : t.CreateAt);
-                var oldest = feeds.Min(t => t.CreateAt > t.UpdateAt ? t.UpdateAt : t.CreateAt);
-                var response = new ResponseFeedsContext
-                {
-                    Latest = latest,
-                    Oldest = oldest,
-                    Feeds = feeds.OrderByDescending(f => f.UpdateAt).ThenByDescending(f => f.CreateAt).ToArray()
-                };
+                var response = feeds.Select(f => FeedEntityHelper.CreateFeedContext(
+                    f,
+                    tweets.FirstOrDefault(t => t.Id == f.ReferenceTweetId),
+                    users.FirstOrDefault(u => u.Id == f.FeedByUserId)))
+                    .ToResponseFeedsContext();
 
                 return new OkObjectResult(response);
             }
