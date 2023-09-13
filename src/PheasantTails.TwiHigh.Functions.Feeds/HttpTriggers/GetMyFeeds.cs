@@ -126,7 +126,7 @@ namespace PheasantTails.TwiHigh.Functions.Feeds.HttpTriggers
                         }
                         if (f.FeedByTweetId.HasValue)
                         {
-                            list.Add((f.FeedByTweetId.ToString(), new PartitionKey(f.FeedByTweetId.ToString())));
+                            list.Add((f.FeedByTweetId.ToString(), new PartitionKey(f.FeedByUserId.ToString())));
                         }
 
                         return list;
@@ -151,6 +151,7 @@ namespace PheasantTails.TwiHigh.Functions.Feeds.HttpTriggers
                     users.FirstOrDefault(u => u.Id == f.FeedByUserId),
                     tweets.FirstOrDefault(t => t.Id == f.FeedByTweetId)))
                     .ToResponseFeedsContext();
+                logger.TwiHighLogInformation(FUNCTION_NAME, "Tweets RU: {0}, Users RU: {1}", tweets.RequestCharge, users.RequestCharge);
 
                 return new OkObjectResult(response);
             }
