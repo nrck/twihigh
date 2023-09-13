@@ -65,5 +65,7 @@
 
             return tweet;
         }
+
+        public override string GetPartitionKeyString() => OwnerUserId.ToString();
     }
 }

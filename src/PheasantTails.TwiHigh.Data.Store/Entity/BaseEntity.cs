@@ -19,5 +19,7 @@
         /// データ作成日時
         /// </summary>
         public virtual DateTimeOffset CreateAt { get; set; } = DateTimeOffset.UtcNow;
+
+        public abstract string GetPartitionKeyString();
     }
 }

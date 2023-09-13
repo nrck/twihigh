@@ -126,6 +126,8 @@
             return feed;
         }
 
+        public override string GetPartitionKeyString() => FeedToUserId.ToString();
+
         private static Feed Create(Tweet targetTweet, TwiHighUser feedByUser, string type, Tweet? feedByTweet = null)
         {
             var now = DateTimeOffset.UtcNow;

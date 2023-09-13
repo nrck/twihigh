@@ -14,5 +14,6 @@
         public string AvatarUrl { get; set; } = string.Empty;
         public Guid[] Follows { get; set; } = Array.Empty<Guid>();
         public Guid[] Followers { get; set; } = Array.Empty<Guid>();
+        public override string GetPartitionKeyString() => Id.ToString();
     }
 }
