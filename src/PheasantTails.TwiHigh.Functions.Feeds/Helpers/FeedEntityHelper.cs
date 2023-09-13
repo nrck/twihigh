@@ -22,7 +22,7 @@ namespace PheasantTails.TwiHigh.Functions.Feeds.Helpers
             return response;
         }
 
-        internal static FeedContext CreateFeedContext(Feed feed, Tweet targetTweet, TwiHighUser feedByUser)
+        internal static FeedContext CreateFeedContext(Feed feed, Tweet targetTweet, TwiHighUser feedByUser, Tweet feedByTweet)
         {
             var responseTwiHighUserContext = new ResponseTwiHighUserContext
             {
@@ -40,6 +40,7 @@ namespace PheasantTails.TwiHigh.Functions.Feeds.Helpers
             return new FeedContext
             {
                 CreateAt = feed.CreateAt,
+                FeedByTweet = feedByTweet,
                 FeedByUser = responseTwiHighUserContext,
                 FeedType = feed.FeedType,
                 Id = feed.Id,

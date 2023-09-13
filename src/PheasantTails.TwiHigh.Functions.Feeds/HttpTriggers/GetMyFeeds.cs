@@ -116,24 +116,40 @@ namespace PheasantTails.TwiHigh.Functions.Feeds.HttpTriggers
                 }
 
                 // Get tweets
-                var tweetIds = feeds.Where(f => f.ReferenceTweetId.HasValue)
-                    .Select(f => (id: f.ReferenceTweetId.ToString(), partitionKey: new PartitionKey(f.FeedToUserId.ToString())))
+                var tweetIds = feeds.Where(f => f.FeedToTweetId.HasValue || f.FeedByTweetId.HasValue)
+                    .SelectMany(f =>
+                    {
+                        var list = new List<(string id, PartitionKey partitionKey)>();
+                        if (f.FeedToTweetId.HasValue)
+                        {
+                            list.Add((f.FeedToTweetId.ToString(), new PartitionKey(f.FeedToUserId.ToString())));
+                        }
+                        if (f.FeedByTweetId.HasValue)
+                        {
+                            list.Add((f.FeedByTweetId.ToString(), new PartitionKey(f.FeedByTweetId.ToString())));
+                        }
+
+                        return list;
+                    })
                     .ToArray();
-                var tweets = await _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TWEET_CONTAINER_NAME)
-                    .ReadManyItemsAsync<Tweet>(tweetIds);
+                var tweets = tweetIds.Any()
+                    ? await _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TWEET_CONTAINER_NAME).ReadManyItemsAsync<Tweet>(tweetIds)
+                    : default;
 
                 // Get users
                 var userIds = feeds.Where(f => f.FeedByUserId.HasValue)
                     .Select(f => (id: f.FeedByUserId.ToString(), partitionKey: new PartitionKey(f.FeedByUserId.ToString())))
                     .ToArray();
-                var users = await _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_USER_CONTAINER_NAME)
-                    .ReadManyItemsAsync<TwiHighUser>(userIds);
+                var users = userIds.Any()
+                    ? await _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_USER_CONTAINER_NAME).ReadManyItemsAsync<TwiHighUser>(userIds)
+                    : default;
 
                 // Create response context
                 var response = feeds.Select(f => FeedEntityHelper.CreateFeedContext(
                     f,
-                    tweets.FirstOrDefault(t => t.Id == f.ReferenceTweetId),
-                    users.FirstOrDefault(u => u.Id == f.FeedByUserId)))
+                    tweets.FirstOrDefault(t => t.Id == f.FeedToTweetId),
+                    users.FirstOrDefault(u => u.Id == f.FeedByUserId),
+                    tweets.FirstOrDefault(t => t.Id == f.FeedByTweetId)))
                     .ToResponseFeedsContext();
 
                 return new OkObjectResult(response);

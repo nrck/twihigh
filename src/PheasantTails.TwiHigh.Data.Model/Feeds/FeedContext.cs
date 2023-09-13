@@ -4,7 +4,8 @@ using PheasantTails.TwiHigh.Data.Store.Entity;
 namespace PheasantTails.TwiHigh.Data.Model.Feeds
 {
     public class FeedContext
-    {        /// <summary>
+    {
+        /// <summary>
         /// お気に入りされたときの通知
         /// </summary>
         public const string FEED_TYPE_FAVORED = "Favored";
@@ -59,6 +60,12 @@ namespace PheasantTails.TwiHigh.Data.Model.Feeds
         /// <see cref="FEED_TYPE_INFORMATION"/>では<c>null</c>になる。
         /// </summary>
         public ResponseTwiHighUserContext? FeedByUser { get; set; }
+
+        /// <summary>
+        /// <see cref="FeedType"/>の操作をしたアカウント<br />
+        /// <see cref="FEED_TYPE_INFORMATION"/>では<c>null</c>になる。
+        /// </summary>
+        public Tweet? FeedByTweet { get; set; }
 
         /// <summary>
         /// <see cref="FeedType"/>の操作に関係するツイートデータID。<br />
