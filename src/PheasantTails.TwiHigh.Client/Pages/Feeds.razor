@@ -26,13 +26,13 @@
 
             @if (feed.FeedType == FeedContext.FEED_TYPE_MENTIONED)
             {
-                @if (feed.ReferenceTweet == null)
+                @if (feed.FeedByTweet == null)
                 {
 
                 }
                 else
                 {
-                    <TweetComponent Tweet="new (feed.ReferenceTweet)" />
+                    <TweetComponent Tweet="new (feed.FeedByTweet)" />
                 }
             }
             else

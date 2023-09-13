@@ -11,11 +11,15 @@ namespace PheasantTails.TwiHigh.Client.Pages
         {
             await base.OnInitializedAsync();
             var res = await FeedHttpClient.GetMyFeedsAsync(DateTimeOffset.MinValue, DateTimeOffset.MaxValue);
-            if(res != null)
+            if (res == null)
+            {
+                MyFeeds = Array.Empty<FeedContext>();
+            }
+            else
             {
                 MyFeeds = res.Feeds;
-                StateHasChanged();
             }
+            StateHasChanged();
         }
     }
 }
