@@ -5,6 +5,7 @@
     /// </summary>
     public class Feed : BaseEntity
     {
+        #region [const string]
         /// <summary>
         /// お気に入りされたときの通知
         /// </summary>
@@ -34,16 +35,23 @@
         /// パーテーションキー
         /// </summary>
         public const string PARTITION_KEY = "/feedToUserId";
-
-        /// <summary>
-        /// このフィード先のアカウントデータIDの
-        /// </summary>
-        public Guid FeedToUserId { get; set; }
+        #endregion
 
         /// <summary>
         /// 通知の種類。FEED_TYPEの何れかを設定する。
         /// </summary>
         public string FeedType { get; set; } = FEED_TYPE_INFORMATION;
+
+        /// <summary>
+        /// このフィード先のアカウントデータID
+        /// </summary>
+        public Guid FeedToUserId { get; set; }
+
+        /// <summary>
+        /// <see cref="FeedType"/>の操作に関係するツイートデータID。<br />
+        /// <see cref="FEED_TYPE_FOLLOWED"/>と<see cref="FEED_TYPE_INFORMATION"/>では<c>null</c>になる。
+        /// </summary>
+        public Guid? FeedToTweetId { get; set; }
 
         /// <summary>
         /// <see cref="FeedType"/>の操作をしたアカウントデータID<br />
@@ -52,28 +60,10 @@
         public Guid? FeedByUserId { get; set; }
 
         /// <summary>
-        /// <see cref="FeedType"/>の操作をしたアカウントID<br />
-        /// <see cref="FEED_TYPE_INFORMATION"/>では<c>null</c>になる。
+        /// <see cref="FeedType"/>の操作をしたツイートデータID<br />
+        /// <see cref="FEED_TYPE_MENTIONED"/>以外のときは<c>null</c>になる。
         /// </summary>
-        public string? FeedByUserDisplayId { get; set; }
-
-        /// <summary>
-        /// <see cref="FeedType"/>の操作をしたアカウント名<br />
-        /// <see cref="FEED_TYPE_INFORMATION"/>では<c>null</c>になる。
-        /// </summary>
-        public string? FeedByUserDisplayName { get; set; }
-
-        /// <summary>
-        /// <see cref="FeedType"/>の操作をしたアカウントのアイコンURL<br />
-        /// <see cref="FEED_TYPE_INFORMATION"/>では<c>null</c>になる。
-        /// </summary>
-        public string? FeedByUserAvatarUrl { get; set; }
-
-        /// <summary>
-        /// <see cref="FeedType"/>の操作に関係するツイートデータID。<br />
-        /// <see cref="FEED_TYPE_FOLLOWED"/>と<see cref="FEED_TYPE_INFORMATION"/>では<c>null</c>になる。
-        /// </summary>
-        public Guid? ReferenceTweetId { get; set; }
+        public Guid? FeedByTweetId { get; set; }
 
         /// <summary>
         /// <see cref="FEED_TYPE_INFORMATION"/>のときに設定するテキストメッセージ。<br />
@@ -112,31 +102,8 @@
         /// <param name="targetTweet">対象のツイート</param>
         /// <param name="feedByUser">リプライしたアカウント</param>
         /// <returns></returns>
-        public static Feed CreateMentioned(Tweet targetTweet, TwiHighUser feedByUser)
-            => Create(targetTweet, feedByUser, FEED_TYPE_MENTIONED);
-
-        /// <summary>
-        /// リプライされたときの通知を作成する
-        /// </summary>
-        /// <param name="targetUserId">対象のアカウントデータID</param>
-        /// <param name="feedByUser">リプライしたアカウント</param>
-        /// <returns></returns>
-        public static Feed CreateMentioned(Guid targetUserId, TwiHighUser feedByUser)
-        {
-            var now = DateTimeOffset.UtcNow;
-            var feed = new Feed
-            {
-                CreateAt = now,
-                FeedByUserDisplayId = feedByUser.DisplayId,
-                FeedByUserDisplayName = feedByUser.DisplayName,
-                FeedByUserId = feedByUser.Id,
-                FeedToUserId = targetUserId,
-                FeedType = FEED_TYPE_MENTIONED,
-                UpdateAt = now
-            };
-
-            return feed;
-        }
+        public static Feed CreateMentioned(Tweet targetTweet, TwiHighUser feedByUser, Tweet feedByTweet)
+            => Create(targetTweet, feedByUser, FEED_TYPE_MENTIONED, feedByTweet);
 
         /// <summary>
         /// お知らせを作成する
@@ -159,20 +126,18 @@
             return feed;
         }
 
-        private static Feed Create(Tweet targetTweet, TwiHighUser feedByUser, string type)
+        private static Feed Create(Tweet targetTweet, TwiHighUser feedByUser, string type, Tweet? feedByTweet = null)
         {
             var now = DateTimeOffset.UtcNow;
             var feed = new Feed
             {
                 CreateAt = now,
-                FeedByUserAvatarUrl = feedByUser.AvatarUrl,
-                FeedByUserDisplayId = feedByUser.DisplayId,
-                FeedByUserDisplayName = feedByUser.DisplayName,
                 FeedByUserId = feedByUser.Id,
+                FeedByTweetId = feedByTweet?.Id,
                 FeedToUserId = targetTweet.UserId,
                 FeedType = type,
-                ReferenceTweetId = targetTweet.Id,
-                UpdateAt = now
+                FeedToTweetId = targetTweet.Id,
+                UpdateAt = now,
             };
 
             return feed;
