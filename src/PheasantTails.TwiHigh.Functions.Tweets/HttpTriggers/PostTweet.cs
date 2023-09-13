@@ -167,12 +167,14 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.HttpTriggers
                         AZURE_STORAGE_PATCH_TWEET_IN_TIMELINES_QUEUE_NAME,
                         que);
                     // insert feed
-                    var feedQueue = new FeedFavoredQueue
+                    var feedQueue = new FeedMentionedQueue
                     {
                         FeedByUserId = tweet.UserId,
                         FeedByUserPartitionKey = tweet.UserId.ToString(),
                         TargetTweetId = context.TweetId,
-                        TargetTweetPartitionKey = context.UserId.ToString()
+                        TargetTweetPartitionKey = context.UserId.ToString(),
+                        FeedByTweetId = tweet.Id,
+                        FeedByTweetPartitionKey = tweet.GetPartitionKeyString()
                     };
                     await QueueStorages.InsertMessageAsync(
                         AZURE_STORAGE_FEED_MENTIONED_BY_USER_QUEUE_NAME,

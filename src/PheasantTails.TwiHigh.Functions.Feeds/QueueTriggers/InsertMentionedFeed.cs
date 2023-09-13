@@ -5,6 +5,8 @@ using PheasantTails.TwiHigh.Data.Model.Queues;
 using PheasantTails.TwiHigh.Data.Store.Entity;
 using PheasantTails.TwiHigh.Functions.Core.Extensions;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -35,26 +37,33 @@ namespace PheasantTails.TwiHigh.Functions.Feeds.QueueTriggers
                     // null check
                     throw new ArgumentNullException(nameof(myQueueItem), "Queue is Null");
                 }
-                var que = JsonSerializer.Deserialize<FeedFavoredQueue>(myQueueItem);
+                var que = JsonSerializer.Deserialize<FeedMentionedQueue>(myQueueItem);
 
                 // Get target tweet
-                ItemResponse<Tweet> tweet;
+                FeedResponse<Tweet> targetAndReplyFromTweets;
                 try
                 {
-                    tweet = await _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TWEET_CONTAINER_NAME)
-                        .ReadItemAsync<Tweet>(que.TargetTweetId.ToString(), new PartitionKey(que.TargetTweetPartitionKey));
+                    targetAndReplyFromTweets = await _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TWEET_CONTAINER_NAME)
+                        .ReadManyItemsAsync<Tweet>(new List<(string, PartitionKey)>{
+                            (que.TargetTweetId.ToString(), new PartitionKey(que.TargetTweetPartitionKey)),
+                            (que.FeedByTweetId.ToString(), new PartitionKey(que.FeedByTweetPartitionKey))
+                        });
                 }
                 catch (CosmosException ex)
                 {
                     if (ex.StatusCode == HttpStatusCode.NotFound)
                     {
-                        logger.TwiHighLogWarning(FUNCTION_NAME, "Target tweet is NOT found. ID: {0}", que.TargetTweetId);
+                        logger.TwiHighLogWarning(FUNCTION_NAME, "Target tweet is NOT found. ID: {0}, {1}", que.TargetTweetId, que.FeedByTweetId);
                         return;
                     }
-                    throw new FeedException($"An error occurred while retrieving the tweet. TweetID: {que.TargetTweetId}", ex);
+                    throw new FeedException($"An error occurred while retrieving the tweet. TweetID: {que.TargetTweetId}, {que.FeedByTweetId}", ex);
                 }
-                logger.TwiHighLogInformation(FUNCTION_NAME, "Target tweet is found. ID: {0}", tweet.Resource.Id);
-                logger.TwiHighLogInformation(FUNCTION_NAME, "{0} > {1}", tweet.Resource.UserDisplayId, tweet.Resource.Text);
+                var targetTweet = targetAndReplyFromTweets.Resource.FirstOrDefault(t => t.Id == que.TargetTweetId);
+                var feedByTweet = targetAndReplyFromTweets.Resource.FirstOrDefault(t => t.Id == que.FeedByTweetId);
+                logger.TwiHighLogInformation(FUNCTION_NAME, "Target tweet is found. ID: {0}", targetTweet.Id);
+                logger.TwiHighLogInformation(FUNCTION_NAME, "{0} > {1}", targetTweet.UserDisplayId, targetTweet.Text);
+                logger.TwiHighLogInformation(FUNCTION_NAME, "Reply from tweet is found. ID: {0}", feedByTweet.Id);
+                logger.TwiHighLogInformation(FUNCTION_NAME, "{0} > {1}", feedByTweet.UserDisplayId, feedByTweet.Text);
 
                 // Get target user
                 ItemResponse<TwiHighUser> user;
@@ -76,10 +85,10 @@ namespace PheasantTails.TwiHigh.Functions.Feeds.QueueTriggers
                 logger.TwiHighLogInformation(FUNCTION_NAME, "Feed by {0}", user.Resource.DisplayId);
 
                 // Create a feed item.
-                var feed = Feed.CreateMentioned(tweet, user);
+                var feed = Feed.CreateMentioned(targetTweet, user, feedByTweet);
                 var result = await _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_FEED_CONTAINER_NAME)
                     .CreateItemAsync(feed);
-                logger.TwiHighLogInformation(FUNCTION_NAME, "Created Feed. Total RU: {0:0.00}", tweet.RequestCharge + user.RequestCharge + result.RequestCharge);
+                logger.TwiHighLogInformation(FUNCTION_NAME, "Created Feed. Total RU: {0:0.00}", targetAndReplyFromTweets.RequestCharge + user.RequestCharge + result.RequestCharge);
             }
             catch (Exception ex)
             {
