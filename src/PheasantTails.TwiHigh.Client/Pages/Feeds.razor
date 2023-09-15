@@ -1,4 +1,6 @@
 ﻿@page "/Feeds"
+@attribute [Authorize]
+@using PheasantTails.TwiHigh.Client.ViewModels;
 @using PheasantTails.TwiHigh.Data.Model.Feeds;
 @inherits PageBase
 
@@ -32,7 +34,11 @@
                 }
                 else
                 {
-                    <TweetComponent Tweet="new (feed.FeedByTweet)" />
+                    var tweet = new TweetViewModel(feed.FeedByTweet);
+                    <TweetComponent @key="tweet.Id"
+                                    Tweet="tweet"
+                                    OnClickDetail="OnClickDetail"
+                                    OnClickProfile="OnClickProfile" />
                 }
             }
             else
