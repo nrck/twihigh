@@ -11,15 +11,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
-            var res = await FeedHttpClient.GetMyFeedsAsync(DateTimeOffset.MinValue, DateTimeOffset.MaxValue);
-            if (res == null)
-            {
-                MyFeeds = Array.Empty<FeedContext>();
-            }
-            else
-            {
-                MyFeeds = res.Feeds;
-            }
+            MyFeeds = FeedService.FeedContexts;
             StateHasChanged();
         }
 

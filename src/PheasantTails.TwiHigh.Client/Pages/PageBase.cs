@@ -117,6 +117,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
             Logger.LogStart();
             var token = await LocalStorageService.GetItemAsStringAsync(LOCAL_STORAGE_KEY_JWT);
             SetTokenToHtmlClient(token);
+            await FeedService.InitializeAsync(token);
             Logger.LogFinish();
         }
 

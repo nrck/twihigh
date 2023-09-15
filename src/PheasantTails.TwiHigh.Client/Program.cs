@@ -26,11 +26,12 @@ namespace PheasantTails.TwiHigh.Client
             builder.Services.AddHttpClient<FeedHttpClient>();
 
             // ƒ~ƒhƒ‹
-            builder.Services.AddBlazoredLocalStorage();
-            builder.Services.AddScoped<AuthenticationStateProvider, TwiHighAuthenticationStateProvider>();
+            builder.Services.AddBlazoredLocalStorageAsSingleton();
+            builder.Services.AddSingleton<AuthenticationStateProvider, TwiHighAuthenticationStateProvider>();
             builder.Services.AddPWAUpdater();
             builder.Services.AddSingleton<IMessageService, MessageService>();
             builder.Services.AddSingleton<IScrollInfoService, ScrollInfoService>();
+            builder.Services.AddSingleton<IFeedService, FeedService>();
 
             builder.Services.AddOptions();
             builder.Services.AddAuthorizationCore();

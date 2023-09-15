@@ -6,8 +6,9 @@ using static PheasantTails.TwiHigh.Client.Components.MessageComponent;
 
 namespace PheasantTails.TwiHigh.Client.Shared
 {
-    public abstract class SharedBase : ComponentBase
+    public abstract class SharedBase : ComponentBase, IDisposable
     {
+#pragma warning disable CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
         [Inject]
         protected IMessageService MessageService { get; set; }
 
@@ -17,9 +18,18 @@ namespace PheasantTails.TwiHigh.Client.Shared
         [Inject]
         protected IScrollInfoService ScrollInfoService { get; set; }
 
+        [Inject]
+        protected IFeedService FeedService { get; set; }
+#pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
+
         [CascadingParameter]
         protected Task<AuthenticationState>? AuthenticationState { get; set; }
 
+        protected override void OnInitialized()
+        {
+            base.OnInitialized();
+            FeedService.NotifyChangedFeeds += StateHasChanged;
+        }
 
         protected void SetErrorMessage(string text)
         {
@@ -43,11 +53,22 @@ namespace PheasantTails.TwiHigh.Client.Shared
 
         protected async Task<bool> GetIsAuthenticatedAsync()
         {
-            if(AuthenticationState == null)
+            if (AuthenticationState == null)
             {
                 return false;
             }
             return (await AuthenticationState).User.Identity?.IsAuthenticated ?? false;
+        }
+
+        public void Dispose()
+        {
+            if (FeedService != null && FeedService.NotifyChangedFeeds != null)
+            {
+#pragma warning disable CS8601 // Null 参照代入の可能性があります。
+                FeedService.NotifyChangedFeeds -= StateHasChanged;
+#pragma warning restore CS8601 // Null 参照代入の可能性があります。
+            }
+            GC.SuppressFinalize(this);
         }
     }
 }
