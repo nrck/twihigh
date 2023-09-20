@@ -16,7 +16,7 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
         {
             _httpClient = httpClient;
             _apiUrlBase = $"{configuration["TimelineApiUrl"]}";
-            _apiUrlTimeline = $"{_apiUrlBase}/timeline?since={{0}}&until={{1}}";
+            _apiUrlTimeline = $"{_apiUrlBase}/?since={{0}}&until={{1}}";
         }
 
         public void SetToken(string token)
