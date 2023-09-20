@@ -1,10 +1,11 @@
 ﻿using PheasantTails.TwiHigh.Data.Model.Feeds;
+using System.Collections.ObjectModel;
 
 namespace PheasantTails.TwiHigh.Client.Services
 {
     public interface IFeedService
     {
-        public FeedContext[] FeedContexts { get; set; }
+        public ObservableCollection<FeedContext> FeedContexts { get; set; }
         public int FeedDotCount { get; set; }
         public Action NotifyChangedFeeds { get; set; }
 

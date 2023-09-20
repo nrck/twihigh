@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
 using PheasantTails.TwiHigh.Client.TypedHttpClients;
 using PheasantTails.TwiHigh.Data.Model.Feeds;
+using System.Collections.ObjectModel;
 
 namespace PheasantTails.TwiHigh.Client.Services
 {
@@ -14,7 +15,7 @@ namespace PheasantTails.TwiHigh.Client.Services
 
         public int FeedDotCount { get; set; }
 
-        public FeedContext[] FeedContexts { get; set; } = Array.Empty<FeedContext>();
+        public ObservableCollection<FeedContext> FeedContexts { get; set; } = new ObservableCollection<FeedContext>();
 
         public Action NotifyChangedFeeds { get; set; }
 
@@ -90,9 +91,10 @@ namespace PheasantTails.TwiHigh.Client.Services
 
         private void MergeFeeds(IEnumerable<FeedContext> newFeeds)
         {
-            FeedContexts = newFeeds.UnionBy(FeedContexts, f => f.Id)
+            var tmp = newFeeds.UnionBy(FeedContexts, f => f.Id)
                 .OrderByDescending(f => f.CreateAt)
                 .ToArray();
+            FeedContexts = new ObservableCollection<FeedContext>(tmp);
             FeedDotCount = FeedContexts.Count(f => !f.IsOpened);
         }
 

@@ -1,21 +1,42 @@
-﻿using PheasantTails.TwiHigh.Client.TypedHttpClients;
-using PheasantTails.TwiHigh.Client.ViewModels;
-using PheasantTails.TwiHigh.Data.Model.Feeds;
+﻿using PheasantTails.TwiHigh.Client.ViewModels;
 
 namespace PheasantTails.TwiHigh.Client.Pages
 {
     public partial class Feeds : PageBase
     {
-        private FeedContext[]? MyFeeds { get; set; }
+#pragma warning disable CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
+        private FeedsViewModel ViewModel { get; set; }
+#pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
 
-        protected override async Task OnInitializedAsync()
+        protected override void OnInitialized()
         {
-            await base.OnInitializedAsync();
-            MyFeeds = FeedService.FeedContexts;
-            StateHasChanged();
+            base.OnInitialized();
+            ViewModel = new FeedsViewModel(this)
+            {
+                MyFeeds = FeedService.FeedContexts
+            };
+            FeedService.NotifyChangedFeeds += UpdateMyFeeds;
         }
 
-        private void OnClickDetail(TweetViewModel tweetViewModel) => 
+        protected override void Dispose(bool isDispose)
+        {
+            if (isDispose)
+            {
+                if (FeedService?.NotifyChangedFeeds != null)
+                {
+                    FeedService.NotifyChangedFeeds -= UpdateMyFeeds;
+                }
+                ViewModel.Dispose();
+            }
+            base.Dispose(isDispose);
+        }
+
+        private void UpdateMyFeeds()
+        {
+            ViewModel.MyFeeds = FeedService.FeedContexts;
+        }
+
+        private void OnClickDetail(TweetViewModel tweetViewModel) =>
             Navigation.NavigateTo(string.Format(DefinePaths.PAGE_PATH_STATUS, tweetViewModel.UserDisplayId, tweetViewModel.Id));
 
         private void OnClickProfile(TweetViewModel tweetViewModel) =>

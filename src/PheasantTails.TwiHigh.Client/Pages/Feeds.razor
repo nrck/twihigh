@@ -8,13 +8,13 @@
 <PageTitleComponent Title="通知" />
 
 <section>
-    @if (MyFeeds == null)
+    @if (ViewModel == null || ViewModel.MyFeeds == null)
     {
         <Loading />
     }
-    else if (0 < MyFeeds.LongLength)
+    else if (0 < ViewModel.MyFeeds.Count)
     {
-        @foreach (FeedContext feed in MyFeeds)
+        @foreach (FeedContext feed in ViewModel.MyFeeds)
         {
             var action = feed.FeedType switch
             {

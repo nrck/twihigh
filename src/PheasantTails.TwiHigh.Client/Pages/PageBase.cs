@@ -5,6 +5,7 @@ using Microsoft.JSInterop;
 using PheasantTails.TwiHigh.Client.Extensions;
 using PheasantTails.TwiHigh.Client.Shared;
 using PheasantTails.TwiHigh.Client.TypedHttpClients;
+using System.ComponentModel;
 
 namespace PheasantTails.TwiHigh.Client.Pages
 {
@@ -45,6 +46,11 @@ namespace PheasantTails.TwiHigh.Client.Pages
         [Inject]
         protected AuthenticationStateProvider AuthenticationStateProvider { get; set; }
 #pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
+
+        public void InvokeStateHasChanged(object? sender, EventArgs args)
+        {
+            StateHasChanged();
+        }
 
         public virtual void Dispose()
         {
