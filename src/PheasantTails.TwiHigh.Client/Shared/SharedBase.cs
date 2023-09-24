@@ -60,7 +60,7 @@ namespace PheasantTails.TwiHigh.Client.Shared
             return (await AuthenticationState).User.Identity?.IsAuthenticated ?? false;
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             if (FeedService != null && FeedService.NotifyChangedFeeds != null)
             {

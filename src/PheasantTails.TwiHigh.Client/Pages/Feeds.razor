@@ -37,7 +37,7 @@
                     var tweet = new TweetViewModel(feed.FeedByTweet);
                     <TweetComponent @key="tweet.Id"
                                     Tweet="tweet"
-                                    OnClickDetail="OnClickDetail"
+                                    OnClickDetail="OnClickDetailAsync"
                                     OnClickProfile="OnClickProfile" />
                 }
             }

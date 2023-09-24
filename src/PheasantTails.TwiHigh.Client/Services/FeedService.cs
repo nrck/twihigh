@@ -7,19 +7,19 @@ namespace PheasantTails.TwiHigh.Client.Services
 {
     public class FeedService : IDisposable, IAsyncDisposable, IFeedService
     {
-        private const string LOCAL_STORAGE_KEY_FEEDS = "UserFeeds_{0}";
+        //private const string LOCAL_STORAGE_KEY_FEEDS = "UserFeeds_{0}";
         private readonly FeedHttpClient _feedHttpClient;
-        private CancellationTokenSource _workerCancellationTokenSource;
-        private AuthenticationStateProvider _authenticationStateProvider;
-        private string _userId;
+        private readonly CancellationTokenSource _workerCancellationTokenSource;
+        private readonly AuthenticationStateProvider _authenticationStateProvider;
+        //private string _userId;
 
         public int FeedDotCount { get; set; }
 
         public ObservableCollection<FeedContext> FeedContexts { get; set; } = new ObservableCollection<FeedContext>();
 
-        public Action NotifyChangedFeeds { get; set; }
+        public Action? NotifyChangedFeeds { get; set; }
 
-        private string LocalStorageKeyFeeds => string.Format(LOCAL_STORAGE_KEY_FEEDS, _userId);
+        //private string LocalStorageKeyFeeds => string.Format(LOCAL_STORAGE_KEY_FEEDS, _userId);
 
         private bool IsWorking { get; set; }
 
@@ -29,7 +29,7 @@ namespace PheasantTails.TwiHigh.Client.Services
             _workerCancellationTokenSource = new CancellationTokenSource();
             _authenticationStateProvider = authenticationStateProvider;
             _authenticationStateProvider.AuthenticationStateChanged += AuthenticationStateChangedHandlerAsync;
-            _userId = string.Empty;
+            //_userId = string.Empty;
         }
 
         public async Task InitializeAsync(string jwt)
@@ -42,6 +42,19 @@ namespace PheasantTails.TwiHigh.Client.Services
             _feedHttpClient.SetToken(jwt);
             await SetUserIdAsync(_authenticationStateProvider.GetAuthenticationStateAsync());
             _ = GetMyFeedsWorkerAsync(_workerCancellationTokenSource.Token);
+        }
+
+        public async Task MarkAsReadedFeedAsync(IEnumerable<Guid> ids)
+        {
+            var opendFeeds = FeedContexts.Where(f => f.IsOpened == false && ids.Any(i => i == f.Id)).ToList();
+            opendFeeds.ForEach(f => f.IsOpened = true);
+            MergeFeeds(opendFeeds);
+
+            var context = new PutUpdateMyFeedsContext
+            {
+                Ids = opendFeeds.Select(f => f.Id).ToArray()
+            };
+            await _feedHttpClient.PutOpenedMyFeeds(context);
         }
 
         public ValueTask DisposeAsync()
@@ -62,8 +75,9 @@ namespace PheasantTails.TwiHigh.Client.Services
             await SetUserIdAsync(authenticationState);
         }
 
-        private async Task SetUserIdAsync(Task<AuthenticationState> authenticationState)
+        private Task SetUserIdAsync(Task<AuthenticationState> authenticationState)
         {
+            return Task.CompletedTask;
         }
 
         private async Task GetMyFeedsWorkerAsync(CancellationToken cancellationToken)
@@ -83,7 +97,7 @@ namespace PheasantTails.TwiHigh.Client.Services
                     continue;
                 }
                 MergeFeeds(context.Feeds);
-                NotifyChangedFeeds.Invoke();
+                NotifyChangedFeeds?.Invoke();
                 await Task.Delay(5000, cancellationToken);
             }
             IsWorking = false;

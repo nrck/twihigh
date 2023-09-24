@@ -1,26 +1,12 @@
 ﻿using PheasantTails.TwiHigh.Client.Pages;
 using PheasantTails.TwiHigh.Data.Model.Feeds;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 
 namespace PheasantTails.TwiHigh.Client.ViewModels
 {
     internal class FeedsViewModel : ViewModelBase<Feeds>, IDisposable
     {
-
         private ObservableCollection<FeedContext> _myFeeds;
-
-        public void MyFeedsChangedCallback(object? sender, NotifyCollectionChangedEventArgs e)
-        {
-            if (e.NewItems == null)
-            {
-                MyFeeds = new ObservableCollection<FeedContext>();
-            }
-            else
-            {
-                MyFeeds = new((IEnumerable<FeedContext>)e.NewItems);
-            }
-        }
 
         internal ObservableCollection<FeedContext> MyFeeds
         {

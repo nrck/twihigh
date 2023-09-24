@@ -10,6 +10,7 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
     {
         private readonly string _apiUrlBase;
         private readonly string _apiUrlGetMyFeeds;
+        private readonly string _apiUrlPutOpenedMyFeeds;
         private readonly HttpClient _httpClient;
 
         public FeedHttpClient(HttpClient httpClient, IConfiguration configuration)
@@ -17,6 +18,7 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
             _httpClient = httpClient;
             _apiUrlBase = $"{configuration["FeedApiUrl"]}";
             _apiUrlGetMyFeeds = $"{_apiUrlBase}/?since={{0}}&until={{1}}";
+            _apiUrlPutOpenedMyFeeds = $"{_apiUrlBase}/";
         }
 
         public void SetToken(string token)
@@ -45,6 +47,11 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
 
             response.EnsureSuccessStatusCode();
             return null;
+        }
+
+        public Task PutOpenedMyFeeds(PutUpdateMyFeedsContext context)
+        {
+            return _httpClient.PutAsJsonAsync(_apiUrlPutOpenedMyFeeds, context);
         }
     }
 }

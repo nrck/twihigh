@@ -52,7 +52,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
             StateHasChanged();
         }
 
-        public virtual void Dispose()
+        public override void Dispose()
         {
             Logger.LogStart();
             Dispose(true);
