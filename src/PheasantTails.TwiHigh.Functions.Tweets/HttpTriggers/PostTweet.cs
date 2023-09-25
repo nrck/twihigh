@@ -161,8 +161,8 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.HttpTriggers
                         TweetId = context.TweetId,
                         Operations = new[]
                         {
-                            TweetPatchOperation.Add("/replyFrom/-", tweet.Id),
-                            TweetPatchOperation.Set("/updateAt", DateTimeOffset.UtcNow)
+                            TweetPatchOperation.Add("/replyFrom/-", tweet.Id.ToString()),
+                            TweetPatchOperation.Set("/updateAt", DateTimeOffset.UtcNow.ToString())
                         }
                     };
 
@@ -197,7 +197,7 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.HttpTriggers
                         Operations = new[]
                         {
                             TweetPatchOperation.Remove("/replyTo"),
-                            TweetPatchOperation.Set("/updateAt", tweet.UpdateAt)
+                            TweetPatchOperation.Set("/updateAt", tweet.UpdateAt.ToString())
                         }
                     };
                     await QueueStorages.InsertMessageAsync(

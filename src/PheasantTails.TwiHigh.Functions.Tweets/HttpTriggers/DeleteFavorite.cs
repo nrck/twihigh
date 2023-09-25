@@ -14,6 +14,7 @@ using PheasantTails.TwiHigh.Functions.Extensions;
 using System;
 using System.Linq;
 using System.Net;
+using System.Text.Json;
 using System.Threading.Tasks;
 using static PheasantTails.TwiHigh.Functions.Core.StaticStrings;
 
@@ -140,8 +141,8 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.HttpTriggers
                     TweetId = tweetId,
                     Operations = new[]
                     {
-                        TweetPatchOperation.Replace("/favoriteFrom", replacedFavoriteFrom),
-                        TweetPatchOperation.Set("/updateAt", DateTimeOffset.UtcNow)
+                        TweetPatchOperation.Replace("/favoriteFrom", JsonSerializer.Serialize(replacedFavoriteFrom)),
+                        TweetPatchOperation.Set("/updateAt", DateTimeOffset.UtcNow.ToString())
                     }
                 };
 

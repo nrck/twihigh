@@ -86,8 +86,8 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.HttpTriggers
                     Operations = new[]
                     {
                         TweetPatchOperation.Set("/text", "This tweet has been deleted."),
-                        TweetPatchOperation.Set("/isDeleted", true),
-                        TweetPatchOperation.Set("/updateAt", tweetPatchResponse.Resource.UpdateAt)
+                        TweetPatchOperation.Set("/isDeleted", true.ToString()),
+                        TweetPatchOperation.Set("/updateAt", tweetPatchResponse.Resource.UpdateAt.ToString())
                     }
                 };
                 await QueueStorages.InsertMessageAsync(

@@ -96,7 +96,7 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.QueueTriggers
                             TweetPatchOperation.Set("/userDisplayId", result.Resource.UserDisplayId),
                             TweetPatchOperation.Set("/userDisplayName", result.Resource.UserDisplayName),
                             TweetPatchOperation.Set("/userAvatarUrl", result.Resource.UserAvatarUrl),
-                            TweetPatchOperation.Set("/updateAt", DateTimeOffset.UtcNow)
+                            TweetPatchOperation.Set("/updateAt", DateTimeOffset.UtcNow.ToString())
                         }
                     };
                     await QueueStorages.InsertMessageAsync(

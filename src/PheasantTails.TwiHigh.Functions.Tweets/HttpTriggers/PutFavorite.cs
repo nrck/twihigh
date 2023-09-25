@@ -14,6 +14,7 @@ using PheasantTails.TwiHigh.Functions.Extensions;
 using System;
 using System.Linq;
 using System.Net;
+using System.Text.Json;
 using System.Threading.Tasks;
 using static PheasantTails.TwiHigh.Functions.Core.StaticStrings;
 
@@ -112,17 +113,17 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.HttpTriggers
                 };
                 var queOperation = new[]
                 {
-                    TweetPatchOperation.Set("/updateAt", DateTimeOffset.UtcNow)
+                    TweetPatchOperation.Set("/updateAt", DateTimeOffset.UtcNow.ToString())
                 };
                 if (targetTweet.FavoriteFrom.Length == 0)
                 {
                     patch = patch.Append(PatchOperation.Set("/favoriteFrom", new[] { favoriteFrom })).ToArray();
-                    queOperation = queOperation.Append(TweetPatchOperation.Set("/favoriteFrom", new[] { favoriteFrom })).ToArray();
+                    queOperation = queOperation.Append(TweetPatchOperation.Set("/favoriteFrom", JsonSerializer.Serialize(new[] { favoriteFrom }))).ToArray();
                 }
                 else
                 {
                     patch = patch.Append(PatchOperation.Add("/favoriteFrom/-", favoriteFrom)).ToArray();
-                    queOperation = queOperation.Append(TweetPatchOperation.Add("/favoriteFrom/-", favoriteFrom)).ToArray();
+                    queOperation = queOperation.Append(TweetPatchOperation.Add("/favoriteFrom/-", JsonSerializer.Serialize(favoriteFrom))).ToArray();
                 }
 
                 // Patch the tweet.
