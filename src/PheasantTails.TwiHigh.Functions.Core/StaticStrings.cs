@@ -83,6 +83,11 @@
         public const string AZURE_STORAGE_PATCH_TIMELINES_BY_REMOVE_REPLYTO_QUEUE_NAME = "patch-timelines-by-remove-replyto";
 
         /// <summary>
+        /// 
+        /// </summary>
+        public const string AZURE_STORAGE_PATCH_TIMELINES_BY_ADD_FAVORITE_FROM_NAME = "patch-timelines-by-add-favorite-from";
+
+        /// <summary>
         /// お気に入り登録されたときにフィードを作成するキュー名称
         /// </summary>
         public const string AZURE_STORAGE_FEED_MENTIONED_BY_USER_QUEUE_NAME = "feed-mentioned-by-user-trigger";
