@@ -135,9 +135,14 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.HttpTriggers
                 }
 
                 // Insert queue message to timelines function.
+                var patchTweetQueue = new PatchTweetQueue { TweetId = tweetId };
+                patchTweetQueue
+                    .AppendOperation(PatchOperationType.Replace, "/favoriteFrom", replacedFavoriteFrom)
+                    .AppendOperation(PatchOperationType.Set, "/updateAt", DateTimeOffset.UtcNow);
+
                 await QueueStorages.InsertMessageAsync(
                     AZURE_STORAGE_PATCH_TWEET_IN_TIMELINES_QUEUE_NAME,
-                    new PatchTweetQueue { TweetId = tweetId, Operations = patch });
+                    patchTweetQueue);
 
                 return new OkResult();
             }

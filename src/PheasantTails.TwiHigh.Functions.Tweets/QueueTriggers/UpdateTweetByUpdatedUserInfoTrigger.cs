@@ -88,17 +88,11 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.QueueTriggers
                         continue;
                     }
 
-                    var que = new PatchTweetQueue
-                    {
-                        TweetId = result.Resource.Id,
-                        Operations = new[]
-                        {
-                            PatchOperation.Set("/userDisplayId", result.Resource.UserDisplayId),
-                            PatchOperation.Set("/userDisplayName", result.Resource.UserDisplayName),
-                            PatchOperation.Set("/userAvatarUrl", result.Resource.UserAvatarUrl),
-                            PatchOperation.Set("/updateAt", DateTimeOffset.UtcNow)
-                        }
-                    };
+                    var que = new PatchTweetQueue { TweetId = result.Resource.Id };
+                    que.AppendOperation(PatchOperationType.Set, "/userDisplayId", result.Resource.UserDisplayId)
+                        .AppendOperation(PatchOperationType.Set, "/userDisplayName", result.Resource.UserDisplayName)
+                        .AppendOperation(PatchOperationType.Set, "/userAvatarUrl", result.Resource.UserAvatarUrl)
+                        .AppendOperation(PatchOperationType.Set, "/updateAt", DateTimeOffset.UtcNow);
                     await QueueStorages.InsertMessageAsync(
                         AZURE_STORAGE_PATCH_TWEET_IN_TIMELINES_QUEUE_NAME,
                         que);

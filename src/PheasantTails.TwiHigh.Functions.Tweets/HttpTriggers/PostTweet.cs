@@ -156,11 +156,9 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.HttpTriggers
                         .PatchItemAsync<Tweet>(tweetid, partitionKey, patch);
                     logger.TwiHighLogInformation(funcName, "Patch a tweet. Total RU: {0:0.00}", tweetPatchResponse.RequestCharge);
 
-                    var que = new PatchTweetQueue
-                    {
-                        TweetId = context.TweetId,
-                        Operations = patch
-                    };
+                    var que = new PatchTweetQueue { TweetId = context.TweetId };
+                    que.AppendOperation(PatchOperationType.Add, "/replyFrom/-", tweet.Id)
+                        .AppendOperation(PatchOperationType.Set, "/updateAt", DateTimeOffset.UtcNow);
 
                     // update user timelines
                     await QueueStorages.InsertMessageAsync(
@@ -187,15 +185,9 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.HttpTriggers
                     logger.TwiHighLogError(FUNCTION_NAME, ex);
 
                     // Delete the replyTo of own tweet when it fails.
-                    var que = new PatchTweetQueue
-                    {
-                        TweetId = context.TweetId,
-                        Operations = new[]
-                        {
-                            PatchOperation.Remove("/replyTo"),
-                            PatchOperation.Set("/updateAt", tweet.UpdateAt)
-                        }
-                    };
+                    var que = new PatchTweetQueue { TweetId = context.TweetId };
+                    que.AppendOperation(PatchOperationType.Remove, "/replyTo", null)
+                        .AppendOperation(PatchOperationType.Set, "/updateAt", tweet.UpdateAt);
                     await QueueStorages.InsertMessageAsync(
                         AZURE_STORAGE_PATCH_TWEET_IN_TIMELINES_QUEUE_NAME,
                         que);

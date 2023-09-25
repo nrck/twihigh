@@ -80,16 +80,10 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.HttpTriggers
                 }
 
                 // Remove from a follower's timeline.
-                var que = new PatchTweetQueue
-                {
-                    TweetId = tweetPatchResponse.Resource.Id,
-                    Operations = new[]
-                    {
-                        PatchOperation.Set("/text", "This tweet has been deleted."),
-                        PatchOperation.Set("/isDeleted", true),
-                        PatchOperation.Set("/updateAt", tweetPatchResponse.Resource.UpdateAt)
-                    }
-                };
+                var que = new PatchTweetQueue { TweetId = tweetPatchResponse.Resource.Id, };
+                que.AppendOperation(PatchOperationType.Set, "/text", "This tweet has been deleted.")
+                    .AppendOperation(PatchOperationType.Set, "/isDeleted", true)
+                    .AppendOperation(PatchOperationType.Set, "/updateAt", tweetPatchResponse.Resource.UpdateAt);
                 await QueueStorages.InsertMessageAsync(
                     AZURE_STORAGE_PATCH_TWEET_IN_TIMELINES_QUEUE_NAME,
                     que);

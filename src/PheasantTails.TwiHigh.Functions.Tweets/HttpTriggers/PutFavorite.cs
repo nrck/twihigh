@@ -110,13 +110,17 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.HttpTriggers
                 {
                     PatchOperation.Set("/updateAt", DateTimeOffset.UtcNow)
                 };
+                var patchTweetQue = new PatchTweetQueue { TweetId = tweetId };
+                patchTweetQue.AppendOperation(PatchOperationType.Set, "/updateAt", DateTimeOffset.UtcNow);
                 if (targetTweet.FavoriteFrom.Length == 0)
                 {
                     patch = patch.Append(PatchOperation.Set("/favoriteFrom", new[] { favoriteFrom })).ToArray();
+                    patchTweetQue.AppendOperation(PatchOperationType.Set, "/favoriteFrom", new[] { favoriteFrom });
                 }
                 else
                 {
                     patch = patch.Append(PatchOperation.Add("/favoriteFrom/-", favoriteFrom)).ToArray();
+                    patchTweetQue.AppendOperation(PatchOperationType.Add, "/favoriteFrom/-", favoriteFrom);
                 }
 
                 // Patch the tweet.
@@ -147,7 +151,7 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.HttpTriggers
                 // Insert queue message to timelines function.
                 await QueueStorages.InsertMessageAsync(
                     AZURE_STORAGE_PATCH_TWEET_IN_TIMELINES_QUEUE_NAME,
-                    new PatchTweetQueue { TweetId = tweetId, Operations = patch});
+                    patchTweetQue);
                 // Insert queue message to feeds function.
                 await QueueStorages.InsertMessageAsync(
                     AZURE_STORAGE_FEED_FAVORED_BY_USER_QUEUE_NAME,

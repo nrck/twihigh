@@ -37,7 +37,7 @@ namespace PheasantTails.TwiHigh.Functions.Timelines.QueueTriggers
                 }
 
                 var que = JsonSerializer.Deserialize<PatchTweetQueue>(myQueueItem);
-                var batchResult = await _client.PatchTimelineAsync(que.TweetId, que.Operations);
+                var batchResult = await _client.PatchTimelineAsync(que.TweetId, que.GetPatchOperations());
 
                 logger.TwiHighLogInformation(FUNCTION_NAME, "PatchTimelineAsync batch finish. RU:{0}, Task Count:{1}, Success:{2}",
                     batchResult.Sum(r => r.Headers.RequestCharge),
