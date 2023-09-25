@@ -156,19 +156,15 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.HttpTriggers
                         .PatchItemAsync<Tweet>(tweetid, partitionKey, patch);
                     logger.TwiHighLogInformation(funcName, "Patch a tweet. Total RU: {0:0.00}", tweetPatchResponse.RequestCharge);
 
-                    var que = new PatchTweetQueue
+                    var que = new PatchTimelinesByAddReplyFromQueue
                     {
                         TweetId = context.TweetId,
-                        Operations = new[]
-                        {
-                            TweetPatchOperation.Add("/replyFrom/-", tweet.Id.ToString()),
-                            TweetPatchOperation.Set("/updateAt", DateTimeOffset.UtcNow.ToString())
-                        }
+                        AddReplyFrom = tweet.Id
                     };
 
                     // update user timelines
                     await QueueStorages.InsertMessageAsync(
-                        AZURE_STORAGE_PATCH_TWEET_IN_TIMELINES_QUEUE_NAME,
+                        AZURE_STORAGE_PATCH_TIMELINES_BY_ADD_REPLYFROM_QUEUE_NAME,
                         que);
                     // insert feed
                     var feedQueue = new FeedMentionedQueue
