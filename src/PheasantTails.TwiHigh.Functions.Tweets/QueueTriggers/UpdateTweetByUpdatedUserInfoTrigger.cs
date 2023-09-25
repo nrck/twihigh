@@ -88,19 +88,15 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.QueueTriggers
                         continue;
                     }
 
-                    var que = new PatchTweetQueue
+                    var que = new PatchTimelinesByUpdateUserInfoQueue
                     {
                         TweetId = result.Resource.Id,
-                        Operations = new[]
-                        {
-                            TweetPatchOperation.Set("/userDisplayId", result.Resource.UserDisplayId),
-                            TweetPatchOperation.Set("/userDisplayName", result.Resource.UserDisplayName),
-                            TweetPatchOperation.Set("/userAvatarUrl", result.Resource.UserAvatarUrl),
-                            TweetPatchOperation.Set("/updateAt", DateTimeOffset.UtcNow.ToString())
-                        }
+                        SetUserDisplayId = result.Resource.UserDisplayId,
+                        SetUserDisplayName = result.Resource.UserDisplayName,
+                        SetUserAvatarUrl = result.Resource.UserAvatarUrl
                     };
                     await QueueStorages.InsertMessageAsync(
-                        AZURE_STORAGE_PATCH_TWEET_IN_TIMELINES_QUEUE_NAME,
+                        AZURE_STORAGE_PATCH_TIMELINES_BY_UPDATE_USER_INFO_NAME,
                         que);
                 }
 
