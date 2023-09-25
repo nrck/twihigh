@@ -1,4 +1,5 @@
 ﻿using Microsoft.Azure.Cosmos;
+using System.Text.Json;
 
 namespace PheasantTails.TwiHigh.Data.Model.Queues
 {
@@ -25,11 +26,11 @@ namespace PheasantTails.TwiHigh.Data.Model.Queues
             {
                 return operation.Type switch
                 {
-                    PatchOperationType.Add => PatchOperation.Add(operation.Path, operation.Value),
+                    PatchOperationType.Add => PatchOperation.Add(operation.Path, operation.JsonStringValue),
                     PatchOperationType.Remove => PatchOperation.Remove(operation.Path),
-                    PatchOperationType.Replace => PatchOperation.Replace(operation.Path, operation.Value),
-                    PatchOperationType.Set => PatchOperation.Set(operation.Path, operation.Value),
-                    PatchOperationType.Increment => PatchOperation.Increment(operation.Path, (long)operation.Value!),
+                    PatchOperationType.Replace => PatchOperation.Replace(operation.Path, operation.JsonStringValue),
+                    PatchOperationType.Set => PatchOperation.Set(operation.Path, operation.JsonStringValue),
+                    PatchOperationType.Increment => PatchOperation.Increment(operation.Path, long.Parse(operation.JsonStringValue)),
                     _ => throw new NotSupportedException(),
                 };
             }).ToArray();
@@ -42,12 +43,12 @@ namespace PheasantTails.TwiHigh.Data.Model.Queues
     {
         public PatchOperationType Type { get; set; }
         public string Path { get; set; } = string.Empty;
-        public object? Value { get; set; }
+        public string JsonStringValue { get; set; } = string.Empty;
 
-        public static TweetPatchOperation Add(string path, object value) => new() { Path = path, Type = PatchOperationType.Add, Value = value };
+        public static TweetPatchOperation Add(string path, object value) => new() { Path = path, Type = PatchOperationType.Add, JsonStringValue = JsonSerializer.Serialize(value) };
         public static TweetPatchOperation Remove(string path) => new() { Path = path, Type = PatchOperationType.Remove };
-        public static TweetPatchOperation Replace(string path, object value) => new() { Path = path, Type = PatchOperationType.Replace, Value = value };
-        public static TweetPatchOperation Set(string path, object value) => new() { Path = path, Type = PatchOperationType.Set, Value = value };
-        public static TweetPatchOperation Increment(string path, object value) => new() { Path = path, Type = PatchOperationType.Increment, Value = value };
+        public static TweetPatchOperation Replace(string path, object value) => new() { Path = path, Type = PatchOperationType.Replace, JsonStringValue = JsonSerializer.Serialize(value) };
+        public static TweetPatchOperation Set(string path, object value) => new() { Path = path, Type = PatchOperationType.Set, JsonStringValue = JsonSerializer.Serialize(value) };
+        public static TweetPatchOperation Increment(string path, object value) => new() { Path = path, Type = PatchOperationType.Increment, JsonStringValue = JsonSerializer.Serialize(value) };
     }
 }
