@@ -41,6 +41,7 @@ namespace PheasantTails.TwiHigh.Client.Services
 
             _feedHttpClient.SetToken(jwt);
             await SetUserIdAsync(_authenticationStateProvider.GetAuthenticationStateAsync());
+            FeedContexts = new ObservableCollection<FeedContext>();
             _ = GetMyFeedsWorkerAsync(_workerCancellationTokenSource.Token);
         }
 
