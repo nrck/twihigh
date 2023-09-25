@@ -45,10 +45,10 @@ namespace PheasantTails.TwiHigh.Data.Model.Queues
         public string Path { get; set; } = string.Empty;
         public string JsonStringValue { get; set; } = string.Empty;
 
-        public static TweetPatchOperation Add(string path, object value) => new() { Path = path, Type = PatchOperationType.Add, JsonStringValue = JsonSerializer.Serialize(value) };
+        public static TweetPatchOperation Add(string path, object value) => new() { Path = path, Type = PatchOperationType.Add, JsonStringValue = JsonSerializer.Serialize(value).TrimStart('"').TrimEnd('"') };
         public static TweetPatchOperation Remove(string path) => new() { Path = path, Type = PatchOperationType.Remove };
-        public static TweetPatchOperation Replace(string path, object value) => new() { Path = path, Type = PatchOperationType.Replace, JsonStringValue = JsonSerializer.Serialize(value) };
-        public static TweetPatchOperation Set(string path, object value) => new() { Path = path, Type = PatchOperationType.Set, JsonStringValue = JsonSerializer.Serialize(value) };
-        public static TweetPatchOperation Increment(string path, object value) => new() { Path = path, Type = PatchOperationType.Increment, JsonStringValue = JsonSerializer.Serialize(value) };
+        public static TweetPatchOperation Replace(string path, object value) => new() { Path = path, Type = PatchOperationType.Replace, JsonStringValue = JsonSerializer.Serialize(value).TrimStart('"').TrimEnd('"') };
+        public static TweetPatchOperation Set(string path, object value) => new() { Path = path, Type = PatchOperationType.Set, JsonStringValue = JsonSerializer.Serialize(value).TrimStart('"').TrimEnd('"') };
+        public static TweetPatchOperation Increment(string path, object value) => new() { Path = path, Type = PatchOperationType.Increment, JsonStringValue = JsonSerializer.Serialize(value).TrimStart('"').TrimEnd('"') };
     }
 }
