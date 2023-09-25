@@ -58,11 +58,6 @@
         public const string AZURE_STORAGE_FEED_FAVORED_BY_USER_QUEUE_NAME = "feed-favored-by-user-trigger";
 
         /// <summary>
-        /// タイムライン内のツイートに対するPatchOperationを実行するキュー名称
-        /// </summary>
-        public const string AZURE_STORAGE_PATCH_TWEET_IN_TIMELINES_QUEUE_NAME = "patch-tweet-in-timelines";
-
-        /// <summary>
         /// 
         /// </summary>
         public const string AZURE_STORAGE_PATCH_TIMELINES_BY_DELETE_FAVORITE_QUEUE_NAME = "patch-timelines-by-delete-favorite";

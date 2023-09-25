@@ -180,7 +180,7 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.HttpTriggers
                         AZURE_STORAGE_FEED_MENTIONED_BY_USER_QUEUE_NAME,
                         feedQueue);
 
-                    logger.TwiHighLogInformation(funcName, "Insert queue message to {0}", AZURE_STORAGE_PATCH_TWEET_IN_TIMELINES_QUEUE_NAME);
+                    logger.TwiHighLogInformation(funcName, "Insert queue message to {0}", AZURE_STORAGE_FEED_MENTIONED_BY_USER_QUEUE_NAME);
                 }
                 catch (CosmosException ex)
                 {
@@ -194,7 +194,7 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.HttpTriggers
                     await QueueStorages.InsertMessageAsync(
                         AZURE_STORAGE_PATCH_TIMELINES_BY_REMOVE_REPLYTO_QUEUE_NAME,
                         que);
-                    logger.TwiHighLogInformation(funcName, "Insert queue message to {0}", AZURE_STORAGE_PATCH_TWEET_IN_TIMELINES_QUEUE_NAME);
+                    logger.TwiHighLogInformation(funcName, "Insert queue message to {0}", AZURE_STORAGE_PATCH_TIMELINES_BY_REMOVE_REPLYTO_QUEUE_NAME);
                 }
 
                 return tweetPatchResponse;
