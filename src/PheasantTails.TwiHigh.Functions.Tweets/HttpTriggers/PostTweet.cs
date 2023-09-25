@@ -187,17 +187,12 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.HttpTriggers
                     logger.TwiHighLogError(FUNCTION_NAME, ex);
 
                     // Delete the replyTo of own tweet when it fails.
-                    var que = new PatchTweetQueue
+                    var que = new PatchTimelinesByRemoveReplyToQueue
                     {
-                        TweetId = context.TweetId,
-                        Operations = new[]
-                        {
-                            TweetPatchOperation.Remove("/replyTo"),
-                            TweetPatchOperation.Set("/updateAt", tweet.UpdateAt.ToString())
-                        }
+                        TweetId = context.TweetId
                     };
                     await QueueStorages.InsertMessageAsync(
-                        AZURE_STORAGE_PATCH_TWEET_IN_TIMELINES_QUEUE_NAME,
+                        AZURE_STORAGE_PATCH_TIMELINES_BY_REMOVE_REPLYTO_QUEUE_NAME,
                         que);
                     logger.TwiHighLogInformation(funcName, "Insert queue message to {0}", AZURE_STORAGE_PATCH_TWEET_IN_TIMELINES_QUEUE_NAME);
                 }
