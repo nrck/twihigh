@@ -13,8 +13,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Properties", "Properties", 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.Functions.Extensions", "src\PheasantTails.TwiHigh.Functions.Extensions\PheasantTails.TwiHigh.Functions.Extensions.csproj", "{125E3B7D-E505-4F97-AEAA-D4D3ECE76146}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.Data.Model", "src\PheasantTails.TwiHigh.Data.Model\PheasantTails.TwiHigh.Data.Model.csproj", "{DF52845F-AF4F-4581-96AF-4E1E17C51CA6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.Data.Store", "src\PheasantTails.TwiHigh.Data.Store\PheasantTails.TwiHigh.Data.Store.csproj", "{CC531CB0-1A8A-4392-B5FB-48571978543B}"
@@ -55,10 +53,6 @@ Global
 		{476A7BA4-8D04-493D-914C-96E2FADF5730}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{476A7BA4-8D04-493D-914C-96E2FADF5730}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{476A7BA4-8D04-493D-914C-96E2FADF5730}.Release|Any CPU.Build.0 = Release|Any CPU
-		{125E3B7D-E505-4F97-AEAA-D4D3ECE76146}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{125E3B7D-E505-4F97-AEAA-D4D3ECE76146}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{125E3B7D-E505-4F97-AEAA-D4D3ECE76146}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{125E3B7D-E505-4F97-AEAA-D4D3ECE76146}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DF52845F-AF4F-4581-96AF-4E1E17C51CA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DF52845F-AF4F-4581-96AF-4E1E17C51CA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF52845F-AF4F-4581-96AF-4E1E17C51CA6}.Release|Any CPU.ActiveCfg = Release|Any CPU

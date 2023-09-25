@@ -14,7 +14,6 @@
 	<ItemGroup>
 		<ProjectReference Include="..\PheasantTails.TwiHigh.Data.Store\PheasantTails.TwiHigh.Data.Store.csproj" />
 		<ProjectReference Include="..\PheasantTails.TwiHigh.Functions.Core\PheasantTails.TwiHigh.Functions.Core.csproj" />
-		<ProjectReference Include="..\PheasantTails.TwiHigh.Functions.Extensions\PheasantTails.TwiHigh.Functions.Extensions.csproj" />
 		<ProjectReference Include="..\PheasantTails.TwiHigh.Data.Model\PheasantTails.TwiHigh.Data.Model.csproj" />
 	</ItemGroup>
 	<ItemGroup>

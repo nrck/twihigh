@@ -16,7 +16,6 @@
 	<ItemGroup>
 		<ProjectReference Include="..\PheasantTails.TwiHigh.Data.Model\PheasantTails.TwiHigh.Data.Model.csproj" />
 		<ProjectReference Include="..\PheasantTails.TwiHigh.Functions.Core\PheasantTails.TwiHigh.Functions.Core.csproj" />
-		<ProjectReference Include="..\PheasantTails.TwiHigh.Functions.Extensions\PheasantTails.TwiHigh.Functions.Extensions.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 		<FunctionsPreservedDependencies Include="System.IdentityModel.Tokens.Jwt.dll" />
