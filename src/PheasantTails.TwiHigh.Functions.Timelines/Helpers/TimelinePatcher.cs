@@ -1,7 +1,7 @@
 ﻿using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;
-using PheasantTails.TwiHigh.Data.Model.Queues;
 using PheasantTails.TwiHigh.Functions.Core.Extensions;
+using PheasantTails.TwiHigh.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -11,10 +11,10 @@ using PheasantTails.TwiHigh.Data.Store.Entity;
 using PheasantTails.TwiHigh.Functions.Core;
 using PheasantTails.TwiHigh.Functions.Core.Extensions;
 using PheasantTails.TwiHigh.Functions.Extensions;
+using PheasantTails.TwiHigh.Interface;
 using System;
 using System.Linq;
 using System.Net;
-using System.Text.Json;
 using System.Threading.Tasks;
 using static PheasantTails.TwiHigh.Functions.Core.StaticStrings;
 
@@ -159,7 +159,7 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.HttpTriggers
                 // Insert queue message to feeds function.
                 await QueueStorages.InsertMessageAsync(
                     AZURE_STORAGE_FEED_FAVORED_BY_USER_QUEUE_NAME,
-                    new FeedFavoredQueue(targetTweet, userReadResponse));
+                    new FeedFavoredQueue(targetTweet, userReadResponse.Resource));
 
                 return new OkResult();
             }

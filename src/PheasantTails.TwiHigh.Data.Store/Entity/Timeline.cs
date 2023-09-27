@@ -27,7 +27,7 @@ namespace PheasantTails.TwiHigh.Data.Store.Entity
 
         public Timeline() { }
 
-        public Timeline(Guid owner, Tweet tweet)
+        public Timeline(Guid owner, ITweet tweet)
         {
             Id = Guid.NewGuid();
             TweetId = tweet.Id;
