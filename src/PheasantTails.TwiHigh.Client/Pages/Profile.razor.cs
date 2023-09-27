@@ -3,7 +3,6 @@ using PheasantTails.TwiHigh.Client.TypedHttpClients;
 using PheasantTails.TwiHigh.Client.ViewModels;
 using PheasantTails.TwiHigh.Data.Model;
 using PheasantTails.TwiHigh.Data.Model.TwiHighUsers;
-using PheasantTails.TwiHigh.Data.Store.Entity;
 using System.Net;
 using System.Net.Http.Json;
 
@@ -73,7 +72,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
                 var res = await TweetHttpClient.GetUserTweetsAsync(User.Id);
                 if (res != null && res.IsSuccessStatusCode && res.StatusCode == HttpStatusCode.OK)
                 {
-                    var tweets = await res.Content.ReadFromJsonAsync<Tweet[]>();
+                    var tweets = await res.Content.ReadFromJsonAsync<TweetViewModel[]>();
                     Tweets = tweets!.Select(t => new TweetViewModel(t) { IsReaded = true })
                         .OrderByDescending(t => t.CreateAt)
                         .ToList();
@@ -192,10 +191,10 @@ namespace PheasantTails.TwiHigh.Client.Pages
             if (res != null && res.IsSuccessStatusCode)
             {
                 SetSucessMessage("ツイートを送信しました！");
-                var tweet = await res.Content.ReadFromJsonAsync<Tweet>();
+                var tweet = await res.Content.ReadFromJsonAsync<TweetViewModel>();
                 if (tweet != null)
                 {
-                    var viewModel = new TweetViewModel(tweet);
+                    var viewModel = tweet;
                     Tweets.Add(viewModel);
                     Tweets = Tweets.OrderBy(t => t.CreateAt).ToList();
                 }

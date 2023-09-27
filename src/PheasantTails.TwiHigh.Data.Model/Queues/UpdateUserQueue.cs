@@ -1,16 +1,13 @@
-﻿using PheasantTails.TwiHigh.Data.Store.Entity;
+﻿using PheasantTails.TwiHigh.Interface;
 
-namespace PheasantTails.TwiHigh.Data.Model.Queues
+namespace PheasantTails.TwiHigh.Data.Model.Queues;
+
+public class UpdateUserQueue
 {
-    public class UpdateUserQueue
+    public ITwiHighUser TwiHighUser { get; set; }
+
+    public UpdateUserQueue(ITwiHighUser twiHighUser) 
     {
-        public TwiHighUser TwiHighUser { get; set; }
-
-        public UpdateUserQueue(TwiHighUser twiHighUser) 
-        {
-            TwiHighUser = twiHighUser;
-        }
-
-        public static implicit operator UpdateUserQueue(TwiHighUser twiHighUser) => new(twiHighUser);
+        TwiHighUser = twiHighUser;
     }
 }

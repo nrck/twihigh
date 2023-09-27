@@ -1,9 +1,11 @@
-﻿namespace PheasantTails.TwiHigh.Data.Store.Entity
+﻿using PheasantTails.TwiHigh.Interface;
+
+namespace PheasantTails.TwiHigh.Data.Store.Entity
 {
     /// <summary>
     /// Timelineコンテナエンティティ
     /// </summary>
-    public class Timeline : BaseEntity
+    public class Timeline : BaseEntity, ITimeline
     {
         /// <summary>
         /// パーテーションキー

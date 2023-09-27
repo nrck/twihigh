@@ -13,4 +13,7 @@
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.26.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
 	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\PheasantTails.TwiHigh.Data.Store\PheasantTails.TwiHigh.Data.Store.csproj" />
+	</ItemGroup>
 </Project>

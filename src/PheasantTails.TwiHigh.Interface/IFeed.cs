@@ -1,6 +1,6 @@
 ﻿namespace PheasantTails.TwiHigh.Interface;
 
-public interface IFeed : IEntityMetadata, IGetablePartitionKey
+public interface IFeed : IEntityMetadata
 {
     public const string FEED_TYPE_FAVORED = "Favored";
     public const string FEED_TYPE_RETWEETED = "Retweet";

@@ -1,7 +1,6 @@
-﻿namespace PheasantTails.TwiHigh.Data.Model.Feeds
+﻿namespace PheasantTails.TwiHigh.Data.Model.Feeds;
+
+public class PutUpdateMyFeedsContext
 {
-    public class PutUpdateMyFeedsContext
-    {
-        public Guid[] Ids { get; set; } = Array.Empty<Guid>();
-    }
+    public Guid[] Ids { get; set; } = Array.Empty<Guid>();
 }

@@ -1,6 +1,6 @@
 ﻿namespace PheasantTails.TwiHigh.Interface;
 
-public interface ITweet : IEntityMetadata, IGetablePartitionKey, ITwiHighUserSummary
+public interface ITweet : IEntityMetadata, ITwiHighUserSummary
 {
     /// <summary>
     /// This tweet's main text.

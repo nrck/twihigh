@@ -1,36 +1,35 @@
-﻿using Microsoft.Azure.Cosmos;
-using PheasantTails.TwiHigh.Data.Store.Entity;
+﻿namespace PheasantTails.TwiHigh.Data.Model.Queues;
 
-namespace PheasantTails.TwiHigh.Data.Model.Queues
+using Microsoft.Azure.Cosmos;
+using PheasantTails.TwiHigh.Interface;
+
+public class PatchTimelinesByAddFavoriteFromQueue : ITimelinePatchOperationable
 {
-    public class PatchTimelinesByAddFavoriteFromQueue : ITimelinePatchOperationable
+    public Guid TweetId { get; set; }
+    public IdTimeStampPair AddOrSetFavoriteFrom { get; set; } = new IdTimeStampPair();
+    public bool IsAddOperation { get; set; }
+    public DateTimeOffset SetUpdateAt { get; set; } = DateTimeOffset.UtcNow;
+
+    public PatchOperation[] GetPatchOperations()
     {
-        public Guid TweetId { get; set; }
-        public IdTimeStampPair AddOrSetFavoriteFrom { get; set; } = new IdTimeStampPair();
-        public bool IsAddOperation { get; set; }
-        public DateTimeOffset SetUpdateAt { get; set; } = DateTimeOffset.UtcNow;
-
-        public PatchOperation[] GetPatchOperations()
+        PatchOperation[] operations;
+        if (IsAddOperation)
         {
-            PatchOperation[] operations;
-            if (IsAddOperation)
+            operations = new[]
             {
-                operations = new[]
-                {
-                    PatchOperation.Add("/favoriteFrom/-", AddOrSetFavoriteFrom),
-                    PatchOperation.Set("/updateAt", SetUpdateAt)
-                };
-            }
-            else
-            {
-                operations = new[]
-                {
-                    PatchOperation.Set("/favoriteFrom", new[] { AddOrSetFavoriteFrom }),
-                    PatchOperation.Set("/updateAt", SetUpdateAt)
-                };
-            }
-
-            return operations;
+                PatchOperation.Add("/favoriteFrom/-", AddOrSetFavoriteFrom),
+                PatchOperation.Set("/updateAt", SetUpdateAt)
+            };
         }
+        else
+        {
+            operations = new[]
+            {
+                PatchOperation.Set("/favoriteFrom", new[] { AddOrSetFavoriteFrom }),
+                PatchOperation.Set("/updateAt", SetUpdateAt)
+            };
+        }
+
+        return operations;
     }
 }

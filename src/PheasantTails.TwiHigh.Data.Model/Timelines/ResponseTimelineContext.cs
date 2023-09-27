@@ -1,11 +1,10 @@
-﻿using PheasantTails.TwiHigh.Data.Store.Entity;
+﻿namespace PheasantTails.TwiHigh.Data.Model.Timelines;
 
-namespace PheasantTails.TwiHigh.Data.Model.Timelines
+using PheasantTails.TwiHigh.Interface;
+
+public class ResponseTimelineContext
 {
-    public class ResponseTimelineContext
-    {
-        public DateTimeOffset Latest { get; set; }
-        public DateTimeOffset Oldest { get; set; }
-        public Tweet[] Tweets { get; set; } = Array.Empty<Tweet>();
-    }
+    public DateTimeOffset Latest { get; set; }
+    public DateTimeOffset Oldest { get; set; }
+    public ITweet[] Tweets { get; set; } = Array.Empty<ITweet>();
 }

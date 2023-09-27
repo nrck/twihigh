@@ -1,16 +1,15 @@
-﻿using PheasantTails.TwiHigh.Data.Store.Entity;
+﻿namespace PheasantTails.TwiHigh.Data.Model.Timelines;
 
-namespace PheasantTails.TwiHigh.Data.Model.Timelines
+using PheasantTails.TwiHigh.Interface;
+
+public class QueAddTimelineContext
 {
-    public class QueAddTimelineContext
-    {
-        public Tweet Tweet { get; set; }
-        public Guid[] Followers { get; set; }
+    public ITweet Tweet { get; set; }
+    public Guid[] Followers { get; set; }
 
-        public QueAddTimelineContext(Tweet tweet, Guid[] followers)
-        {
-            Tweet = tweet;
-            Followers = followers;
-        }
+    public QueAddTimelineContext(ITweet tweet, Guid[] followers)
+    {
+        Tweet = tweet;
+        Followers = followers;
     }
 }

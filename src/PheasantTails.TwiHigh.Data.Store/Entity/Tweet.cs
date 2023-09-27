@@ -1,6 +1,8 @@
-﻿namespace PheasantTails.TwiHigh.Data.Store.Entity
+﻿using PheasantTails.TwiHigh.Interface;
+
+namespace PheasantTails.TwiHigh.Data.Store.Entity
 {
-    public class Tweet : BaseEntity
+    public class Tweet : BaseEntity, ITweet
     {
         public const string PARTITION_KEY = "/userId";
 

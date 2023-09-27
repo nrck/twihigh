@@ -1,12 +1,46 @@
-﻿using PheasantTails.TwiHigh.Data.Store.Entity;
+﻿using PheasantTails.TwiHigh.Interface;
 using System.Text.Json.Serialization;
 
 namespace PheasantTails.TwiHigh.Client.ViewModels
 {
-    public class TweetViewModel : Tweet
+    public class TweetViewModel : ITweet
     {
         public static TweetViewModel SystemTweet => new() { IsSystemTweet = true };
 
+        /// <summary>
+        /// Cosmos DB item id.
+        /// </summary>
+        public Guid Id { get; set; }
+
+        /// <summary>
+        /// Updated time for this item.
+        /// </summary>
+        public DateTimeOffset UpdateAt { get; set; }
+
+        /// <summary>
+        /// Created time for this item.
+        /// </summary>
+        public DateTimeOffset CreateAt { get; set; }
+
+        /// <summary>
+        /// User item id on Cosmos DB.
+        /// </summary>
+        public Guid UserId { get; set; }
+
+        /// <summary>
+        /// User id on screen.
+        /// </summary>
+        public string UserDisplayId { get; set; }
+
+        /// <summary>
+        /// User name on screen.
+        /// </summary>
+        public string UserDisplayName { get; set; }
+
+        /// <summary>
+        /// User icon url string.
+        /// </summary>
+        public string UserAvatarUrl { get; set; }
         /// <summary>
         /// 既読管理フラグ（既読＝スクロール後に画面上に表示される）
         /// </summary>
@@ -67,10 +101,21 @@ namespace PheasantTails.TwiHigh.Client.ViewModels
                 return CreateAt.ToLocalTime().ToString("H:mm:ss");
             }
         }
+        public string Text { get; set; }
+
+        public bool IsDeleted { get; set; }
+
+        public Guid? ReplyTo { get; set; }
+
+        public Guid[] ReplyFrom { get; set; }
+
+        public IdTimeStampPair[]? FavoriteFrom { get; set; }
+
+        public IdTimeStampPair[]? RetweetFrom { get; set; }
 
         public bool IsOpendReplyPostForm { get; set; } = false;
 
-        public TweetViewModel(Tweet tweet)
+        public TweetViewModel(ITweet tweet)
         {
             CreateAt = tweet.CreateAt;
             Id = tweet.Id;

@@ -1,24 +1,24 @@
-﻿using Microsoft.Azure.Cosmos;
+﻿namespace PheasantTails.TwiHigh.Data.Model.Queues;
 
-namespace PheasantTails.TwiHigh.Data.Model.Queues
+using Microsoft.Azure.Cosmos;
+using PheasantTails.TwiHigh.Interface;
+
+public class PatchTimelinesByDeleteTweet : ITimelinePatchOperationable
 {
-    public class PatchTimelinesByDeleteTweet : ITimelinePatchOperationable
-    {
-        private const string DELETE_TWEET_OVERRIDE_MESSAGE = "This tweet has been deleted.";
-        public Guid TweetId { get; set; }
-        public string SetText { get; set; } = DELETE_TWEET_OVERRIDE_MESSAGE;
-        public bool SetIsDeleted { get; set; } = true;
-        public DateTimeOffset SetUpdateAt { get; set; } = DateTimeOffset.UtcNow;
+    private const string DELETE_TWEET_OVERRIDE_MESSAGE = "This tweet has been deleted.";
+    public Guid TweetId { get; set; }
+    public string SetText { get; set; } = DELETE_TWEET_OVERRIDE_MESSAGE;
+    public bool SetIsDeleted { get; set; } = true;
+    public DateTimeOffset SetUpdateAt { get; set; } = DateTimeOffset.UtcNow;
 
-        public PatchOperation[] GetPatchOperations()
+    public PatchOperation[] GetPatchOperations()
+    {
+        var operations = new[]
         {
-            var operations = new[]
-            {
-                PatchOperation.Set("/text", SetText),
-                PatchOperation.Set("/isDeleted", SetIsDeleted),
-                PatchOperation.Set("/updateAt", SetUpdateAt)
-            };
-            return operations;
-        }
+            PatchOperation.Set("/text", SetText),
+            PatchOperation.Set("/isDeleted", SetIsDeleted),
+            PatchOperation.Set("/updateAt", SetUpdateAt)
+        };
+        return operations;
     }
 }

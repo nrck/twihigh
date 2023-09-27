@@ -1,6 +1,6 @@
 ﻿namespace PheasantTails.TwiHigh.Interface;
 
-public interface ITwiHighUser : IEntityMetadata, IGetablePartitionKey
+public interface ITwiHighUser : IEntityMetadata
 {
     /// <summary>
     /// User id on screen.

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Components.Routing;
 using PheasantTails.TwiHigh.Client.ViewModels;
 using PheasantTails.TwiHigh.Data.Model;
 using PheasantTails.TwiHigh.Data.Model.TwiHighUsers;
-using PheasantTails.TwiHigh.Data.Store.Entity;
 using System.Net.Http.Json;
 
 namespace PheasantTails.TwiHigh.Client.Pages
@@ -64,7 +63,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
                 return;
             }
 
-            var tweets = await res.Content.ReadFromJsonAsync<List<Tweet>>();
+            var tweets = await res.Content.ReadFromJsonAsync<List<TweetViewModel>>();
             var main = tweets!.FirstOrDefault(t => t.Id == tweetId);
             if (main == null)
             {
@@ -140,7 +139,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
             if (res != null && res.IsSuccessStatusCode)
             {
                 SetSucessMessage("ツイートを送信しました！");
-                var tweet = await res.Content.ReadFromJsonAsync<Tweet>();
+                var tweet = await res.Content.ReadFromJsonAsync<TweetViewModel>();
                 if (tweet != null && Tweets != null)
                 {
                     var viewModel = new TweetViewModel(tweet);
