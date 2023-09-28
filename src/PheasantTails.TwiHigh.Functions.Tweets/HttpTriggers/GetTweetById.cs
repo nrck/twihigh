@@ -5,7 +5,7 @@ using Microsoft.Azure.Cosmos.Linq;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
-using PheasantTails.TwiHigh.Data.Store.Entity;
+using PheasantTails.TwiHigh.Functions.Core.Entity;
 using PheasantTails.TwiHigh.Functions.Core.Extensions;
 using System;
 using System.Collections.Generic;

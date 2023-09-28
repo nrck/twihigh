@@ -14,6 +14,6 @@
 		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\PheasantTails.TwiHigh.Data.Store\PheasantTails.TwiHigh.Data.Store.csproj" />
+	  <ProjectReference Include="..\PheasantTails.TwiHigh.Interface\PheasantTails.TwiHigh.Interface.csproj" />
 	</ItemGroup>
 </Project>

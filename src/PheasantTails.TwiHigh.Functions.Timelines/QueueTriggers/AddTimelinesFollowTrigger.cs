@@ -2,7 +2,7 @@
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using PheasantTails.TwiHigh.Data.Model.Followers;
-using PheasantTails.TwiHigh.Data.Store.Entity;
+using PheasantTails.TwiHigh.Functions.Core.Entity;
 using PheasantTails.TwiHigh.Functions.Core.Extensions;
 using System;
 using System.Collections.Generic;

@@ -1,4 +1,4 @@
-﻿namespace PheasantTails.TwiHigh.Data.Store.Entity;
+﻿namespace PheasantTails.TwiHigh.Functions.Core.Entity;
 
 using PheasantTails.TwiHigh.Interface;
 

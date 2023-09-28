@@ -1,6 +1,6 @@
 ﻿using PheasantTails.TwiHigh.Data.Model.Feeds;
 using PheasantTails.TwiHigh.Data.Model.TwiHighUsers;
-using PheasantTails.TwiHigh.Data.Store.Entity;
+using PheasantTails.TwiHigh.Functions.Core.Entity;
 using System.Collections.Generic;
 using System.Linq;
 
