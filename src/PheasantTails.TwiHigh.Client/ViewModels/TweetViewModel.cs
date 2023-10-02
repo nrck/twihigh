@@ -30,17 +30,17 @@ namespace PheasantTails.TwiHigh.Client.ViewModels
         /// <summary>
         /// User id on screen.
         /// </summary>
-        public string UserDisplayId { get; set; }
+        public string UserDisplayId { get; set; } = string.Empty;
 
         /// <summary>
         /// User name on screen.
         /// </summary>
-        public string UserDisplayName { get; set; }
+        public string UserDisplayName { get; set; } = string.Empty;
 
         /// <summary>
         /// User icon url string.
         /// </summary>
-        public string UserAvatarUrl { get; set; }
+        public string UserAvatarUrl { get; set; } = string.Empty;
         /// <summary>
         /// 既読管理フラグ（既読＝スクロール後に画面上に表示される）
         /// </summary>
@@ -101,13 +101,13 @@ namespace PheasantTails.TwiHigh.Client.ViewModels
                 return CreateAt.ToLocalTime().ToString("H:mm:ss");
             }
         }
-        public string Text { get; set; }
+        public string Text { get; set; } = string.Empty;
 
         public bool IsDeleted { get; set; }
 
         public Guid? ReplyTo { get; set; }
 
-        public Guid[] ReplyFrom { get; set; }
+        public Guid[] ReplyFrom { get; set; } = Array.Empty<Guid>();
 
         public IdTimeStampPair[]? FavoriteFrom { get; set; }
 

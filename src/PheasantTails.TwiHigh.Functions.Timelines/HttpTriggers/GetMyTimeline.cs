@@ -6,7 +6,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using PheasantTails.TwiHigh.Data.Model.Timelines;
-using PheasantTails.TwiHigh.Data.Store.Entity;
+using PheasantTails.TwiHigh.Functions.Core.Entity;
 using PheasantTails.TwiHigh.Functions.Core.Extensions;
 using System;
 using System.Collections.Generic;

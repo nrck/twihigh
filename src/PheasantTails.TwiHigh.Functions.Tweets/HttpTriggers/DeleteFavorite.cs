@@ -6,14 +6,13 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using PheasantTails.TwiHigh.Data.Model.Queues;
-using PheasantTails.TwiHigh.Data.Store.Entity;
 using PheasantTails.TwiHigh.Functions.Core;
+using PheasantTails.TwiHigh.Functions.Core.Entity;
 using PheasantTails.TwiHigh.Functions.Core.Extensions;
+using PheasantTails.TwiHigh.Functions.Core.Queues;
 using System;
 using System.Linq;
 using System.Net;
-using System.Text.Json;
 using System.Threading.Tasks;
 using static PheasantTails.TwiHigh.Functions.Core.StaticStrings;
 
