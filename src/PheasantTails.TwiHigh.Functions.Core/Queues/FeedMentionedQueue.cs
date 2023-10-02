@@ -1,4 +1,4 @@
-﻿namespace PheasantTails.TwiHigh.Data.Model.Queues;
+﻿namespace PheasantTails.TwiHigh.Functions.Core.Queues;
 public class FeedMentionedQueue
 {
     public Guid TargetTweetId { get; set; }

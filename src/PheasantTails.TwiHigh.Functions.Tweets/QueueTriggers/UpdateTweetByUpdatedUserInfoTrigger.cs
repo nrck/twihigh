@@ -2,9 +2,10 @@
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using PheasantTails.TwiHigh.Data.Model.Queues;
+using PheasantTails.TwiHigh.Data.Store.Entity;
 using PheasantTails.TwiHigh.Functions.Core;
-using PheasantTails.TwiHigh.Functions.Core.Entity;
 using PheasantTails.TwiHigh.Functions.Core.Extensions;
+using PheasantTails.TwiHigh.Functions.Core.Queues;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
-using PheasantTails.TwiHigh.Data.Model.Queues;
+using PheasantTails.TwiHigh.Functions.Core.Queues;
 using PheasantTails.TwiHigh.Functions.Timelines.Helpers;
 using System.Threading.Tasks;
 using static PheasantTails.TwiHigh.Functions.Core.StaticStrings;

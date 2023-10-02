@@ -1,4 +1,4 @@
-﻿namespace PheasantTails.TwiHigh.Data.Model.Queues;
+﻿namespace PheasantTails.TwiHigh.Functions.Core.Queues;
 
 using Microsoft.Azure.Cosmos;
 using PheasantTails.TwiHigh.Interface;
