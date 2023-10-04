@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Components;
+using PheasantTails.TwiHigh.Client.Extensions;
 using PheasantTails.TwiHigh.Client.TypedHttpClients;
 using PheasantTails.TwiHigh.Client.ViewModels;
 using PheasantTails.TwiHigh.Data.Model;
 using PheasantTails.TwiHigh.Data.Model.TwiHighUsers;
+using PheasantTails.TwiHigh.Interface;
 using System.Net;
 using System.Net.Http.Json;
 
@@ -72,7 +74,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
                 var res = await TweetHttpClient.GetUserTweetsAsync(User.Id);
                 if (res != null && res.IsSuccessStatusCode && res.StatusCode == HttpStatusCode.OK)
                 {
-                    var tweets = await res.Content.ReadFromJsonAsync<TweetViewModel[]>();
+                    var tweets = await res.Content.TwiHighReadFromJsonAsync<ITweet[]>();
                     Tweets = tweets!.Select(t => new TweetViewModel(t) { IsReaded = true })
                         .OrderByDescending(t => t.CreateAt)
                         .ToList();

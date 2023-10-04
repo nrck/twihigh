@@ -1,4 +1,5 @@
-﻿using PheasantTails.TwiHigh.Data.Model.Feeds;
+﻿using PheasantTails.TwiHigh.Client.Extensions;
+using PheasantTails.TwiHigh.Data.Model.Feeds;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -42,7 +43,7 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
             var response = await _httpClient.GetAsync(url);
             if (response.StatusCode == HttpStatusCode.OK)
             {
-                return await response.Content.ReadFromJsonAsync<ResponseFeedsContext>();
+                return await response.Content.TwiHighReadFromJsonAsync<ResponseFeedsContext>();
             }
 
             response.EnsureSuccessStatusCode();

@@ -1,4 +1,5 @@
-﻿using PheasantTails.TwiHigh.Data.Model.TwiHighUsers;
+﻿using PheasantTails.TwiHigh.Client.Extensions;
+using PheasantTails.TwiHigh.Data.Model.TwiHighUsers;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
@@ -44,7 +45,7 @@ namespace PheasantTails.TwiHigh.Client.TypedHttpClients
             try
             {
                 var res = await _httpClient.PostAsJsonAsync(_apiUrlLogin, authorizationContext);
-                return await res.Content.ReadFromJsonAsync<ResponseJwtContext>();
+                return await res.Content.TwiHighReadFromJsonAsync<ResponseJwtContext>();
             }
             catch (Exception)
             {

@@ -74,7 +74,7 @@ namespace PheasantTails.TwiHigh.Client.ViewModels
         /// <summary>
         /// 投稿日時（文字列）
         /// </summary>
-        [JsonIgnore] 
+        [JsonIgnore]
         public string CreateAtDatetimeString
         {
             get
@@ -118,11 +118,14 @@ namespace PheasantTails.TwiHigh.Client.ViewModels
         public TweetViewModel(ITweet tweet)
         {
             CreateAt = tweet.CreateAt;
+            FavoriteFrom = tweet.FavoriteFrom;
             Id = tweet.Id;
             IsDeleted = tweet.IsDeleted;
+            IsEmphasized = false;
             IsReaded = false;
             ReplyFrom = tweet.ReplyFrom;
             ReplyTo = tweet.ReplyTo;
+            RetweetFrom = tweet.RetweetFrom;
             Text = tweet.Text;
             UpdateAt = tweet.UpdateAt;
             UserAvatarUrl = tweet.UserAvatarUrl;

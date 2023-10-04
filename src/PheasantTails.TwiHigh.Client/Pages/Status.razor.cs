@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
+using PheasantTails.TwiHigh.Client.Extensions;
 using PheasantTails.TwiHigh.Client.ViewModels;
 using PheasantTails.TwiHigh.Data.Model;
 using PheasantTails.TwiHigh.Data.Model.TwiHighUsers;
+using PheasantTails.TwiHigh.Interface;
 using System.Net.Http.Json;
 
 namespace PheasantTails.TwiHigh.Client.Pages
@@ -63,7 +65,7 @@ namespace PheasantTails.TwiHigh.Client.Pages
                 return;
             }
 
-            var tweets = await res.Content.ReadFromJsonAsync<List<TweetViewModel>>();
+            var tweets = await res.Content.TwiHighReadFromJsonAsync<List<ITweet>>();
             var main = tweets!.FirstOrDefault(t => t.Id == tweetId);
             if (main == null)
             {
