@@ -11,10 +11,9 @@ on:
     paths:
       - '.github/workflows/deploy-tweets-function.yml'
       - 'src/PheasantTails.TwiHigh.Data.Model/**'
-      - 'src/PheasantTails.TwiHigh.Data.Store/**'
       - 'src/PheasantTails.TwiHigh.Functions.Core/**'
-      - 'src/PheasantTails.TwiHigh.Functions.Extensions/**'
       - 'src/PheasantTails.TwiHigh.Functions.Tweets/**'
+      - 'src/PheasantTails.TwiHigh.Interface/**'
 
 jobs:
   pro-build-and-deploy-tweets:

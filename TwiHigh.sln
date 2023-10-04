@@ -33,6 +33,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\deploy-azure-function.yml = .github\workflows\deploy-azure-function.yml
 		.github\workflows\deploy-client-application.yml = .github\workflows\deploy-client-application.yml
+		.github\workflows\deploy-feeds-function.yml = .github\workflows\deploy-feeds-function.yml
 		.github\workflows\deploy-follows-function.yml = .github\workflows\deploy-follows-function.yml
 		.github\workflows\deploy-timelines-function.yml = .github\workflows\deploy-timelines-function.yml
 		.github\workflows\deploy-tweets-function.yml = .github\workflows\deploy-tweets-function.yml

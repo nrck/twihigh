@@ -11,10 +11,9 @@ on:
     paths:
       - '.github/workflows/deploy-follows-function.yml'
       - 'src/PheasantTails.TwiHigh.Data.Model/**'
-      - 'src/PheasantTails.TwiHigh.Data.Store/**'
       - 'src/PheasantTails.TwiHigh.Functions.Core/**'
-      - 'src/PheasantTails.TwiHigh.Functions.Extensions/**'
       - 'src/PheasantTails.TwiHigh.Functions.Follows/**'
+      - 'src/PheasantTails.TwiHigh.Interface/**'
 
 jobs:
   dev-build-and-deploy-follows:

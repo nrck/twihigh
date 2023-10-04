@@ -12,7 +12,7 @@ on:
       - '.github/workflows/deploy-client-application.yml'
       - 'src/PheasantTails.TwiHigh.Client/**'
       - 'src/PheasantTails.TwiHigh.Data.Model/**'
-      - 'src/PheasantTails.TwiHigh.Data.Store/**'
+      - 'src/PheasantTails.TwiHigh.Interface/**'
 
 jobs:
   pro-build-and-deploy-client:

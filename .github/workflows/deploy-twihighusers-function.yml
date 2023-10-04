@@ -11,10 +11,9 @@ on:
     paths:
       - '.github/workflows/deploy-twihighusers-function.yml'
       - 'src/PheasantTails.TwiHigh.Data.Model/**'
-      - 'src/PheasantTails.TwiHigh.Data.Store/**'
       - 'src/PheasantTails.TwiHigh.Functions.Core/**'
-      - 'src/PheasantTails.TwiHigh.Functions.Extensions/**'
       - 'src/PheasantTails.TwiHigh.Functions.TwiHighUsers/**'
+      - 'src/PheasantTails.TwiHigh.Interface/**'
 
 jobs:
   pro-build-and-deploy-twihighusers:
