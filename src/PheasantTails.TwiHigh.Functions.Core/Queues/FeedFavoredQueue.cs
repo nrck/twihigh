@@ -1,6 +1,6 @@
 ﻿namespace PheasantTails.TwiHigh.Functions.Core.Queues;
 
-using PheasantTails.TwiHigh.Interface;
+using PheasantTails.TwiHigh.Functions.Core.Entity;
 
 public class FeedFavoredQueue
 {
@@ -11,7 +11,7 @@ public class FeedFavoredQueue
 
     public FeedFavoredQueue() { }
 
-    public FeedFavoredQueue(ITweet targetTweet, ITwiHighUser feedByUser)
+    public FeedFavoredQueue(Tweet targetTweet, TwiHighUser feedByUser)
     {
         TargetTweetId = targetTweet.Id;
         TargetTweetPartitionKey = targetTweet.UserId.ToString();

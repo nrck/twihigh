@@ -1,12 +1,12 @@
-﻿using PheasantTails.TwiHigh.Interface;
+﻿namespace PheasantTails.TwiHigh.Functions.Core.Queues;
 
-namespace PheasantTails.TwiHigh.Functions.Core.Queues;
+using PheasantTails.TwiHigh.Functions.Core.Entity;
 
 public class UpdateUserQueue
 {
-    public ITwiHighUser TwiHighUser { get; set; }
+    public TwiHighUser TwiHighUser { get; set; }
 
-    public UpdateUserQueue(ITwiHighUser twiHighUser)
+    public UpdateUserQueue(TwiHighUser twiHighUser)
     {
         TwiHighUser = twiHighUser;
     }

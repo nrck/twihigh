@@ -18,11 +18,6 @@ public interface ITwiHighUser : IEntityMetadata
     public string DisplayName { get; set; }
 
     /// <summary>
-    /// Hashed login password
-    /// </summary>
-    public string HashedPassword { get; set; }
-
-    /// <summary>
     /// Biography
     /// </summary>
     public string Biography { get; set; }

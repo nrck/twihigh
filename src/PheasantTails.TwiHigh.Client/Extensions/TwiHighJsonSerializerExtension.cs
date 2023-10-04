@@ -11,7 +11,8 @@ public static class TwiHighJsonSerializerExtension
     {
         Converters = {
             new InterfaceConverter<ITweet, ResponseTweetContext>()
-        }
+        },
+        PropertyNameCaseInsensitive = true
     };
 
     public static async Task<T?> TwiHighReadFromJsonAsync<T>(this HttpContent content, CancellationToken cancellationToken = default)
