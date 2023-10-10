@@ -6,7 +6,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="11.5.1" />
-	  <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.32.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PheasantTails.TwiHigh.Interface\PheasantTails.TwiHigh.Interface.csproj" />

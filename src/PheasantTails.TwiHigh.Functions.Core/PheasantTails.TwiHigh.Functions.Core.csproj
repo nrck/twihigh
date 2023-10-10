@@ -7,7 +7,6 @@
 	<ItemGroup>
 		<PackageReference Include="Azure.Storage.Blobs" Version="12.16.0" />
 		<PackageReference Include="Azure.Storage.Queues" Version="12.12.0" />
-		<PackageReference Include="Microsoft.Azure.Cosmos" Version="3.32.0" />
 		<PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.1.0" />
 		<PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.4-preview.84" />
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.26.1" />
