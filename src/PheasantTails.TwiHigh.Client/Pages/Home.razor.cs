@@ -1,7 +1,7 @@
 ﻿using PheasantTails.TwiHigh.Client.TypedHttpClients;
 using PheasantTails.TwiHigh.Client.ViewModels;
-using PheasantTails.TwiHigh.Data.Model;
 using PheasantTails.TwiHigh.Data.Model.Timelines;
+using PheasantTails.TwiHigh.Data.Model.Tweets;
 using PheasantTails.TwiHigh.Data.Model.TwiHighUsers;
 using System.Net;
 using System.Net.Http.Json;

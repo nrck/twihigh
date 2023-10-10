@@ -5,8 +5,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using PheasantTails.TwiHigh.Data.Model;
-using PheasantTails.TwiHigh.Data.Model.Timelines;
+using PheasantTails.TwiHigh.Data.Model.Tweets;
 using PheasantTails.TwiHigh.Functions.Core;
 using PheasantTails.TwiHigh.Functions.Core.Entity;
 using PheasantTails.TwiHigh.Functions.Core.Extensions;
@@ -117,7 +116,7 @@ namespace PheasantTails.TwiHigh.Functions.Tweets.HttpTriggers
                 // Insert queue message to timelines.
                 await QueueStorages.InsertMessageAsync(
                     AZURE_STORAGE_ADD_TIMELINES_TWEET_TRIGGER_QUEUE_NAME,
-                    new QueAddTimelineContext(tweet, userReadResponse.Resource.Followers));
+                    new AddTimelineByPostTweetQueue(tweet, userReadResponse.Resource.Followers));
                 return new CreatedResult($"/{userReadResponse.Resource.DisplayId}/Status/{tweetCreateResponse.Resource.Id}", tweetCreateResponse.Resource);
             }
             catch (Exception ex)

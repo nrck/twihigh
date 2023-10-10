@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using PheasantTails.TwiHigh.Data.Model;
+using PheasantTails.TwiHigh.Data.Model.Tweets;
 using PheasantTails.TwiHigh.Data.Model.TwiHighUsers;
 
 namespace PheasantTails.TwiHigh.Client.Components

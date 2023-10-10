@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Components.Web;
 using PheasantTails.TwiHigh.Client.Pages;
 using PheasantTails.TwiHigh.Client.ViewModels;
-using PheasantTails.TwiHigh.Data.Model;
+using PheasantTails.TwiHigh.Data.Model.Tweets;
 
 namespace PheasantTails.TwiHigh.Client.Components
 {

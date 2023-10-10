@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using PheasantTails.TwiHigh.Data.Model.Timelines;
 using PheasantTails.TwiHigh.Functions.Core.Entity;
 using PheasantTails.TwiHigh.Functions.Core.Extensions;
+using PheasantTails.TwiHigh.Functions.Core.Queues;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,7 +38,7 @@ namespace PheasantTails.TwiHigh.Functions.Timelines.QueueTriggers
                     throw new ArgumentNullException(nameof(myQueueItem), "Queue is Null");
                 }
 
-                var que = JsonSerializer.Deserialize<QueAddTimelineContext>(myQueueItem);
+                var que = JsonSerializer.Deserialize<AddTimelineByPostTweetQueue>(myQueueItem);
 
                 // Add the tweet to your own timeline.
                 var timelineContainer = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_TIMELINE_CONTAINER_NAME);

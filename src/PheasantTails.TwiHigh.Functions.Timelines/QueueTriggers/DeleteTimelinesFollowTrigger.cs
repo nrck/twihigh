@@ -1,7 +1,7 @@
 ﻿using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
-using PheasantTails.TwiHigh.Data.Model.Followers;
+using PheasantTails.TwiHigh.Functions.Core.Queues;
 using System;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -30,7 +30,7 @@ namespace PheasantTails.TwiHigh.Functions.Timelines.QueueTriggers
             }
 
             // キューの取得
-            var que = JsonSerializer.Deserialize<RemoveFolloweeTweetContext>(myQueueItem);
+            var que = JsonSerializer.Deserialize<DeleteTimelinesByRemoveFolloweeQueue>(myQueueItem);
             var now = DateTimeOffset.UtcNow;
 
             logger.LogInformation("{0} remove to {1} at {2}.", que.UserId, que.FolloweeId, now.ToString("yyyy/MM/dd HH:mm:ss"));

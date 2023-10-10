@@ -1,9 +1,9 @@
 ﻿using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
-using PheasantTails.TwiHigh.Data.Model.Followers;
 using PheasantTails.TwiHigh.Functions.Core.Entity;
 using PheasantTails.TwiHigh.Functions.Core.Extensions;
+using PheasantTails.TwiHigh.Functions.Core.Queues;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,7 +45,7 @@ namespace PheasantTails.TwiHigh.Functions.Timelines.QueueTriggers
                     throw new ArgumentNullException(nameof(myQueueItem), "Queue is Null");
                 }
 
-                var que = JsonSerializer.Deserialize<AddNewFolloweeTweetContext>(myQueueItem);
+                var que = JsonSerializer.Deserialize<AddTimelinesByNewFolloweeQueue>(myQueueItem);
 
                 // Create query
                 var query = _queryDefinition

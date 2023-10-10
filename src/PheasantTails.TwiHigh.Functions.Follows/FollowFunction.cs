@@ -5,9 +5,9 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using PheasantTails.TwiHigh.Data.Model.Followers;
 using PheasantTails.TwiHigh.Functions.Core.Entity;
 using PheasantTails.TwiHigh.Functions.Core;
+using PheasantTails.TwiHigh.Functions.Core.Queues;
 using PheasantTails.TwiHigh.Functions.Core.Extensions;
 using System;
 using System.Linq;
@@ -62,7 +62,7 @@ namespace PheasantTails.TwiHigh.Functions.Follows
 
             await QueueStorages.InsertMessageAsync(
                     AZURE_STORAGE_ADD_TIMELINES_FOLLOW_TRIGGER_QUEUE_NAME,
-                    new AddNewFolloweeTweetContext { FolloweeId = followee.Resource.Id, UserId = follower.Resource.Id });
+                    new AddTimelinesByNewFolloweeQueue { FolloweeId = followee.Resource.Id, UserId = follower.Resource.Id });
 
             return new NoContentResult();
         }
@@ -115,7 +115,7 @@ namespace PheasantTails.TwiHigh.Functions.Follows
 
             await QueueStorages.InsertMessageAsync(
                     AZURE_STORAGE_DELETE_TIMELINES_FOLLOW_TRIGGER_QUEUE_NAME,
-                    new RemoveFolloweeTweetContext { FolloweeId = followee.Resource.Id, UserId = follower.Resource.Id });
+                    new DeleteTimelinesByRemoveFolloweeQueue { FolloweeId = followee.Resource.Id, UserId = follower.Resource.Id });
 
             return new NoContentResult();
         }
