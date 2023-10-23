@@ -44,9 +44,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.Funct
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.Interface", "src\PheasantTails.TwiHigh.Interface\PheasantTails.TwiHigh.Interface.csproj", "{492ED9E5-7336-434F-A7EF-05C8E19B89F5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PheasantTails.TwiHigh.Beta", "src\PheasantTails.TwiHigh.Beta\PheasantTails.TwiHigh.Beta\PheasantTails.TwiHigh.Beta.csproj", "{F8A8D5A2-0376-4C3D-ACEB-CBAC9CA0E4DB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PheasantTails.TwiHigh.Beta.Server", "src\PheasantTails.TwiHigh.Beta.Server\PheasantTails.TwiHigh.Beta.Server.csproj", "{F8A8D5A2-0376-4C3D-ACEB-CBAC9CA0E4DB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PheasantTails.TwiHigh.Beta.Client", "src\PheasantTails.TwiHigh.Beta\PheasantTails.TwiHigh.Beta.Client\PheasantTails.TwiHigh.Beta.Client.csproj", "{E6C840F5-82C9-42B9-883F-963D4B53F86C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PheasantTails.TwiHigh.Beta.Client", "src\PheasantTails.TwiHigh.Beta.Client\PheasantTails.TwiHigh.Beta.Client.csproj", "{E6C840F5-82C9-42B9-883F-963D4B53F86C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
