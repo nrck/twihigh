@@ -1,4 +1,8 @@
+using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components.Authorization;
+using PheasantTails.TwiHigh.Beta.Client;
 using PheasantTails.TwiHigh.Beta.Client.Pages;
+using PheasantTails.TwiHigh.Beta.Client.TypedHttpClients;
 using PheasantTails.TwiHigh.Beta.Server.Components;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 
@@ -14,7 +18,21 @@ namespace PheasantTails.TwiHigh.Beta.Server
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents()
                 .AddInteractiveWebAssemblyComponents();
-            builder.Services.AddPWAUpdater();                
+
+            // Œ^•t‚«HttpClient
+            builder.Services.AddHttpClient<TimelineHttpClient>();
+            builder.Services.AddHttpClient<AppUserHttpClient>();
+            builder.Services.AddHttpClient<TweetHttpClient>();
+            builder.Services.AddHttpClient<FollowHttpClient>();
+            builder.Services.AddHttpClient<FeedHttpClient>();
+
+            // ƒ~ƒhƒ‹
+            builder.Services.AddBlazoredLocalStorage();
+            builder.Services.AddScoped<AuthenticationStateProvider, TwiHighAuthenticationStateProvider>();
+            builder.Services.AddPWAUpdater();
+
+
+            builder.Services.AddAuthorizationCore();
 
             var app = builder.Build();
 
