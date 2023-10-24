@@ -1,5 +1,6 @@
 using PheasantTails.TwiHigh.Beta.Client.Pages;
 using PheasantTails.TwiHigh.Beta.Server.Components;
+using Toolbelt.Blazor.Extensions.DependencyInjection;
 
 namespace PheasantTails.TwiHigh.Beta.Server
 {
@@ -13,6 +14,7 @@ namespace PheasantTails.TwiHigh.Beta.Server
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents()
                 .AddInteractiveWebAssemblyComponents();
+            builder.Services.AddPWAUpdater();                
 
             var app = builder.Build();
 
