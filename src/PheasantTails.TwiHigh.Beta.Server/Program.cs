@@ -1,7 +1,7 @@
 using PheasantTails.TwiHigh.Beta.Client.Pages;
-using PheasantTails.TwiHigh.Beta.Components;
+using PheasantTails.TwiHigh.Beta.Server.Components;
 
-namespace PheasantTails.TwiHigh.Beta
+namespace PheasantTails.TwiHigh.Beta.Server
 {
     public class Program
     {
