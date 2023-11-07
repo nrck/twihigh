@@ -1,0 +1,190 @@
+﻿.twi-high-article {
+    display: flex;
+    padding-top: 12px;
+    padding-right: 12px;
+    padding-bottom: 12px;
+    padding-left: 12px;
+    width: 100%;
+    border-bottom-width: 0.8px;
+    border-bottom-style: solid;
+    border-bottom-color: rgb(239,243,244);
+    border-left-style: solid;
+    border-left-color: lightsalmon;
+    transition-delay: 1.5s;
+    transition-duration: 1s;
+    transition-property: border-left-width, padding-left;
+}
+
+.unread-border {
+    border-left-width: 6px;
+    padding-left: 6px;
+}
+
+.readed {
+    border-left-width: 0;
+    padding-left: 12px;
+}
+
+.twi-high-article-left {
+    width: 48px;
+    margin-right: 12px;
+}
+
+.twi-high-article-right {
+    width: calc(100% - 12px - 48px);
+}
+
+    .twi-high-article-right .emphasized {
+        flex-wrap: wrap;
+    }
+
+.twi-high-article-right-header {
+    display: flex;
+    max-width: 100%;
+}
+
+.twi-high-article-right-body:hover {
+    cursor: pointer;
+}
+
+.user-display-name {
+    padding-right: 4px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    min-width: 0;
+}
+
+    .user-display-name span {
+        color: rgb(15,20,25);
+        font-size: 15px;
+        font-weight: 700;
+    }
+
+        .user-display-name span:hover {
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .user-display-name span.emphasized {
+            font-size: 18px;
+        }
+
+.user-display-id {
+    padding-right: 16px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    min-width: 0;
+}
+
+    .user-display-id span {
+        color: rgb(83,100,113);
+        font-size: 15px;
+        font-weight: 400;
+    }
+
+        .user-display-id span:hover {
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+.user-display-createat {
+    margin-left: auto;
+}
+
+
+    .user-display-createat span {
+        color: rgb(83,100,113);
+        font-size: 15px;
+        font-weight: 400;
+        white-space: nowrap;
+    }
+
+.emphasized .user-display-createat {
+    margin-left: 0;
+    margin-right: auto;
+}
+
+.twi-high-article-right-body .emphasized {
+    margin-top: 12px;
+    margin-bottom: 12px;
+}
+
+.user-tweet-text {
+}
+
+    .user-tweet-text span {
+        color: rgb(15,20,25);
+        line-height: 20px;
+        font-size: 15px;
+        font-weight: 400;
+        word-wrap: break-word;
+    }
+
+        .user-tweet-text span.emphasized {
+            line-height: 36px;
+            font-size: 24px;
+            word-wrap: break-word;
+        }
+
+    .user-tweet-text .reply {
+        line-height: 12px;
+        font-size: 10px;
+    }
+
+.twi-high-article-right-footer {
+    display: flex;
+    width: 100%;
+    margin-top: 4px;
+    font-size: 14px;
+    line-height: 16px;
+}
+
+    .twi-high-article-right-footer .link-button {
+        display: flex;
+        height: 20px;
+        width: calc(100% / 4);
+        border-width: 0px;
+        background-color: rgb(255, 255, 255, 0);
+        padding: 0;
+        margin: 0;
+        color: rgb(83, 100, 113);
+    }
+
+        .twi-high-article-right-footer .link-button .icon {
+            height: 20px;
+            width: 30%;
+            text-align: right;
+            padding-top: 2px;
+            padding-right: 4px;
+        }
+
+        .twi-high-article-right-footer .link-button .number {
+            height: 20px;
+            width: 70%;
+            text-align: left;
+            padding-top: 2px;
+            padding-left: 4px;
+        }
+
+.reply-section {
+    background-color: aliceblue;
+}
+
+.fadein {
+    animation-name: fadeinAnime;
+    animation-duration: 0.3s;
+    animation-fill-mode: forwards;
+    opacity: 0;
+}
+
+@keyframes fadeinAnime {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}

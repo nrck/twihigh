@@ -1,0 +1,36 @@
+﻿@using PheasantTails.TwiHigh.Beta.Client.Extensions;
+@if (User != null)
+{
+    <article class="user-profile">
+        @* 左 *@
+        <div class="user-profile-left">
+            @* アイコン *@
+            <AvatarComponent UserAvatarUrl="@User.AvatarUrl" OnClick=OnClickAvatar />
+        </div>
+        @* 右 *@
+        <div class="user-profile-right">
+            @* ヘッダー *@
+            <div class="user-profile-right-header">
+                @* ユーザー名 *@
+                <div class="user-display-name">
+                    <span @onclick=OnClickUserDisplayName>@User.DisplayName</span>
+                </div>
+                @* ユーザーID *@
+                <div class="user-display-id">
+                    <span @onclick=OnClickUserDisplayId>@@@User.DisplayId</span>
+                </div>
+            </div>
+            @* ボディ*@
+            <div class="user-profile-right-body">
+                @* テキスト本文 *@
+                <div class="user-tweet-text">
+                    <span>
+                        <AutoLink Text="@User.Biography.GetTextWithNewline()" />
+                    </span>
+                </div>
+            </div>
+            <div class="user-profile-right-footer">
+            </div>
+        </div>
+    </article>
+}

@@ -1,0 +1,73 @@
+﻿@page "/profile/{Id?}"
+@using PheasantTails.TwiHigh.Beta.Client.Extensions;
+@inherits PageBase
+@*
+    ユーザページ
+*@
+<PageTitle>@(Title) - ツイハイ！</PageTitle>
+<PageTitleComponent Title="@Title" />
+
+@if (User == null)
+{
+    <Loading />
+}
+else
+{
+    <section class="px-3">
+        <div class="profile-header">
+            @* アイコン *@
+            <BigAvatarComponent UserAvatarUrl="@User.AvatarUrl" />
+
+            @* フォローボタン *@
+            @if (IsMyTwiHighUser)
+            {
+                <button class="profile-edit-button" @onclick=OnClickProfileEditor>プロフィールを編集</button>
+            }
+            else
+            {
+                <FollowButtonComponent IsFollowing=@IsFollowing OnClickFollowButton="OnClickFollowButton" OnClickRemoveButton="OnClickRemoveButton" />
+            }
+        </div>
+
+        @* プロフィール *@
+        <div class="profile-display-name">
+            @User.DisplayName
+        </div>
+        <div>
+            <span class="profile-display-id">@@@User.DisplayId</span>
+            @if (IsFollowed)
+            {
+                <span class="is-followed">フォローされています</span>
+            }
+        </div>
+        @* アカウント作成日 *@
+        <div class="profile-createdat">
+            <span>@User.CreateAt.ToLocalTime().ToString("d") からツイハイ！の住人です</span>
+        </div>
+        @* Bio *@
+        <div class="profile-biography">
+            <AutoLink Text="@User.Biography.GetTextWithNewline()" />
+        </div>
+        @* フォロー人数 *@
+        <div class="profile-follow">
+            <a href="profile/@(Id)/follows" style="text-decoration: none;">
+                <span class="number">@User.Follows.Length</span>
+                <span class="text">フォロー中</span>
+            </a>
+            <span class="space"></span>
+            <a href="profile/@(Id)/followers" style="text-decoration: none;">
+                <span class="number">@User.Followers.Length</span>
+                <span class="text">フォロワー</span>
+            </a>
+        </div>
+    </section>
+    @* ツイート *@
+    <TimelineComponent @key="User.Id"
+                   Tweets="Tweets"
+                   MyTwiHithUserId="MyTwiHithUserId"
+                   OnClickDelete="OnClickDeleteButtonAsync"
+                   OnClickProfileEditor="OnClickProfileEditor"
+                   OnPostReply="PostTweetAsync"
+                   OnClickProfile="OnClickProfile"
+                   OnClickDetail="OnClickDetail" />
+}

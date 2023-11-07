@@ -1,0 +1,108 @@
+﻿@page "/Feeds"
+@attribute [Authorize]
+@using PheasantTails.TwiHigh.Beta.Client.ViewModels;
+@using PheasantTails.TwiHigh.Data.Model.Feeds;
+@inherits PageBase
+
+<PageTitle>通知 - ツイハイ！</PageTitle>
+<PageTitleComponent Title="通知" />
+
+<section>
+    @if (ViewModel == null || ViewModel.MyFeeds == null)
+    {
+        <Loading />
+    }
+    else if (0 < ViewModel.MyFeeds.Count)
+    {
+        @foreach (FeedContext feed in ViewModel.MyFeeds)
+        {
+            var action = feed.FeedType switch
+            {
+                FeedContext.FEED_TYPE_FAVORED => "あなたのツイートをお気に入りに入れました。",
+                FeedContext.FEED_TYPE_FOLLOWED => "あなたをフォローしました。",
+                FeedContext.FEED_TYPE_INFORMATION => "",
+                FeedContext.FEED_TYPE_MENTIONED => "あなたのツイートに返信しました。",
+                FeedContext.FEED_TYPE_RETWEETED => "あなたのツイートをリツイートしました。",
+                _ => ""
+            };
+
+            @if (feed.FeedType == FeedContext.FEED_TYPE_MENTIONED)
+            {
+                @if (feed.FeedByTweet == null)
+                {
+
+                }
+                else
+                {
+                    var tweet = new TweetViewModel(feed.FeedByTweet);
+                    tweet.IsReaded = feed.IsOpened;
+                    <TweetComponent @key="tweet.Id"
+                                    Tweet="tweet"
+                                    OnClickDetail="OnClickDetailAsync"
+                                    OnClickProfile="OnClickProfile" />
+                }
+            }
+            else
+            {
+                <article class="feed-item">
+                    @* 左 *@
+                    <div class="feed-item-left">
+                        @* アイコン *@
+                        @if (feed.FeedByUser == null)
+                        {
+
+                        }
+                        else
+                        {
+                            <AvatarComponent UserAvatarUrl="@(feed.FeedByUser.AvatarUrl)"
+                                             OnClick="@(() => { Navigation.NavigateTo(string.Format(DefinePaths.PAGE_PATH_PROFILE, feed.FeedByUser.DisplayId)); })" />
+                        }
+                    </div>
+                    @* 右 *@
+                    <div class="feed-item-right">
+                        @* ヘッダー *@
+                        @if (feed.FeedByUser == null)
+                        {
+
+                        }
+                        else
+                        {
+                            <div class="feed-item-right-header">
+                                @* ユーザー名 *@
+                                <div class="user-display-name">
+                                    <span @onclick="@(() => { Navigation.NavigateTo(string.Format(DefinePaths.PAGE_PATH_PROFILE, feed.FeedByUser.DisplayId)); })">@feed.FeedByUser.DisplayName</span>
+                                </div>
+                                @* ユーザーID *@
+                                <div class="user-display-id">
+                                    <span @onclick="@(() => { Navigation.NavigateTo(string.Format(DefinePaths.PAGE_PATH_PROFILE, feed.FeedByUser.DisplayId)); })">@@@feed.FeedByUser.DisplayId</span>
+                                </div>
+                            </div>
+                        }
+                        @* ボディ*@
+                        <div class="feed-item-right-body">
+                            @if (feed.ReferenceTweet == null)
+                            {
+
+                            }
+                            else
+                            {
+                                @* テキスト本文 *@
+                                <div class="user-tweet-text" @onclick="@(() => { Navigation.NavigateTo(string.Format(DefinePaths.PAGE_PATH_STATUS, feed.ReferenceTweet.UserDisplayId, feed.ReferenceTweet.Id)); })">
+                                    <span>
+                                        @(feed.FeedByUser!.DisplayName)さんが@(action)
+                                    </span>
+                                </div>
+                            }
+                        </div>
+                        <div class="feed-item-right-footer">
+                        </div>
+                    </div>
+                </article>
+            }
+        }
+    }
+    else
+    {
+        <NoContentsComponent NoContentsText="通知はありません。" />
+    }
+</section>

@@ -1,0 +1,29 @@
+﻿@using Extensions
+@inherits UIComponentBase
+@if (Licence != null)
+{
+    <section class="package-licence">
+        <div class="package-header">
+            <span class="package-name">@Licence.PackageName</span>
+            <span class="package-version">( @Licence.PackageVersion )</span>
+            <span class="package-url"><AutoLink Text="@Licence.PackageUrl" /></span>
+        </div>
+        <div>
+            @if (Licence.Authors.Any())
+            {
+                @foreach (var author in Licence.Authors)
+                {
+                    <span class="package-author">@author</span>
+                }
+            }
+            <span class="package-copyright">@Licence.Copyright</span>
+        </div>
+        <div class="package-description">
+            <span><AutoLink Text="@Licence.Description.GetTextWithNewline()" /></span>
+        </div>
+        <div>
+            <span class="licence-type">@Licence.LicenseType</span>
+            <span class="licence-url"><AutoLink Text="@Licence.LicenseUrl" /></span>
+        </div>
+    </section>
+}

@@ -1,19 +1,19 @@
 ﻿@using Microsoft.AspNetCore.Components.WebAssembly.Hosting
+@using PheasantTails.TwiHigh.Beta.Client.Pages;
+@using PheasantTails.TwiHigh.Data.Model.TwiHighUsers;
 @using Microsoft.AspNetCore.Hosting
 @inject IServiceProvider ServiceProvider
-
+@inherits SharedBase;
 <div class="top-row ps-3 navbar navbar-light">
     <div class="container-fluid">
         <a class="twihigh-brand" href="@DefinePaths.PAGE_PATH_INDEX">ツイハイ！ <span class="ea">(Early Access)</span></a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <div class="nav-link-notification">
                 <span class="navbar-toggler-icon"></span>
-                @*
                 @if (0 < FeedService.FeedDotCount)
                 {
                     <span class="navbar-toggler-icon-notification-badge"></span>
                 }
-                *@
             </div>
         </button>
     </div>
@@ -41,12 +41,10 @@
                     <NavLink class="nav-link" href="@(string.Format(DefinePaths.PAGE_PATH_FEED))">
                         <div class="nav-link-notification">
                             <span class="oi oi-bell" aria-hidden="true" style="padding-top: 6px;"></span>
-                            @*
                             @if (0 < FeedService.FeedDotCount)
                             {
                                 <span class="nav-link-notification-badge">@(FeedService.FeedDotCount)</span>
                             }
-                            *@
                         </div>
                          通知
                     </NavLink>
