@@ -1,7 +1,38 @@
-﻿@page "/"
+﻿@page "/Home"
+@*
+    ログイン後のページ
+*@
 
-<PageTitle>Home</PageTitle>
+@* タイトル *@
+<PageTitle>ホーム - ツイハイ！</PageTitle>
+@*<PageTitleComponent Title="ホーム" />*@
 
-<h1>Hello, world!</h1>
+@* ツイート欄 *@
+@*
+<section>
+    <PostFormComponent UserAvatarUrl="@AvatarUrl"
+                       OnClickAvatar="OnClickProfileEditor"
+                       OnPostTweet="PostTweetAsync"
+                       IsForceForcus=true />
+</section>
+*@
+@* タイムライン *@
+@*
+@if (Tweets == null)
+{
+    <NoContentsComponent NoContentsText="@("まずは @twihigh をフォローしてみよう！")" />
+}
+else
+{
 
-Welcome to your new app.
+    <TimelineComponent @key="MyTwiHithUserId"
+                   Tweets="Tweets"
+                   MyTwiHithUserId=MyTwiHithUserId
+                   OnClickDelete="OnClickDeleteButtonAsync"
+                   OnPostReply="PostTweetAsync"
+                   OnClickProfileEditor="OnClickProfileEditor"
+                   OnClickProfile="OnClickProfile"
+                   OnClickGapTweetsLoad="OnClickGetGapTweets"
+                   OnClickDetail="OnClickDetail" />
+}
+*@

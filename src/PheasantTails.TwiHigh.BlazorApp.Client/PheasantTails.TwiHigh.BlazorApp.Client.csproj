@@ -9,11 +9,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Blazored.LocalStorage" Version="4.4.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.0" />
+    <PackageReference Include="ReactiveProperty.Blazor" Version="9.3.4" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ViewModels\" />
+    <Folder Include="Languages\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PheasantTails.TwiHigh.Data.Model\PheasantTails.TwiHigh.Data.Model.csproj" />
+    <ProjectReference Include="..\PheasantTails.TwiHigh.Interface\PheasantTails.TwiHigh.Interface.csproj" />
   </ItemGroup>
 
 </Project>
