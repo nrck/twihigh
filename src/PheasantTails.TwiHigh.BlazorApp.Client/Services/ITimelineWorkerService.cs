@@ -41,12 +41,12 @@ public interface ITimelineWorkerService
     /// </summary>
     /// <param name="tweet">Tweet</param>
     /// <returns>This instance's timeline size after deleted.</returns>
-    public int Remove(DisplayTweet tweet);
+    public Task<int> RemoveAsync(DisplayTweet tweet);
 
     /// <summary>
     /// Deletes a tweet from this instance's timeline.
     /// </summary>
     /// <param name="tweet">Tweet</param>
     /// <returns>This instance's timeline size after deleted.</returns>
-    public int Remove(Guid tweetId);
+    public Task<int> RemoveAsync(Guid tweetId);
 }

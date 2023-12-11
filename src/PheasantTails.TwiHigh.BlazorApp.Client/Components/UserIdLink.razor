@@ -1,0 +1,12 @@
+﻿@inject NavigationManager NavigationManager
+<a href="@($"/profile/{UserDisplayId}")" @onclick:preventDefault @onclick=OnClickLink>@@@(UserDisplayId)</a>
+
+@code {
+    [Parameter]
+    public string UserDisplayId { get; set; } = string.Empty;
+
+    private void OnClickLink()
+    {
+        NavigationManager.NavigateToProfilePage(UserDisplayId);
+    }
+}

@@ -1,4 +1,6 @@
 ﻿@page "/Home"
+@inject ITimelineWorkerService TimelineWorkerService
+@inject HomeViewModel ViewModel
 @*
     ログイン後のページ
 *@
@@ -17,14 +19,16 @@
 </section>
 *@
 @* タイムライン *@
-@*
-@if (Tweets == null)
+
+@if (TimelineWorkerService.Timeline.Count == 0)
 {
     <NoContentsComponent NoContentsText="@("まずは @twihigh をフォローしてみよう！")" />
 }
 else
 {
 
+    <NoContentsComponent NoContentsText="@($"{TimelineWorkerService.Timeline.Count} 件")" />
+    @*
     <TimelineComponent @key="MyTwiHithUserId"
                    Tweets="Tweets"
                    MyTwiHithUserId=MyTwiHithUserId
@@ -34,5 +38,5 @@ else
                    OnClickProfile="OnClickProfile"
                    OnClickGapTweetsLoad="OnClickGetGapTweets"
                    OnClickDetail="OnClickDetail" />
+                   *@
 }
-*@

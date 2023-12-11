@@ -1,7 +1,10 @@
 ﻿using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
+using PheasantTails.TwiHigh.BlazorApp.Client.Exceptions;
 using PheasantTails.TwiHigh.BlazorApp.Client.Models;
 using System.Collections.ObjectModel;
+using System.Net;
+using System.Net.Http;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.Services;
 
@@ -9,9 +12,16 @@ public class TimelineWorkerService : IAsyncDisposable, ITimelineWorkerService
 {
     public const string LOCAL_STORAGE_KEY_USER_TIMELINE = "UserTimelines_{0}_v3";
 
+    private readonly string _apiUrlBase;
+    private readonly string _apiUrlTweet;
+    private readonly string _apiUrlDeleteTweet;
+    private readonly string _apiUrlGetTweet;
+    private readonly string _apiUrlGetUserTweets;
+
     private LocalTimelineStore _store;
     private readonly ILocalStorageService _localStorageService;
     private readonly AuthenticationStateProvider _authenticationStateProvider;
+    private readonly IHttpClientFactory _httpClientFactory;
     private bool _isDispose;
     private bool _isRunning;
     private CancellationTokenSource _cancellationTokenSource;
@@ -19,12 +29,25 @@ public class TimelineWorkerService : IAsyncDisposable, ITimelineWorkerService
     public ReadOnlyCollection<DisplayTweet> Timeline => _store.Timeline.AsReadOnly<DisplayTweet>();
     private CancellationToken WorkerCancellationToken => _cancellationTokenSource.Token;
 
-    public TimelineWorkerService(ILocalStorageService localStorageService, AuthenticationStateProvider authenticationStateProvider)
+    public TimelineWorkerService(
+        ILocalStorageService localStorageService,
+        AuthenticationStateProvider authenticationStateProvider,
+        IHttpClientFactory httpClientFactory,
+        IConfiguration configuration)
     {
         _store = new LocalTimelineStore();
         _localStorageService = localStorageService;
         _authenticationStateProvider = authenticationStateProvider;
         _cancellationTokenSource = new CancellationTokenSource();
+        _httpClientFactory = httpClientFactory;
+
+        _apiUrlBase = $"{configuration["TweetApiUrl"]}";
+        _apiUrlTweet = $"{_apiUrlBase}/";
+        _apiUrlDeleteTweet = $"{_apiUrlBase}/{{0}}";
+        _apiUrlGetTweet = $"{_apiUrlBase}/{{0}}";
+        _apiUrlGetUserTweets = $"{_apiUrlBase}/user/{{0}}";
+
+        _authenticationStateProvider.AuthenticationStateChanged += OnChangedAuthenticationState;
     }
 
     #region public
@@ -61,17 +84,12 @@ public class TimelineWorkerService : IAsyncDisposable, ITimelineWorkerService
         return _store.Timeline.Count;
     }
 
-    public int Remove(DisplayTweet tweet) => Remove(tweet.Id);
+    public async Task<int> RemoveAsync(DisplayTweet tweet) => await RemoveAsync(tweet.Id);
 
-    public int Remove(Guid tweetId)
+    public async Task<int> RemoveAsync(Guid tweetId)
     {
-        var targetTweet = _store.Timeline.Find(t => t.Id == tweetId);
-        if (targetTweet != null)
-        {
-            _store.Timeline.Remove(targetTweet);
-        }
-
-        return _store.Timeline.Count;
+        await RemoveTweetAtServerAsync(tweetId);
+        return RemoveTweetAtLocal(tweetId);
     }
 
     public async ValueTask ForceSaveAsync(CancellationToken cancellationToken = default)
@@ -163,5 +181,53 @@ public class TimelineWorkerService : IAsyncDisposable, ITimelineWorkerService
 
     private string GetLocalTorageKeyUserTimeline(Guid userId)
         => string.Format(LOCAL_STORAGE_KEY_USER_TIMELINE, userId);
+
+    private int RemoveTweetAtLocal(Guid tweetId)
+    {
+        var targetTweet = _store.Timeline.Find(t => t.Id == tweetId);
+        if (targetTweet != null)
+        {
+            _store.Timeline.Remove(targetTweet);
+        }
+
+        return _store.Timeline.Count;
+    }
+
+    private async Task RemoveTweetAtServerAsync(Guid tweetId)
+    {
+        try
+        {
+            var url = string.Format(_apiUrlDeleteTweet, tweetId.ToString());
+            await _httpClientFactory.CreateClient().DeleteAsync(url);
+        }
+        catch (HttpRequestException ex)
+        {
+            throw ex.StatusCode switch
+            {
+                HttpStatusCode.NotFound => new TwiHighApiRequestException("対象のツイートは既に削除されています。", httpRequestException: ex),
+                HttpStatusCode.Unauthorized => new TwiHighApiRequestException("再度ログインしてから実行してください。", httpRequestException: ex),
+                HttpStatusCode.Forbidden => new TwiHighApiRequestException("このツイートの削除は許可されていません。", httpRequestException: ex),
+                _ => new TwiHighApiRequestException($"ツイート削除中にサーバでエラーが発生しました。({ex.StatusCode})", httpRequestException: ex),
+            };
+        }
+        catch (Exception ex)
+        {
+            throw new TwiHighException($"ツイート削除中にサーバでエラーが発生しました。引き続きエラーが発生する場合は、サポートまでお問い合わせください。[{nameof(TimelineWorkerService)}.{nameof(RemoveTweetAtServerAsync)}()]", ex);
+        }
+    }
+
+    private async Task OnChangedAuthenticationState(Task<AuthenticationState> authenticationState)
+    {
+        var user = await authenticationState;
+        
+        if (user?.User?.Identity?.IsAuthenticated ?? false)
+        {
+            var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!string.IsNullOrEmpty(userId))
+            {
+                _store.UserId = Guid.Parse(userId);
+            }
+        }
+    }
     #endregion
 }
