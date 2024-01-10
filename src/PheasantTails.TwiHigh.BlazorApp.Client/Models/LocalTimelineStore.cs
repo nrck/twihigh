@@ -6,10 +6,14 @@ public class LocalTimelineStore
     public DateTimeOffset Latest { get; set; }
     public DateTimeOffset Oldest { get; set; }
     public List<DisplayTweet> Timeline { get; set; } = [];
+    public Guid UserId { get; set; }
     public LocalTimelineStore GetSaveData() => new()
     {
+        UserId = UserId,
         Latest = Latest,
         Oldest = Oldest,
-        Timeline = Timeline.Take(MaximumTweets).ToList()
+        Timeline = Timeline.OrderByDescending(t => t.CreateAt)
+            .Take(MaximumTweets)
+            .ToList()
     };
 }

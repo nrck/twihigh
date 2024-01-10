@@ -4,7 +4,6 @@ using PheasantTails.TwiHigh.BlazorApp.Client.Exceptions;
 using PheasantTails.TwiHigh.BlazorApp.Client.Models;
 using System.Collections.ObjectModel;
 using System.Net;
-using System.Net.Http;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.Services;
 
@@ -20,8 +19,8 @@ public class TimelineWorkerService : IAsyncDisposable, ITimelineWorkerService
 
     private LocalTimelineStore _store;
     private readonly ILocalStorageService _localStorageService;
-    private readonly AuthenticationStateProvider _authenticationStateProvider;
-    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly TwiHighAuthenticationStateProvider _authenticationStateProvider;
+    private readonly HttpClient _httpClient;
     private bool _isDispose;
     private bool _isRunning;
     private CancellationTokenSource _cancellationTokenSource;
@@ -37,9 +36,9 @@ public class TimelineWorkerService : IAsyncDisposable, ITimelineWorkerService
     {
         _store = new LocalTimelineStore();
         _localStorageService = localStorageService;
-        _authenticationStateProvider = authenticationStateProvider;
+        _authenticationStateProvider = (TwiHighAuthenticationStateProvider)authenticationStateProvider;
         _cancellationTokenSource = new CancellationTokenSource();
-        _httpClientFactory = httpClientFactory;
+        _httpClient = httpClientFactory.CreateClient();
 
         _apiUrlBase = $"{configuration["TweetApiUrl"]}";
         _apiUrlTweet = $"{_apiUrlBase}/";
@@ -93,12 +92,10 @@ public class TimelineWorkerService : IAsyncDisposable, ITimelineWorkerService
     }
 
     public async ValueTask ForceSaveAsync(CancellationToken cancellationToken = default)
-        // TODO
-        => await SaveAsync(Guid.NewGuid(), cancellationToken);
+        => await _localStorageService.SetItemAsync(GetLocalStorageKeyUserTimeline(), _store.GetSaveData(), cancellationToken);
 
     public async ValueTask ForceLoadAsync(CancellationToken cancellationToken = default)
-        // TODO
-        => await LoadAsync(Guid.NewGuid(), cancellationToken);
+        => _store = await _localStorageService.GetItemAsync<LocalTimelineStore>(GetLocalStorageKeyUserTimeline(), cancellationToken);
     #endregion
 
     #region private
@@ -111,6 +108,14 @@ public class TimelineWorkerService : IAsyncDisposable, ITimelineWorkerService
             {
                 return;
             }
+
+            // Check user id.
+            var userId = await _authenticationStateProvider.GetLoggedInUserIdAsync().ConfigureAwait(false);
+            if (string.IsNullOrEmpty(userId))
+            {
+                throw new InvalidOperationException($"未ログインで{nameof(TimelineWorkerService)}.{nameof(RunAsync)}()を実行することはできません。");
+            }
+            _store.UserId = Guid.Parse(userId);
 
             // Toggle the flag.
             _isRunning = true;
@@ -126,6 +131,7 @@ public class TimelineWorkerService : IAsyncDisposable, ITimelineWorkerService
 
                 // TODO: Do REST API.
                 // do something processing.
+
 
                 // Save timeline data to local storage.
                 await ForceSaveAsync(WorkerCancellationToken);
@@ -156,14 +162,6 @@ public class TimelineWorkerService : IAsyncDisposable, ITimelineWorkerService
         }
     }
 
-    private async ValueTask SaveAsync(Guid userId, CancellationToken cancellationToken = default)
-    {
-        await _localStorageService.SetItemAsync(GetLocalTorageKeyUserTimeline(userId), _store.GetSaveData(), cancellationToken);
-    }
-
-    private async ValueTask LoadAsync(Guid userId, CancellationToken cancellationToken = default)
-        => _store = await _localStorageService.GetItemAsync<LocalTimelineStore>(GetLocalTorageKeyUserTimeline(userId), cancellationToken);
-
     private void Upsert(DisplayTweet tweet)
     {
         var oldTweetIndex = _store.Timeline.FindIndex(t => t.Id == tweet.Id && t.UpdateAt < tweet.UpdateAt);
@@ -175,12 +173,17 @@ public class TimelineWorkerService : IAsyncDisposable, ITimelineWorkerService
     }
 
     private void TimelineOrderByDescending()
-    {
-        _store.Timeline = [.. _store.Timeline.OrderByDescending(x => x.CreateAt)];
-    }
+        => _store.Timeline = [.. _store.Timeline.OrderByDescending(x => x.CreateAt)];
 
-    private string GetLocalTorageKeyUserTimeline(Guid userId)
-        => string.Format(LOCAL_STORAGE_KEY_USER_TIMELINE, userId);
+    private string GetLocalStorageKeyUserTimeline()
+    {
+        if (_store.UserId == default)
+        {
+            throw new TwiHighException("ローカルストレージにユーザーIDが見つかりませんでした。");
+        }
+
+        return string.Format(LOCAL_STORAGE_KEY_USER_TIMELINE, _store.UserId);
+    }
 
     private int RemoveTweetAtLocal(Guid tweetId)
     {
@@ -198,7 +201,7 @@ public class TimelineWorkerService : IAsyncDisposable, ITimelineWorkerService
         try
         {
             var url = string.Format(_apiUrlDeleteTweet, tweetId.ToString());
-            await _httpClientFactory.CreateClient().DeleteAsync(url);
+            await _httpClient.DeleteAsync(url);
         }
         catch (HttpRequestException ex)
         {
@@ -216,18 +219,38 @@ public class TimelineWorkerService : IAsyncDisposable, ITimelineWorkerService
         }
     }
 
-    private async Task OnChangedAuthenticationState(Task<AuthenticationState> authenticationState)
+    private async void OnChangedAuthenticationState(Task<AuthenticationState> authenticationState)
     {
-        var user = await authenticationState;
-        
-        if (user?.User?.Identity?.IsAuthenticated ?? false)
+        var state = await authenticationState;
+        if (!(state?.User?.Identity?.IsAuthenticated ?? false))
         {
-            var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!string.IsNullOrEmpty(userId))
+            // Not Authenticated.
+            if (_store.UserId != default)
             {
-                _store.UserId = Guid.Parse(userId);
+                await ForceSaveAsync();
+                _store = new();
             }
+            await StopAsync();
+
+            return;
         }
+
+        // Set new user id.
+        var userIdFromClaims = state.User.Claims.FirstOrDefault(x => x.Type == "Id")?.Value;
+        if (Guid.TryParse(userIdFromClaims, out var userId) && _store.UserId != userId)
+        {
+            // If logged in user was changed, Load new user's timeline to local timeline store. 
+            await ForceSaveAsync();
+            _store = new()
+            {
+                UserId = userId
+            };
+            await ForceLoadAsync();
+        }
+
+        // Set new bearer token.
+        var token = await _authenticationStateProvider.GetTokenFromLocalStorageAsync();
+        _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
     }
     #endregion
 }

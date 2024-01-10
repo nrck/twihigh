@@ -175,7 +175,7 @@ public class TwiHighAuthenticationStateProvider : AuthenticationStateProvider
     /// <summary>
     /// Get a Bearer token from local storage in browser.
     /// </summary>
-    private async ValueTask<string> GetTokenFromLocalStorageAsync(CancellationToken cancellationToken = default)
+    public async ValueTask<string> GetTokenFromLocalStorageAsync(CancellationToken cancellationToken = default)
         => await _localStorage.GetItemAsStringAsync(LOCAL_STORAGE_NAME_JWT, cancellationToken).ConfigureAwait(false);
 
     /// <summary>
