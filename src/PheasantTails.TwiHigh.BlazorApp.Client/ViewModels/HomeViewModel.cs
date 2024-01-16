@@ -1,12 +1,10 @@
 ﻿using Microsoft.AspNetCore.Components;
 using PheasantTails.TwiHigh.BlazorApp.Client.Extensions;
-using PheasantTails.TwiHigh.BlazorApp.Client.Models;
 using PheasantTails.TwiHigh.BlazorApp.Client.Services;
 using PheasantTails.TwiHigh.Interface;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System.Collections.Specialized;
-using System.Reactive.Disposables;
 using System.Reactive.Linq;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.ViewModels;
@@ -14,13 +12,9 @@ namespace PheasantTails.TwiHigh.BlazorApp.Client.ViewModels;
 /// <summary>
 /// ViewModel for Home page.
 /// </summary>
-internal class HomeViewModel : IDisposable, INotifyCollectionChanged
+internal class HomeViewModel : ViewModelBase, IDisposable, INotifyCollectionChanged
 {
     private readonly ITimelineWorkerService _timelineWorkerService;
-    private readonly CompositeDisposable _disposable = [];
-    private readonly NavigationManager _navigationManager;
-
-    public event NotifyCollectionChangedEventHandler? CollectionChanged;
 
     /// <summary>
     /// Delete my tweet command.
@@ -62,11 +56,10 @@ internal class HomeViewModel : IDisposable, INotifyCollectionChanged
     /// </summary>
     public ReactiveCommand<ICosmosDbItemId> NavigateStatePageWithReplyCommand { get; }
 
-    public HomeViewModel(ITimelineWorkerService timelineWorkerService, NavigationManager navigation)
+    public HomeViewModel(ITimelineWorkerService timelineWorkerService, NavigationManager navigation, IMessageService messageService) : base(navigation, messageService)
     {
         // Inject
         _timelineWorkerService = timelineWorkerService;
-        _navigationManager = navigation;
 
         // Initialize
         DeleteMyTweetCommand = new ReactiveCommand<ICosmosDbItemId>();
@@ -86,6 +79,4 @@ internal class HomeViewModel : IDisposable, INotifyCollectionChanged
             .Subscribe(args => _navigationManager.NavigateToStatePage(args.User.UserDisplayId, args.Tweet))
             .AddTo(_disposable);
     }
-
-    public void Dispose() => _disposable.Dispose();
 }

@@ -1,0 +1,17 @@
+﻿@*
+    Entrypoint page
+*@
+@page "/"
+@inherits TwiHighPageBase
+@inject IndexViewModel viewmodel
+
+<THLoading />
+
+@code
+{
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        viewmodel.CheckAuthenticationStateCommand.Execute();
+    }
+}

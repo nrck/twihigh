@@ -1,0 +1,13 @@
+﻿@*
+    メッセージコンポーネント
+*@
+<div class="message-box @(IsClosed ? "fadeout" : "fadein")">
+    <div class="message-text @MessageAreaCssClass">
+        <span>
+            @Context?.Message
+        </span>
+        <button class="close" @onclick="OnClickCloseButton">
+            ×
+        </button>
+    </div>
+</div>

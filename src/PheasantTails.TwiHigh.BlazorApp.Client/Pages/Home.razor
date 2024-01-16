@@ -1,9 +1,11 @@
-﻿@page "/Home"
-@inject ITimelineWorkerService TimelineWorkerService
-@inject HomeViewModel ViewModel
-@*
-    ログイン後のページ
+﻿@*
+    Home page
 *@
+@page "/Home"
+@inherits TwiHighPageBase
+@inject ITimelineWorkerService TimelineWorkerService
+@*@inject HomeViewModel ViewModel*@
+
 
 @* タイトル *@
 <PageTitle>ホーム - ツイハイ！</PageTitle>

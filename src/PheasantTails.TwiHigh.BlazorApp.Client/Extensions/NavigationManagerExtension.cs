@@ -47,4 +47,10 @@ internal static class NavigationManagerExtension
 
         navigationManager.NavigateTo(string.Format(PAGE_PATH_PROFILE, userDisplayId), forceLoad, replace);
     }
+
+    internal static void NavigateToHomePage(this NavigationManager navigationManager, bool forceLoad = false, bool replace = false)
+        => navigationManager.NavigateTo(PAGE_PATH_HOME, forceLoad, replace);
+
+    internal static void NavigateToLoginPage(this NavigationManager navigationManager, bool forceLoad = false, bool replace = false)
+        => navigationManager.NavigateTo(PAGE_PATH_LOGIN, forceLoad, replace);
 }
