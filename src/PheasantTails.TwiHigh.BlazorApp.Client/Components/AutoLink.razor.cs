@@ -49,7 +49,7 @@ namespace PheasantTails.TwiHigh.BlazorApp.Client.Components
                 }
                 else
                 {
-                    builder.OpenComponent<UserIdLink>(sequence);
+                    builder.OpenComponent<THUserIdLink>(sequence);
                     sequence++;
                     builder.AddAttribute(sequence, "UserDisplayId", ContentArray[index]);
                     sequence++;

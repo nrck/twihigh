@@ -5,22 +5,25 @@ using PheasantTails.TwiHigh.BlazorApp.Client.ViewModels;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.Extensions;
 
-internal static class DependencyInjections
+public static class DependencyInjections
 {
-    internal static IServiceCollection AddViewModels(this IServiceCollection services)
+    public static IServiceCollection AddViewModels(this IServiceCollection services)
     {
-        services.AddSingleton<HomeViewModel>();
+        services.AddTransient<HomeViewModel>();
+        services.AddTransient<IndexViewModel>();
+        services.AddTransient<LoginViewModel>();
         return services;
     }
 
-    internal static IServiceCollection AddTwiHighservices(this IServiceCollection services)
+    public static IServiceCollection AddTwiHighservices(this IServiceCollection services)
     {
         services.AddSingleton<ITimelineWorkerService, TimelineWorkerService>();
+        services.AddSingleton<IMessageService, MessageService>();
         services.AddSingleton<AuthenticationStateProvider, TwiHighAuthenticationStateProvider>();
         return services;
     }
 
-    internal static IServiceCollection AddTwiHighApiClient(this IServiceCollection services)
+    public static IServiceCollection AddTwiHighApiClient(this IServiceCollection services)
     {
         services.AddHttpClient<TimelineHttpClient>();
         services.AddHttpClient<AppUserHttpClient>();

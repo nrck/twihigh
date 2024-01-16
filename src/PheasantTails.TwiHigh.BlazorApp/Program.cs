@@ -1,4 +1,4 @@
-using PheasantTails.TwiHigh.BlazorApp.Client.Pages;
+using PheasantTails.TwiHigh.BlazorApp.Client.Extensions;
 using PheasantTails.TwiHigh.BlazorApp.Components;
 
 namespace PheasantTails.TwiHigh.BlazorApp
@@ -13,6 +13,9 @@ namespace PheasantTails.TwiHigh.BlazorApp
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents()
                 .AddInteractiveWebAssemblyComponents();
+            builder.Services.AddViewModels()
+                .AddTwiHighservices()
+                .AddTwiHighApiClient();
 
             var app = builder.Build();
 
@@ -36,7 +39,7 @@ namespace PheasantTails.TwiHigh.BlazorApp
             app.MapRazorComponents<App>()
                 .AddInteractiveServerRenderMode()
                 .AddInteractiveWebAssemblyRenderMode()
-                .AddAdditionalAssemblies(typeof(Counter).Assembly);
+                .AddAdditionalAssemblies(typeof(Client.Pages.Index).Assembly);
 
             app.Run();
         }

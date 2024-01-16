@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using PheasantTails.TwiHigh.BlazorApp.Client.Bases;
 
-namespace PheasantTails.TwiHigh.Client.Components
+namespace PheasantTails.TwiHigh.BlazorApp.Client.Components
 {
-    public partial class MessageComponent : IDisposable
+    public partial class MessageComponent : TwiHighComponentBase, IDisposable
     {
         public enum MessageLevel
         {
@@ -52,7 +53,7 @@ namespace PheasantTails.TwiHigh.Client.Components
         protected override void OnInitialized()
         {
             base.OnInitialized();
-            AutoCloseTimer = new Timer(OnFireAutoCloseTimer,null, 5000, 0);
+            AutoCloseTimer = new Timer(OnFireAutoCloseTimer, null, 5000, 0);
         }
 
         private void OnClickCloseButton(MouseEventArgs e) => CloseMessage();
@@ -68,7 +69,7 @@ namespace PheasantTails.TwiHigh.Client.Components
             IsClosed = true;
             AutoCloseTimer.Dispose();
             StateHasChanged();
-            _ = new Timer((object? _) => { Context.OnClickClose.Invoke(Context.MessageId); }, null, 500, 0);
+            _ = new Timer((_) => { Context.OnClickClose.Invoke(Context.MessageId); }, null, 500, 0);
             ;
         }
     }
