@@ -12,7 +12,7 @@ namespace PheasantTails.TwiHigh.BlazorApp.Client.ViewModels;
 /// <summary>
 /// ViewModel for Home page.
 /// </summary>
-internal class HomeViewModel : ViewModelBase, IDisposable, INotifyCollectionChanged
+public class HomeViewModel : ViewModelBase, IDisposable, INotifyCollectionChanged
 {
     private readonly ITimelineWorkerService _timelineWorkerService;
 

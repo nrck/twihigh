@@ -9,9 +9,9 @@
 
 @code
 {
-    protected override void OnInitialized()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        base.OnInitialized();
-        viewmodel.CheckAuthenticationStateCommand.Execute();
+        await base.OnAfterRenderAsync(firstRender);
+        await viewmodel.CheckAuthenticationStateCommand.ExecuteAsync();
     }
 }

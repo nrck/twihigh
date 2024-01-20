@@ -12,13 +12,13 @@ public class IndexViewModel : ViewModelBase, IDisposable, INotifyCollectionChang
 {
     private readonly AuthenticationStateProvider _authenticationStateProvider;
 
-    public ReactiveCommand CheckAuthenticationStateCommand { get; private set; }
+    public AsyncReactiveCommand CheckAuthenticationStateCommand { get; private set; }
 
     public IndexViewModel(AuthenticationStateProvider authenticationStateProvider, NavigationManager navigationManager, IMessageService messageService) : base(navigationManager, messageService)
     {
         _authenticationStateProvider = authenticationStateProvider;
-        CheckAuthenticationStateCommand = new ReactiveCommand();
-        CheckAuthenticationStateCommand.Subscribe(async () => await LoginCheck())
+        CheckAuthenticationStateCommand = new AsyncReactiveCommand();
+        CheckAuthenticationStateCommand.Subscribe(LoginCheck)
             .AddTo(_disposable);
     }
 

@@ -11,15 +11,15 @@
         <h2>ツイハイにログイン</h2>
         <div class="login-form-group">
             <label for="user-display-id" class="login-form-user-display-id-label">アカウントID</label>
-            <input type="text" name="user-display-id" class="login-form-user-display-id-input" @bind-value=ViewModel.AuthorizationContext.Value.DisplayId />
+            <input type="text" name="user-display-id" class="login-form-user-display-id-input" @bind-value=ViewModel.DisplayId.Value />
         </div>
         <div class="login-form-group">
             <label for="user-password" class="login-form-user-password-label">パスワード</label>
-            <input type="password" name="user-password" class="login-form-user-password-input" @bind-value=ViewModel.AuthorizationContext.Value.PlanePassword />
+            <input type="password" name="user-password" class="login-form-user-password-input" @bind-value=ViewModel.PlainPassword.Value />
         </div>
         <div class="login-form-group">
-            <button type="submit" class="login-form-submit-button" @onclick="() => ViewModel.LoginCommand.Execute()" disabled="@(!ViewModel.LoginCommand.CanExecute())">
-                @if (ViewModel.LoginCommand.CanExecute())
+            <button type="submit" class="login-form-submit-button" @onclick="async () => await ViewModel.LoginCommand.ExecuteAsync(this)" disabled="@(!ViewModel.CanExecute.Value)">
+                @if (ViewModel.CanExecute.Value)
                 {
                     <span>ログインする</span>
                 }
@@ -33,7 +33,7 @@
 </section>
 
 @code {
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnInitializedAsync();
         await ViewModel.CheckAuthenticationStateCommand.ExecuteAsync();

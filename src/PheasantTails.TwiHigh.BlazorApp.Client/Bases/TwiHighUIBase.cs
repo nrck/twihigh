@@ -10,4 +10,6 @@ public class TwiHighUIBase : ComponentBase
 
     [Inject]
     protected AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
+
+    public async Task InvokeRenderAsync() => await InvokeAsync(StateHasChanged);
 }

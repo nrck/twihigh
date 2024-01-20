@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using PheasantTails.TwiHigh.BlazorApp.Client.Bases;
 using PheasantTails.TwiHigh.BlazorApp.Client.Extensions;
 using PheasantTails.TwiHigh.BlazorApp.Client.Services;
 using PheasantTails.TwiHigh.Data.Model.TwiHighUsers;
@@ -7,6 +8,7 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System.Collections.Specialized;
 using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.ViewModels;
 
@@ -16,8 +18,10 @@ public class LoginViewModel : ViewModelBase, IDisposable, INotifyCollectionChang
     private readonly HttpClient _httpClient;
     private readonly string _apiUrlLogin;
 
-    public ReactivePropertySlim<PostAuthorizationContext> AuthorizationContext { get; }
-    public AsyncReactiveCommand LoginCommand { get; }
+    public ReactivePropertySlim<string> DisplayId { get; }
+    public ReactivePropertySlim<string> PlainPassword { get; }
+    public ReactivePropertySlim<bool> CanExecute { get; }
+    public AsyncReactiveCommand<TwiHighUIBase> LoginCommand { get; }
     public AsyncReactiveCommand CheckAuthenticationStateCommand { get; }
 
     public LoginViewModel(HttpClient httpClient, AuthenticationStateProvider authenticationStateProvider, IConfiguration configuration, NavigationManager navigationManager, IMessageService messageService) : base(navigationManager, messageService)
@@ -25,11 +29,18 @@ public class LoginViewModel : ViewModelBase, IDisposable, INotifyCollectionChang
         _httpClient = httpClient;
         _apiUrlLogin = $"{configuration["AppUserApiUrl"]}/Login";
         _authenticationStateProvider = authenticationStateProvider;
-        AuthorizationContext = new ReactivePropertySlim<PostAuthorizationContext>();
-        LoginCommand = new AsyncReactiveCommand()
-            .WithSubscribe(async () =>
+        DisplayId = new ReactivePropertySlim<string>().AddTo(_disposable);
+        PlainPassword = new ReactivePropertySlim<string>().AddTo(_disposable);
+        CanExecute = new ReactivePropertySlim<bool>().AddTo(_disposable);
+        CanExecute.Value = true;
+        LoginCommand = new AsyncReactiveCommand<TwiHighUIBase>()
+            .WithSubscribe(async (component) =>
             {
+                CanExecute.Value = false;
+                await component.InvokeRenderAsync();
                 await LoginAsync();
+                CanExecute.Value = true;
+                await component.InvokeRenderAsync();
             })
             .AddTo(_disposable);
         CheckAuthenticationStateCommand = new AsyncReactiveCommand()
@@ -44,12 +55,12 @@ public class LoginViewModel : ViewModelBase, IDisposable, INotifyCollectionChang
     {
         try
         {
-            if (string.IsNullOrEmpty(AuthorizationContext.Value.DisplayId))
+            if (string.IsNullOrEmpty(DisplayId.Value))
             {
                 _messageService.SetErrorMessage("ユーザ名を入力してください。");
                 return;
             }
-            if (string.IsNullOrEmpty(AuthorizationContext.Value.PlanePassword))
+            if (string.IsNullOrEmpty(PlainPassword.Value))
             {
                 _messageService.SetErrorMessage("パスワードを入力してください。");
                 return;
@@ -57,9 +68,14 @@ public class LoginViewModel : ViewModelBase, IDisposable, INotifyCollectionChang
             HttpResponseMessage res;
             try
             {
-                res = await _httpClient.PostAsJsonAsync(_apiUrlLogin, AuthorizationContext.Value, cancellationToken: cancellationToken);
+                var context = new PostAuthorizationContext
+                {
+                    DisplayId = DisplayId.Value,
+                    PlanePassword = PlainPassword.Value
+                };
+                res = await _httpClient.PostAsJsonAsync(new Uri(_apiUrlLogin), context, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }, cancellationToken: cancellationToken);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 // TODO: タイムアウト時の処理を入れる
                 throw;
