@@ -44,9 +44,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.Funct
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.Interface", "src\PheasantTails.TwiHigh.Interface\PheasantTails.TwiHigh.Interface.csproj", "{492ED9E5-7336-434F-A7EF-05C8E19B89F5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PheasantTails.TwiHigh.BlazorApp", "src\PheasantTails.TwiHigh.BlazorApp\PheasantTails.TwiHigh.BlazorApp.csproj", "{EA1A07A4-48A2-494D-92D3-A303377DCC6F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.BlazorApp", "src\PheasantTails.TwiHigh.BlazorApp\PheasantTails.TwiHigh.BlazorApp.csproj", "{EA1A07A4-48A2-494D-92D3-A303377DCC6F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PheasantTails.TwiHigh.BlazorApp.Client", "src\PheasantTails.TwiHigh.BlazorApp.Client\PheasantTails.TwiHigh.BlazorApp.Client.csproj", "{4866B885-F186-470A-BD9A-E60EA20D882F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.BlazorApp.Client", "src\PheasantTails.TwiHigh.BlazorApp.Client\PheasantTails.TwiHigh.BlazorApp.Client.csproj", "{4866B885-F186-470A-BD9A-E60EA20D882F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PheasantTails.TwiHigh.BlazorApp.View", "src\PheasantTails.TwiHigh.BlazorApp.View\PheasantTails.TwiHigh.BlazorApp.View.csproj", "{C71A2006-618C-463D-8CC5-B09E3823968D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -102,6 +104,10 @@ Global
 		{4866B885-F186-470A-BD9A-E60EA20D882F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4866B885-F186-470A-BD9A-E60EA20D882F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4866B885-F186-470A-BD9A-E60EA20D882F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C71A2006-618C-463D-8CC5-B09E3823968D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C71A2006-618C-463D-8CC5-B09E3823968D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C71A2006-618C-463D-8CC5-B09E3823968D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C71A2006-618C-463D-8CC5-B09E3823968D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
