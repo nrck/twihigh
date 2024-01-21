@@ -5,7 +5,7 @@ using System.Reactive.Disposables;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.ViewModels;
 
-public abstract class ViewModelBase : IDisposable, INotifyCollectionChanged
+public abstract class ViewModelBase : IViewModelBase
 {
     protected readonly CompositeDisposable _disposable = [];
     protected readonly NavigationManager _navigationManager;
@@ -26,7 +26,5 @@ public abstract class ViewModelBase : IDisposable, INotifyCollectionChanged
     }
 
     protected void HandleException(Exception ex)
-    {
-        _messageService.SetErrorMessage($"申し訳ありません。予期せぬエラーが発生しました。役立つメッセージ「{ex.GetType().Name}: {ex.Message}」");
-    }
+        => _messageService.SetErrorMessage($"申し訳ありません。予期せぬエラーが発生しました。役立つメッセージ「{ex.GetType().Name}: {ex.Message}」");
 }

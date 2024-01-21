@@ -4,11 +4,10 @@ using PheasantTails.TwiHigh.BlazorApp.Client.Extensions;
 using PheasantTails.TwiHigh.BlazorApp.Client.Services;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-using System.Collections.Specialized;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.ViewModels;
 
-public class IndexViewModel : ViewModelBase, IDisposable, INotifyCollectionChanged
+public class IndexViewModel : ViewModelBase, IIndexViewModel
 {
     private readonly AuthenticationStateProvider _authenticationStateProvider;
 

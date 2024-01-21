@@ -1,4 +1,5 @@
 using Blazored.LocalStorage;
+using PheasantTails.TwiHigh.BlazorApp.Client.Views.Pages;
 using PheasantTails.TwiHigh.BlazorApp.Components;
 using PheasantTails.TwiHigh.BlazorApp.Extensions;
 
@@ -42,7 +43,7 @@ namespace PheasantTails.TwiHigh.BlazorApp
                 .AddInteractiveServerRenderMode()
                 .AddInteractiveWebAssemblyRenderMode()
                 .AddAdditionalAssemblies(
-                    typeof(Client.Pages.Home).Assembly
+                    typeof(Home).Assembly
                 );
 
             app.Run();

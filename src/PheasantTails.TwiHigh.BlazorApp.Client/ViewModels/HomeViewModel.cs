@@ -4,7 +4,6 @@ using PheasantTails.TwiHigh.BlazorApp.Client.Services;
 using PheasantTails.TwiHigh.Interface;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-using System.Collections.Specialized;
 using System.Reactive.Linq;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.ViewModels;
@@ -12,7 +11,7 @@ namespace PheasantTails.TwiHigh.BlazorApp.Client.ViewModels;
 /// <summary>
 /// ViewModel for Home page.
 /// </summary>
-public class HomeViewModel : ViewModelBase, IDisposable, INotifyCollectionChanged
+public class HomeViewModel : ViewModelBase, IHomeViewModel
 {
     private readonly ITimelineWorkerService _timelineWorkerService;
 

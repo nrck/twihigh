@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using PheasantTails.TwiHigh.BlazorApp.Client.Bases;
+using PheasantTails.TwiHigh.BlazorApp.Client.Views.Bases;
 
-namespace PheasantTails.TwiHigh.BlazorApp.Client.Components
+namespace PheasantTails.TwiHigh.BlazorApp.Client.Views.Components
 {
     public partial class MessageComponent : TwiHighComponentBase, IDisposable
     {

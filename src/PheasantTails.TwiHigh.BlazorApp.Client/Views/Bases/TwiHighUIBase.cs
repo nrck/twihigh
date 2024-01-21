@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 
-namespace PheasantTails.TwiHigh.BlazorApp.Client.Bases;
+namespace PheasantTails.TwiHigh.BlazorApp.Client.Views.Bases;
 
 public class TwiHighUIBase : ComponentBase
 {

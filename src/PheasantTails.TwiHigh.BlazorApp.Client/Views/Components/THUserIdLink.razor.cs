@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components;
-using PheasantTails.TwiHigh.BlazorApp.Client.Bases;
 using PheasantTails.TwiHigh.BlazorApp.Client.Extensions;
+using PheasantTails.TwiHigh.BlazorApp.Client.Views.Bases;
 
-namespace PheasantTails.TwiHigh.BlazorApp.Client.Components;
+namespace PheasantTails.TwiHigh.BlazorApp.Client.Views.Components;
 
 public partial class THUserIdLink : TwiHighComponentBase
 {
@@ -10,5 +10,5 @@ public partial class THUserIdLink : TwiHighComponentBase
     public string UserDisplayId { get; set; } = string.Empty;
 
     private void OnClickLink()
-        => base.Navigation.NavigateToProfilePage(UserDisplayId);
+        => Navigation.NavigateToProfilePage(UserDisplayId);
 }

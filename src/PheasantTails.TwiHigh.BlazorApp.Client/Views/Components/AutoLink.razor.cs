@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using System.Text.RegularExpressions;
 
-namespace PheasantTails.TwiHigh.BlazorApp.Client.Components
+namespace PheasantTails.TwiHigh.BlazorApp.Client.Views.Components
 {
     public partial class AutoLink
     {

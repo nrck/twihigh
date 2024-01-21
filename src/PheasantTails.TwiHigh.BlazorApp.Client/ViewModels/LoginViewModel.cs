@@ -1,18 +1,17 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
-using PheasantTails.TwiHigh.BlazorApp.Client.Bases;
 using PheasantTails.TwiHigh.BlazorApp.Client.Extensions;
 using PheasantTails.TwiHigh.BlazorApp.Client.Services;
+using PheasantTails.TwiHigh.BlazorApp.Client.Views.Bases;
 using PheasantTails.TwiHigh.Data.Model.TwiHighUsers;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-using System.Collections.Specialized;
 using System.Net.Http.Json;
 using System.Text.Json;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.ViewModels;
 
-public class LoginViewModel : ViewModelBase, IDisposable, INotifyCollectionChanged
+public class LoginViewModel : ViewModelBase, ILoginViewModel
 {
     private readonly AuthenticationStateProvider _authenticationStateProvider;
     private readonly HttpClient _httpClient;
