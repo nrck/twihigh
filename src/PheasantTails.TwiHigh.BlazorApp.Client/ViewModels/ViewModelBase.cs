@@ -17,6 +17,7 @@ public abstract class ViewModelBase : IViewModelBase
     {
         _navigationManager = navigationManager;
         _messageService = messageService;
+        Subscribe();
     }
 
     public virtual void Dispose()
@@ -27,4 +28,6 @@ public abstract class ViewModelBase : IViewModelBase
 
     protected void HandleException(Exception ex)
         => _messageService.SetErrorMessage($"申し訳ありません。予期せぬエラーが発生しました。役立つメッセージ「{ex.GetType().Name}: {ex.Message}」");
+
+    protected abstract void Subscribe();
 }

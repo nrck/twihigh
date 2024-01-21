@@ -18,42 +18,42 @@ public class HomeViewModel : ViewModelBase, IHomeViewModel
     /// <summary>
     /// Delete my tweet command.
     /// </summary>
-    public ReactiveCommand<ICosmosDbItemId> DeleteMyTweetCommand { get; }
+    public ReactiveCommand<ICosmosDbItemId> DeleteMyTweetCommand { get; } = new ReactiveCommand<ICosmosDbItemId>();
 
     /// <summary>
     /// Add reaction command.
     /// </summary>
-    public ReactiveCommand<(ICosmosDbItemId Tweet, ICosmosDbItemId Sticker)> AddReactionCommand { get; }
+    public ReactiveCommand<(ICosmosDbItemId Tweet, ICosmosDbItemId Sticker)> AddReactionCommand { get; } = new ReactiveCommand<(ICosmosDbItemId Tweet, ICosmosDbItemId Sticker)>();
 
     /// <summary>
     /// Delete reaction command.
     /// </summary>
-    public ReactiveCommand<(ICosmosDbItemId Tweet, ICosmosDbItemId User)> RemoveReactionCommand { get; }
+    public ReactiveCommand<(ICosmosDbItemId Tweet, ICosmosDbItemId User)> RemoveReactionCommand { get; } = new ReactiveCommand<(ICosmosDbItemId Tweet, ICosmosDbItemId User)>();
 
     /// <summary>
     /// Retweet command.
     /// </summary>
-    public ReactiveCommand<ICosmosDbItemId> AddRetweetCommand { get; }
+    public ReactiveCommand<ICosmosDbItemId> AddRetweetCommand { get; } = new ReactiveCommand<ICosmosDbItemId>();
 
     /// <summary>
     /// Remove retweet command.
     /// </summary>
-    public ReactiveCommand<ICosmosDbItemId> RemoveRetweetCommand { get; }
+    public ReactiveCommand<ICosmosDbItemId> RemoveRetweetCommand { get; } = new ReactiveCommand<ICosmosDbItemId>();
 
     /// <summary>
     /// Navigate to state page command.
     /// </summary>
-    public ReactiveCommand<(ICosmosDbItemId Tweet, ITwiHighUserSummary User)> NavigateStatePageCommand { get; }
+    public ReactiveCommand<(ICosmosDbItemId Tweet, ITwiHighUserSummary User)> NavigateStatePageCommand { get; } = new ReactiveCommand<(ICosmosDbItemId Tweet, ITwiHighUserSummary User)>();
 
     /// <summary>
     /// Navigate to user page command.
     /// </summary>
-    public ReactiveCommand<ICosmosDbItemId> NavigateUserPageCommad { get; }
+    public ReactiveCommand<ICosmosDbItemId> NavigateUserPageCommad { get; } = new ReactiveCommand<ICosmosDbItemId>();
 
     /// <summary>
     /// Navigate to reply form at state page command.
     /// </summary>
-    public ReactiveCommand<ICosmosDbItemId> NavigateStatePageWithReplyCommand { get; }
+    public ReactiveCommand<ICosmosDbItemId> NavigateStatePageWithReplyCommand { get; } = new ReactiveCommand<ICosmosDbItemId>();
 
     public HomeViewModel(ITimelineWorkerService timelineWorkerService, NavigationManager navigation, IMessageService messageService) : base(navigation, messageService)
     {
@@ -61,21 +61,19 @@ public class HomeViewModel : ViewModelBase, IHomeViewModel
         _timelineWorkerService = timelineWorkerService;
 
         // Initialize
-        DeleteMyTweetCommand = new ReactiveCommand<ICosmosDbItemId>();
-        NavigateStatePageCommand = new ReactiveCommand<(ICosmosDbItemId Tweet, ITwiHighUserSummary User)>();
-        NavigateUserPageCommad = new ReactiveCommand<ICosmosDbItemId>();
-        NavigateStatePageWithReplyCommand = new ReactiveCommand<ICosmosDbItemId>();
-        AddReactionCommand = new ReactiveCommand<(ICosmosDbItemId Tweet, ICosmosDbItemId Sticker)>();
-        RemoveReactionCommand = new ReactiveCommand<(ICosmosDbItemId Tweet, ICosmosDbItemId User)>();
-        AddRetweetCommand = new ReactiveCommand<ICosmosDbItemId>();
-        RemoveRetweetCommand = new ReactiveCommand<ICosmosDbItemId>();
+        DeleteMyTweetCommand.AddTo(_disposable);
+        NavigateStatePageCommand.AddTo(_disposable);
+        NavigateUserPageCommad.AddTo(_disposable);
+        NavigateStatePageWithReplyCommand.AddTo(_disposable);
+        AddReactionCommand.AddTo(_disposable);
+        RemoveReactionCommand.AddTo(_disposable);
+        AddRetweetCommand.AddTo(_disposable);
+        RemoveRetweetCommand.AddTo(_disposable);
+    }
 
-        // Setting subscribe
-        DeleteMyTweetCommand
-            .Subscribe(async tweet => await _timelineWorkerService.RemoveAsync(tweet.Id))
-            .AddTo(_disposable);
-        NavigateStatePageCommand
-            .Subscribe(args => _navigationManager.NavigateToStatePage(args.User.UserDisplayId, args.Tweet))
-            .AddTo(_disposable);
+    protected override void Subscribe()
+    {
+        DeleteMyTweetCommand.Subscribe(async tweet => await _timelineWorkerService.RemoveAsync(tweet.Id));
+        NavigateStatePageCommand.Subscribe(args => _navigationManager.NavigateToStatePage(args.User.UserDisplayId, args.Tweet));
     }
 }

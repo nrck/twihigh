@@ -3,15 +3,21 @@
     Entrypoint page
 *@
 @inherits TwiHighPageBase
-@inject IIndexViewModel viewmodel
+@inject IIndexViewModel ViewModel
 
 <THLoading />
 
 @code
 {
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await ViewModel.CheckAuthenticationStateOnInitializedCommand.ExecuteAsync();
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
-        await viewmodel.CheckAuthenticationStateCommand.ExecuteAsync();
+        await ViewModel.CheckAuthenticationStateOnAfterRenderCommand.ExecuteAsync();
     }
 }

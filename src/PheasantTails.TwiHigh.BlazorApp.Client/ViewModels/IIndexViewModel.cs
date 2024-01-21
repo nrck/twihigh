@@ -4,5 +4,6 @@ namespace PheasantTails.TwiHigh.BlazorApp.Client.ViewModels;
 
 public interface IIndexViewModel : IViewModelBase
 {
-    AsyncReactiveCommand CheckAuthenticationStateCommand { get; }
+    AsyncReactiveCommand CheckAuthenticationStateOnAfterRenderCommand { get; }
+    AsyncReactiveCommand CheckAuthenticationStateOnInitializedCommand { get; }
 }

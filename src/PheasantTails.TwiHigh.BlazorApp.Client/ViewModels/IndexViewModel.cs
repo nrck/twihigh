@@ -11,17 +11,24 @@ public class IndexViewModel : ViewModelBase, IIndexViewModel
 {
     private readonly AuthenticationStateProvider _authenticationStateProvider;
 
-    public AsyncReactiveCommand CheckAuthenticationStateCommand { get; private set; }
+    public AsyncReactiveCommand CheckAuthenticationStateOnAfterRenderCommand { get; } = new AsyncReactiveCommand();
+
+    public AsyncReactiveCommand CheckAuthenticationStateOnInitializedCommand { get; } = new AsyncReactiveCommand();
 
     public IndexViewModel(AuthenticationStateProvider authenticationStateProvider, NavigationManager navigationManager, IMessageService messageService) : base(navigationManager, messageService)
     {
         _authenticationStateProvider = authenticationStateProvider;
-        CheckAuthenticationStateCommand = new AsyncReactiveCommand();
-        CheckAuthenticationStateCommand.Subscribe(LoginCheck)
-            .AddTo(_disposable);
+        CheckAuthenticationStateOnAfterRenderCommand.AddTo(_disposable);
+        CheckAuthenticationStateOnInitializedCommand.AddTo(_disposable);
     }
 
-    private async Task LoginCheck()
+    protected override void Subscribe()
+    {
+        // On WebAssembly, Invoke at OnInitializedAsync method.
+        CheckAuthenticationStateOnInitializedCommand.Subscribe(LoginCheck);
+    }
+
+    protected async Task LoginCheck()
     {
         var state = await ((TwiHighAuthenticationStateProvider)_authenticationStateProvider).GetAuthenticationStateAsync().ConfigureAwait(false);
         var isAuthenticated = state.User.Identity?.IsAuthenticated ?? false;

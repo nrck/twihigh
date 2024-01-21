@@ -17,37 +17,42 @@ public class LoginViewModel : ViewModelBase, ILoginViewModel
     private readonly HttpClient _httpClient;
     private readonly string _apiUrlLogin;
 
-    public ReactivePropertySlim<string> DisplayId { get; }
-    public ReactivePropertySlim<string> PlainPassword { get; }
-    public ReactivePropertySlim<bool> CanExecute { get; }
-    public AsyncReactiveCommand<TwiHighUIBase> LoginCommand { get; }
-    public AsyncReactiveCommand CheckAuthenticationStateCommand { get; }
+    public ReactivePropertySlim<string> DisplayId { get; } = new ReactivePropertySlim<string>();
+    public ReactivePropertySlim<string> PlainPassword { get; } = new ReactivePropertySlim<string>();
+    public ReactivePropertySlim<bool> CanExecute { get; } = new ReactivePropertySlim<bool>();
+    public AsyncReactiveCommand<TwiHighUIBase> LoginCommand { get; } = new AsyncReactiveCommand<TwiHighUIBase>();
+    public AsyncReactiveCommand CheckAuthenticationStateCommand { get; } = new AsyncReactiveCommand();
 
     public LoginViewModel(HttpClient httpClient, AuthenticationStateProvider authenticationStateProvider, IConfiguration configuration, NavigationManager navigationManager, IMessageService messageService) : base(navigationManager, messageService)
     {
         _httpClient = httpClient;
         _apiUrlLogin = $"{configuration["AppUserApiUrl"]}/Login";
         _authenticationStateProvider = authenticationStateProvider;
-        DisplayId = new ReactivePropertySlim<string>().AddTo(_disposable);
-        PlainPassword = new ReactivePropertySlim<string>().AddTo(_disposable);
-        CanExecute = new ReactivePropertySlim<bool>().AddTo(_disposable);
+
+        DisplayId.AddTo(_disposable);
+        PlainPassword.AddTo(_disposable);
+        CanExecute.AddTo(_disposable);
+        LoginCommand.AddTo(_disposable);
+        CheckAuthenticationStateCommand.AddTo(_disposable);
+
         CanExecute.Value = true;
-        LoginCommand = new AsyncReactiveCommand<TwiHighUIBase>()
-            .WithSubscribe(async (component) =>
-            {
-                CanExecute.Value = false;
-                await component.InvokeRenderAsync();
-                await LoginAsync();
-                CanExecute.Value = true;
-                await component.InvokeRenderAsync();
-            })
-            .AddTo(_disposable);
-        CheckAuthenticationStateCommand = new AsyncReactiveCommand()
-            .WithSubscribe(async () =>
-            {
-                await CheckAuthenticationStateAsync();
-            })
-            .AddTo(_disposable);
+    }
+
+    protected override void Subscribe()
+    {
+        LoginCommand.WithSubscribe(async (component) =>
+        {
+            CanExecute.Value = false;
+            await component.InvokeRenderAsync();
+            await LoginAsync();
+            CanExecute.Value = true;
+            await component.InvokeRenderAsync();
+        });
+
+        CheckAuthenticationStateCommand.WithSubscribe(async () =>
+        {
+            await CheckAuthenticationStateAsync();
+        });
     }
 
     private async ValueTask LoginAsync(CancellationToken cancellationToken = default)
