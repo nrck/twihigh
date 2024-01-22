@@ -2,35 +2,29 @@
 @*
     Home page
 *@
+@attribute [Authorize]
 @inherits TwiHighPageBase
-@inject ITimelineWorkerService TimelineWorkerService
-@inject IHomeViewModel ViewModel
 
-
-@* タイトル *@
+@* Title *@
 <PageTitle>ホーム - ツイハイ！</PageTitle>
-@*<PageTitleComponent Title="ホーム" />*@
+<PageTitleComponent Title="ホーム" />
 
-@* ツイート欄 *@
-@*
+@* Tweet post form *@
 <section>
     <PostFormComponent UserAvatarUrl="@AvatarUrl"
                        OnClickAvatar="OnClickProfileEditor"
                        OnPostTweet="PostTweetAsync"
                        IsForceForcus=true />
 </section>
-*@
-@* タイムライン *@
 
-@if (TimelineWorkerService.Timeline.Count == 0)
+@* Timeline *@
+@if (Tweets == null)
 {
     <NoContentsComponent NoContentsText="@("まずは @twihigh をフォローしてみよう！")" />
 }
 else
 {
 
-    <NoContentsComponent NoContentsText="@($"{TimelineWorkerService.Timeline.Count} 件")" />
-    @*
     <TimelineComponent @key="MyTwiHithUserId"
                    Tweets="Tweets"
                    MyTwiHithUserId=MyTwiHithUserId
@@ -40,5 +34,4 @@ else
                    OnClickProfile="OnClickProfile"
                    OnClickGapTweetsLoad="OnClickGetGapTweets"
                    OnClickDetail="OnClickDetail" />
-                   *@
 }
