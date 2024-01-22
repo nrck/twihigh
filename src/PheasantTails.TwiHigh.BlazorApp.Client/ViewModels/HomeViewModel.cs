@@ -71,6 +71,10 @@ public class HomeViewModel : ViewModelBase, IHomeViewModel
         RemoveRetweetCommand.AddTo(_disposable);
     }
 
+    protected override void Initialize()
+    {
+    }
+
     protected override void Subscribe()
     {
         DeleteMyTweetCommand.Subscribe(async tweet => await _timelineWorkerService.RemoveAsync(tweet.Id));

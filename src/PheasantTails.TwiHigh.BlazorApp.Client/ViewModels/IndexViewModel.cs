@@ -11,15 +11,20 @@ public class IndexViewModel : ViewModelBase, IIndexViewModel
 {
     private readonly AuthenticationStateProvider _authenticationStateProvider;
 
-    public AsyncReactiveCommand CheckAuthenticationStateOnAfterRenderCommand { get; } = new AsyncReactiveCommand();
+    public AsyncReactiveCommand CheckAuthenticationStateOnAfterRenderCommand { get; private set; } = default!;
 
-    public AsyncReactiveCommand CheckAuthenticationStateOnInitializedCommand { get; } = new AsyncReactiveCommand();
+    public AsyncReactiveCommand CheckAuthenticationStateOnInitializedCommand { get; private set; } = default!;
 
-    public IndexViewModel(AuthenticationStateProvider authenticationStateProvider, NavigationManager navigationManager, IMessageService messageService) : base(navigationManager, messageService)
+    public IndexViewModel(AuthenticationStateProvider authenticationStateProvider, NavigationManager navigationManager, IMessageService messageService)
+        : base(navigationManager, messageService)
     {
         _authenticationStateProvider = authenticationStateProvider;
-        CheckAuthenticationStateOnAfterRenderCommand.AddTo(_disposable);
-        CheckAuthenticationStateOnInitializedCommand.AddTo(_disposable);
+    }
+
+    protected override void Initialize()
+    {
+        CheckAuthenticationStateOnAfterRenderCommand = new AsyncReactiveCommand().AddTo(_disposable);
+        CheckAuthenticationStateOnInitializedCommand = new AsyncReactiveCommand().AddTo(_disposable);
     }
 
     protected override void Subscribe()

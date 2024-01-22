@@ -1,7 +1,7 @@
-﻿using System.Collections.Specialized;
+﻿using System.ComponentModel;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.ViewModels;
 
-public interface IViewModelBase : IDisposable, INotifyCollectionChanged
+public interface IViewModelBase : IDisposable, INotifyPropertyChanged
 {
 }

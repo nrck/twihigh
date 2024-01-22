@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using PheasantTails.TwiHigh.BlazorApp.Client.Extensions;
 using PheasantTails.TwiHigh.BlazorApp.Client.Services;
-using PheasantTails.TwiHigh.BlazorApp.Client.Views.Bases;
 using PheasantTails.TwiHigh.Data.Model.TwiHighUsers;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -17,45 +16,37 @@ public class LoginViewModel : ViewModelBase, ILoginViewModel
     private readonly HttpClient _httpClient;
     private readonly string _apiUrlLogin;
 
-    public ReactivePropertySlim<string> DisplayId { get; } = new ReactivePropertySlim<string>();
-    public ReactivePropertySlim<string> PlainPassword { get; } = new ReactivePropertySlim<string>();
-    public ReactivePropertySlim<bool> CanExecute { get; } = new ReactivePropertySlim<bool>();
-    public AsyncReactiveCommand<TwiHighUIBase> LoginCommand { get; } = new AsyncReactiveCommand<TwiHighUIBase>();
-    public AsyncReactiveCommand CheckAuthenticationStateCommand { get; } = new AsyncReactiveCommand();
+    public ReactivePropertySlim<string> DisplayId { get; private set; } = default!;
+    public ReactivePropertySlim<string> PlainPassword { get; private set; } = default!;
+    public ReactivePropertySlim<bool> CanExecute { get; private set; } = default!;
+    public AsyncReactiveCommand LoginCommand { get; private set; } = default!;
+    public AsyncReactiveCommand CheckAuthenticationStateCommand { get; private set; } = default!;
 
-    public LoginViewModel(HttpClient httpClient, AuthenticationStateProvider authenticationStateProvider, IConfiguration configuration, NavigationManager navigationManager, IMessageService messageService) : base(navigationManager, messageService)
+    public LoginViewModel(HttpClient httpClient, AuthenticationStateProvider authenticationStateProvider, IConfiguration configuration, NavigationManager navigationManager, IMessageService messageService)
+        : base(navigationManager, messageService)
     {
         _httpClient = httpClient;
         _apiUrlLogin = $"{configuration["AppUserApiUrl"]}/Login";
         _authenticationStateProvider = authenticationStateProvider;
 
-        DisplayId.AddTo(_disposable);
-        PlainPassword.AddTo(_disposable);
-        CanExecute.AddTo(_disposable);
-        LoginCommand.AddTo(_disposable);
-        CheckAuthenticationStateCommand.AddTo(_disposable);
+    }
 
-        CanExecute.Value = true;
+    protected override void Initialize()
+    {
+        DisplayId = new ReactivePropertySlim<string>().AddTo(_disposable);
+        PlainPassword = new ReactivePropertySlim<string>().AddTo(_disposable);
+        CanExecute = new ReactivePropertySlim<bool>(true).AddTo(_disposable);
+        LoginCommand = new AsyncReactiveCommand(CanExecute).AddTo(_disposable);
+        CheckAuthenticationStateCommand = new AsyncReactiveCommand().AddTo(_disposable);
     }
 
     protected override void Subscribe()
     {
-        LoginCommand.WithSubscribe(async (component) =>
-        {
-            CanExecute.Value = false;
-            await component.InvokeRenderAsync();
-            await LoginAsync();
-            CanExecute.Value = true;
-            await component.InvokeRenderAsync();
-        });
-
-        CheckAuthenticationStateCommand.WithSubscribe(async () =>
-        {
-            await CheckAuthenticationStateAsync();
-        });
+        LoginCommand.Subscribe(async () => await LoginAsync());
+        CheckAuthenticationStateCommand.Subscribe(async () => await CheckAuthenticationStateAsync());
     }
 
-    private async ValueTask LoginAsync(CancellationToken cancellationToken = default)
+    private async Task LoginAsync(CancellationToken cancellationToken = default)
     {
         try
         {
