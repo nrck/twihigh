@@ -2,6 +2,7 @@
 using PheasantTails.TwiHigh.BlazorApp.Client.Models;
 using PheasantTails.TwiHigh.BlazorApp.Client.Views.Bases;
 using PheasantTails.TwiHigh.Data.Model.Tweets;
+using System.Collections.ObjectModel;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.Views.Components
 {
@@ -11,7 +12,7 @@ namespace PheasantTails.TwiHigh.BlazorApp.Client.Views.Components
         /// タイムラインに表示するツイートList
         /// </summary>
         [Parameter]
-        public List<DisplayTweet>? Tweets { get; set; }
+        public ReadOnlyCollection<DisplayTweet>? Tweets { get; set; }
 
         [Parameter]
         public Guid MyTwiHithUserId { get; set; }

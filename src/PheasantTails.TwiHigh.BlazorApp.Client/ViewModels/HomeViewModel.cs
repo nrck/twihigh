@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using PheasantTails.TwiHigh.BlazorApp.Client.Extensions;
+using PheasantTails.TwiHigh.BlazorApp.Client.Models;
 using PheasantTails.TwiHigh.BlazorApp.Client.Services;
 using PheasantTails.TwiHigh.Data.Model.Tweets;
 using PheasantTails.TwiHigh.Interface;
@@ -20,6 +22,7 @@ public class HomeViewModel : ViewModelBase, IHomeViewModel
     private readonly ITimelineWorkerService _timelineWorkerService;
     private readonly HttpClient _httpClient;
     private readonly Uri _apiUrlTweet;
+    private readonly TwiHighAuthenticationStateProvider _authenticationStateProvider;
 
     public ReactivePropertySlim<string> AvatarUrl { get; private set; } = default!;
 
@@ -56,23 +59,33 @@ public class HomeViewModel : ViewModelBase, IHomeViewModel
     /// <summary>
     /// Navigate to user page command.
     /// </summary>
-    public ReactiveCommand<ICosmosDbItemId> NavigateUserPageCommand { get; private set; } = default!;
+    public ReactiveCommand<ITwiHighUserSummary> NavigateUserPageCommand { get; private set; } = default!;
 
     /// <summary>
     /// Navigate to reply form at state page command.
     /// </summary>
-    public ReactiveCommand<ICosmosDbItemId> NavigateStatePageWithReplyCommand { get; private set; } = default!;
+    public ReactiveCommand<(ICosmosDbItemId Tweet, ITwiHighUserSummary User)> NavigateStatePageWithReplyCommand { get; private set; } = default!;
 
     public ReactiveCommand NavigateProfileEditorPageCommand { get; private set; } = default!;
 
     public AsyncReactiveCommand<PostTweetContext> PostTweetCommand { get; private set; } = default!;
 
-    public HomeViewModel(HttpClient httpClient, IConfiguration configuration, ITimelineWorkerService timelineWorkerService, NavigationManager navigation, IMessageService messageService) : base(navigation, messageService)
+    public ReactivePropertySlim<Guid> MyTwiHighUserId { get; private set; } = default!;
+
+    public AsyncReactiveCommand GetLoginUserIdCommand { get; private set; } = default!;
+
+    public AsyncReactiveCommand<DisplayTweet> GetGapTweetCommand { get; private set; } = default!;
+
+    public AsyncReactiveCommand GetMyAvatarUrlCommand { get; private set; } = default!;
+
+    public HomeViewModel(AuthenticationStateProvider authenticationStateProvider, HttpClient httpClient, IConfiguration configuration, ITimelineWorkerService timelineWorkerService, NavigationManager navigation, IMessageService messageService)
+        : base(navigation, messageService)
     {
         // Inject
         _httpClient = httpClient;
         _apiUrlTweet = new($"{configuration["TweetApiUrl"]}/");
         _timelineWorkerService = timelineWorkerService;
+        _authenticationStateProvider = (TwiHighAuthenticationStateProvider)authenticationStateProvider;
     }
 
     protected override void Initialize()
@@ -80,14 +93,18 @@ public class HomeViewModel : ViewModelBase, IHomeViewModel
         AvatarUrl = new ReactivePropertySlim<string>(string.Empty).AddTo(_disposable);
         DeleteMyTweetCommand = new AsyncReactiveCommand<ICosmosDbItemId>().AddTo(_disposable);
         NavigateStatePageCommand = new ReactiveCommand<(ICosmosDbItemId Tweet, ITwiHighUserSummary User)>().AddTo(_disposable);
-        NavigateUserPageCommand = new ReactiveCommand<ICosmosDbItemId>().AddTo(_disposable);
-        NavigateStatePageWithReplyCommand = new ReactiveCommand<ICosmosDbItemId>().AddTo(_disposable);
+        NavigateUserPageCommand = new ReactiveCommand<ITwiHighUserSummary>().AddTo(_disposable);
+        NavigateStatePageWithReplyCommand = new ReactiveCommand<(ICosmosDbItemId Tweet, ITwiHighUserSummary User)>().AddTo(_disposable);
         AddReactionCommand = new ReactiveCommand<(ICosmosDbItemId Tweet, ICosmosDbItemId Sticker)>().AddTo(_disposable);
         RemoveReactionCommand = new ReactiveCommand<(ICosmosDbItemId Tweet, ICosmosDbItemId User)>().AddTo(_disposable);
         AddRetweetCommand = new ReactiveCommand<ICosmosDbItemId>().AddTo(_disposable);
         RemoveRetweetCommand = new ReactiveCommand<ICosmosDbItemId>().AddTo(_disposable);
         NavigateProfileEditorPageCommand = new ReactiveCommand().AddTo(_disposable);
         PostTweetCommand = new AsyncReactiveCommand<PostTweetContext>().AddTo(_disposable);
+        MyTwiHighUserId = new ReactivePropertySlim<Guid>().AddTo(_disposable);
+        GetLoginUserIdCommand = new AsyncReactiveCommand().AddTo(_disposable);
+        GetGapTweetCommand = new AsyncReactiveCommand<DisplayTweet>().AddTo(_disposable);
+        GetMyAvatarUrlCommand = new AsyncReactiveCommand().AddTo(_disposable);
     }
 
     protected override void Subscribe()
@@ -95,7 +112,11 @@ public class HomeViewModel : ViewModelBase, IHomeViewModel
         DeleteMyTweetCommand.Subscribe(async tweet => await _timelineWorkerService.RemoveAsync(tweet.Id));
         NavigateStatePageCommand.Subscribe(args => _navigationManager.NavigateToStatePage(args.User.UserDisplayId, args.Tweet));
         NavigateProfileEditorPageCommand.Subscribe(() => _navigationManager.NavigateToProfileEditorPage());
+        NavigateUserPageCommand.Subscribe((t) => _navigationManager.NavigateToProfilePage(t));
         PostTweetCommand.Subscribe(PostTweetAsync);
+        GetLoginUserIdCommand.Subscribe(SetMyTwiHighUserIdAsync);
+        GetGapTweetCommand.Subscribe(GetGapTweetsAsync);
+        GetMyAvatarUrlCommand.Subscribe(SetMyTwiHighUserAvatarUrlAsync);
     }
 
     private async Task PostTweetAsync(PostTweetContext postTweet)
@@ -115,4 +136,31 @@ public class HomeViewModel : ViewModelBase, IHomeViewModel
 #endif
         }
     }
+
+    private async Task SetMyTwiHighUserIdAsync()
+    {
+        var id = await _authenticationStateProvider.GetLoggedInUserIdAsync().ConfigureAwait(false);
+        if (string.IsNullOrEmpty(id))
+        {
+            MyTwiHighUserId.Value = new Guid();
+        }
+        else
+        {
+            MyTwiHighUserId.Value = Guid.Parse(id);
+        }
+    }
+
+    private async Task GetGapTweetsAsync(DisplayTweet tweet)
+    {
+        if (!tweet.IsSystemTweet)
+        {
+            return;
+        }
+        await _timelineWorkerService.ForceFetchMyTimelineAsync(tweet.Since, tweet.Until).ConfigureAwait(false);
+        await _timelineWorkerService.RemoveAsync(tweet).ConfigureAwait(false);
+        await _timelineWorkerService.ForceSaveAsync().ConfigureAwait(false);
+    }
+
+    private async Task SetMyTwiHighUserAvatarUrlAsync()
+        => AvatarUrl.Value = await _authenticationStateProvider.GetLoggedInUserAvatarUrlAsync().ConfigureAwait(false);
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using PheasantTails.TwiHigh.BlazorApp.Client.Services;
 using Reactive.Bindings;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.Views.Bases;
@@ -17,4 +18,10 @@ public class TwiHighUIBase : ComponentBase
     public IDisposable SubscribeStateHasChanged<T>(ReactiveCommand<T> command) => command.Subscribe(async (_) => await InvokeRenderAsync());
 
     public IDisposable SubscribeStateHasChanged<T>(AsyncReactiveCommand<T> command) => command.Subscribe(async (_) => await InvokeRenderAsync());
+
+    public async ValueTask<Guid> GetLoginUserIdAsync()
+    {
+        var userId = await ((TwiHighAuthenticationStateProvider)AuthenticationStateProvider).GetLoggedInUserIdAsync();
+        return Guid.Parse(userId);
+    }
 }

@@ -2,9 +2,11 @@
 @*
     Home page
 *@
+@rendermode InteractiveWebAssembly
 @attribute [Authorize]
 @inherits TwiHighPageBase
 @inject IHomeViewModel ViewModel
+@inject ITimelineWorkerService WorkerService
 
 @* Title *@
 <PageTitle>ホーム - ツイハイ！</PageTitle>
@@ -13,8 +15,8 @@
 @* Tweet post form *@
 <section>
     <THPostForm UserAvatarUrl="@ViewModel.AvatarUrl.Value"
-                OnClickAvatarCommand="ViewModel.NavigateProfileEditorPageCommand"
-                OnPostTweetCommand="ViewModel.PostTweetCommand"
+                OnClickAvatarCommand="@ViewModel.NavigateProfileEditorPageCommand"
+                OnPostTweetCommand="@ViewModel.PostTweetCommand"
                 IsForceForcus=true />
 </section>
 
@@ -26,13 +28,28 @@
 else
 {
 
-    <TimelineComponent @key="MyTwiHithUserId"
-                       Tweets="Tweets"
-                       MyTwiHithUserId=MyTwiHithUserId
-                       OnClickDelete="async () => await ViewModel.DeleteMyTweetCommand.ExecuteAsync();"
-                       OnPostReply="PostTweetAsync"
-                       OnClickProfileEditor="OnClickProfileEditor"
-                       OnClickProfile="OnClickProfile"
-                       OnClickGapTweetsLoad="OnClickGetGapTweets"
-                       OnClickDetail="OnClickDetail" />
+    <THTimeline @key="@ViewModel.MyTwiHighUserId.Value"
+                Tweets="@WorkerService.Timeline"
+                MyTwiHithUserId=@ViewModel.MyTwiHighUserId.Value
+                OnClickDelete="async (t) => await ViewModel.DeleteMyTweetCommand.ExecuteAsync(t)"
+                OnPostReply="async (t) => await ViewModel.PostTweetCommand.ExecuteAsync(t)"
+                OnClickProfileEditor="() => ViewModel.NavigateProfileEditorPageCommand.Execute()"
+                OnClickProfile="(t) => ViewModel.NavigateUserPageCommand.Execute(t)"
+                OnClickGapTweetsLoad="async (t) => await ViewModel.GetGapTweetCommand.ExecuteAsync(t)"
+                OnClickDetail="(t) => ViewModel.NavigateStatePageCommand.Execute((t, t))" />
+}
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync().ConfigureAwait(false);
+        await ViewModel.GetLoginUserIdCommand.ExecuteAsync().ConfigureAwait(false);
+        await ViewModel.GetMyAvatarUrlCommand.ExecuteAsync().ConfigureAwait(false);
+        StateHasChanged();
+
+        await ScrollInfoService.Enable();
+        ScrollInfoService.OnScroll += MarkAsReadedTweet;
+
+        await GetMyTimelineEvery5secAsync(WorkerCancellationTokenSource.Token);
+    }
 }

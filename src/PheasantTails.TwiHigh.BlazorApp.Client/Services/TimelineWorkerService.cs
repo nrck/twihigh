@@ -1,9 +1,12 @@
 ﻿using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using PheasantTails.TwiHigh.BlazorApp.Client.Exceptions;
+using PheasantTails.TwiHigh.BlazorApp.Client.Extensions;
 using PheasantTails.TwiHigh.BlazorApp.Client.Models;
+using PheasantTails.TwiHigh.Data.Model.Timelines;
 using System.Collections.ObjectModel;
 using System.Net;
+using System.Web;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.Services;
 
@@ -16,6 +19,7 @@ public class TimelineWorkerService : IAsyncDisposable, ITimelineWorkerService
     private readonly string _apiUrlDeleteTweet;
     private readonly string _apiUrlGetTweet;
     private readonly string _apiUrlGetUserTweets;
+    private readonly string _apiUrlTimeline;
 
     private LocalTimelineStore _store;
     private readonly ILocalStorageService _localStorageService;
@@ -26,7 +30,11 @@ public class TimelineWorkerService : IAsyncDisposable, ITimelineWorkerService
     private CancellationTokenSource _cancellationTokenSource;
 
     public ReadOnlyCollection<DisplayTweet> Timeline => _store.Timeline.AsReadOnly<DisplayTweet>();
+
+    public Action? OnChangedTimeline { get; set; }
+
     private CancellationToken WorkerCancellationToken => _cancellationTokenSource.Token;
+
 
     public TimelineWorkerService(
         ILocalStorageService localStorageService,
@@ -45,6 +53,7 @@ public class TimelineWorkerService : IAsyncDisposable, ITimelineWorkerService
         _apiUrlDeleteTweet = $"{_apiUrlBase}/{{0}}";
         _apiUrlGetTweet = $"{_apiUrlBase}/{{0}}";
         _apiUrlGetUserTweets = $"{_apiUrlBase}/user/{{0}}";
+        _apiUrlTimeline = $"{_apiUrlBase}/?since={{0}}&until={{1}}";
 
         _authenticationStateProvider.AuthenticationStateChanged += OnChangedAuthenticationState;
     }
@@ -83,9 +92,16 @@ public class TimelineWorkerService : IAsyncDisposable, ITimelineWorkerService
         return _store.Timeline.Count;
     }
 
-    public async Task<int> RemoveAsync(DisplayTweet tweet) => await RemoveAsync(tweet.Id);
+    public async ValueTask<int> RemoveAsync(DisplayTweet tweet)
+    {
+        if (tweet.IsSystemTweet)
+        {
+            return RemoveTweetAtLocal(tweet.Id);
+        }
+        return await RemoveAsync(tweet.Id);
+    }
 
-    public async Task<int> RemoveAsync(Guid tweetId)
+    public async ValueTask<int> RemoveAsync(Guid tweetId)
     {
         await RemoveTweetAtServerAsync(tweetId);
         return RemoveTweetAtLocal(tweetId);
@@ -96,9 +112,44 @@ public class TimelineWorkerService : IAsyncDisposable, ITimelineWorkerService
 
     public async ValueTask ForceLoadAsync(CancellationToken cancellationToken = default)
         => _store = await _localStorageService.GetItemAsync<LocalTimelineStore>(GetLocalStorageKeyUserTimeline(), cancellationToken);
+
+    public async ValueTask ForceFetchMyTimelineAsync(DateTimeOffset since, DateTimeOffset until, CancellationToken cancellationToken = default)
+    {
+        var tweets = await FetchMyTimelineAsync(since, until, cancellationToken).ConfigureAwait(false);
+        AddRange(tweets);
+        OnChangedTimeline?.Invoke();
+    }
     #endregion
 
     #region private
+    private async ValueTask<DisplayTweet[]> FetchMyTimelineAsync(DateTimeOffset since, DateTimeOffset until, CancellationToken cancellationToken = default)
+    {
+        if (until < since)
+        {
+            throw new ArgumentException("開始時刻と終了時刻が逆転しています。", nameof(since));
+        }
+        var url = string.Format(
+            _apiUrlTimeline,
+            HttpUtility.UrlEncode(since.ToString("yyyy-MM-ddTHH:mm:ss.fffffffzzz")),
+            HttpUtility.UrlEncode(until.ToString("yyyy-MM-ddTHH:mm:ss.fffffffzzz"))
+        );
+        var response = await _httpClient.GetAsync(url, cancellationToken);
+        if (response.StatusCode != HttpStatusCode.OK)
+        {
+            return [];
+        }
+        var context = await response.Content.TwiHighReadFromJsonAsync<ResponseTimelineContext>(cancellationToken: cancellationToken)
+            ?? throw new TwiHighApiRequestException("タイムラインの取得でエラーが発生しました。");
+        var tweets = DisplayTweet.ConvertFrom(context.Tweets);
+        if (tweets.Length == 100)
+        {
+            var systemTweet = DisplayTweet.GetSystemTweet(context.Oldest);
+            tweets = [.. tweets, systemTweet];
+        }
+
+        return tweets;
+    }
+
     private async ValueTask RunAsync()
     {
         try
@@ -129,9 +180,10 @@ public class TimelineWorkerService : IAsyncDisposable, ITimelineWorkerService
                 // Interval.
                 await Task.Delay(5000, WorkerCancellationToken);
 
-                // TODO: Do REST API.
-                // do something processing.
-
+                // Do REST API.
+                var tweets = await FetchMyTimelineAsync(_store.Latest.AddTicks(1), DateTimeOffset.MaxValue, WorkerCancellationToken).ConfigureAwait(false);
+                AddRange(tweets);
+                OnChangedTimeline?.Invoke();
 
                 // Save timeline data to local storage.
                 await ForceSaveAsync(WorkerCancellationToken);

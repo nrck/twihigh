@@ -25,6 +25,11 @@ public interface ITimelineWorkerService
     public int AddRange(IEnumerable<DisplayTweet> tweets);
 
     /// <summary>
+    /// Force to fetch timeline from TwiHigh server.
+    /// </summary>
+    public ValueTask ForceFetchMyTimelineAsync(DateTimeOffset since, DateTimeOffset until, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Force to load timeline from local storage in your browser.
     /// </summary>
     public ValueTask ForceLoadAsync(CancellationToken cancellationToken = default);
@@ -41,12 +46,12 @@ public interface ITimelineWorkerService
     /// </summary>
     /// <param name="tweet">Tweet</param>
     /// <returns>This instance's timeline size after deleted.</returns>
-    public Task<int> RemoveAsync(DisplayTweet tweet);
+    public ValueTask<int> RemoveAsync(DisplayTweet tweet);
 
     /// <summary>
     /// Deletes a tweet from this instance's timeline.
     /// </summary>
     /// <param name="tweet">Tweet</param>
     /// <returns>This instance's timeline size after deleted.</returns>
-    public Task<int> RemoveAsync(Guid tweetId);
+    public ValueTask<int> RemoveAsync(Guid tweetId);
 }

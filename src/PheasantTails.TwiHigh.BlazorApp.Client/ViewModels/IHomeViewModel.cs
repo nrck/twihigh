@@ -1,4 +1,5 @@
-﻿using PheasantTails.TwiHigh.Data.Model.Tweets;
+﻿using PheasantTails.TwiHigh.BlazorApp.Client.Models;
+using PheasantTails.TwiHigh.Data.Model.Tweets;
 using PheasantTails.TwiHigh.Interface;
 using Reactive.Bindings;
 
@@ -10,11 +11,15 @@ public interface IHomeViewModel : IViewModelBase
     ReactiveCommand<ICosmosDbItemId> AddRetweetCommand { get; }
     AsyncReactiveCommand<ICosmosDbItemId> DeleteMyTweetCommand { get; }
     ReactiveCommand<(ICosmosDbItemId Tweet, ITwiHighUserSummary User)> NavigateStatePageCommand { get; }
-    ReactiveCommand<ICosmosDbItemId> NavigateStatePageWithReplyCommand { get; }
-    ReactiveCommand<ICosmosDbItemId> NavigateUserPageCommand { get; }
+    ReactiveCommand<(ICosmosDbItemId Tweet, ITwiHighUserSummary User)> NavigateStatePageWithReplyCommand { get; }
+    ReactiveCommand<ITwiHighUserSummary> NavigateUserPageCommand { get; }
     ReactiveCommand<(ICosmosDbItemId Tweet, ICosmosDbItemId User)> RemoveReactionCommand { get; }
     ReactiveCommand<ICosmosDbItemId> RemoveRetweetCommand { get; }
     ReactivePropertySlim<string> AvatarUrl { get; }
     ReactiveCommand NavigateProfileEditorPageCommand { get; }
     AsyncReactiveCommand<PostTweetContext> PostTweetCommand { get; }
+    ReactivePropertySlim<Guid> MyTwiHighUserId { get; }
+    AsyncReactiveCommand GetLoginUserIdCommand { get; }
+    AsyncReactiveCommand<DisplayTweet> GetGapTweetCommand { get; }
+    AsyncReactiveCommand GetMyAvatarUrlCommand { get; }
 }

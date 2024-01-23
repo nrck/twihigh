@@ -17,5 +17,52 @@ public class DisplayTweet : ITweet
     public string UserDisplayId { get; set; } = string.Empty;
     public string UserDisplayName { get; set; } = string.Empty;
     public string UserAvatarUrl { get; set; } = string.Empty;
+    public bool IsReaded { get; set; }
     public bool IsSystemTweet { get; set; }
+    public DateTimeOffset Since { get; set; }
+    public DateTimeOffset Until { get; set; }
+
+    public static DisplayTweet[] ConvertFrom (IEnumerable<ITweet> tweets)
+    {
+        DisplayTweet[] array = [];
+        foreach (var tweet in tweets)
+        {
+            if(tweet is DisplayTweet displayTweet)
+            {
+                array = [.. array, displayTweet];
+            }
+            else
+            {
+                var converted = new DisplayTweet
+                {
+                    CreateAt = tweet.CreateAt,
+                    FavoriteFrom = tweet.FavoriteFrom,
+                    Id = tweet.Id,
+                    IsDeleted = tweet.IsDeleted,
+                    ReplyFrom = tweet.ReplyFrom,
+                    ReplyTo = tweet.ReplyTo,
+                    RetweetFrom = tweet.RetweetFrom,
+                    Text = tweet.Text,
+                    UpdateAt = tweet.UpdateAt,
+                    UserAvatarUrl = tweet.UserAvatarUrl,
+                    UserDisplayId = tweet.UserDisplayId,
+                    UserDisplayName = tweet.UserDisplayName,
+                    UserId = tweet.UserId
+                };
+                array = [.. array, converted];
+            }
+        }
+        return array;
+    }
+
+    public static DisplayTweet GetSystemTweet(DateTimeOffset until)
+        => new()
+        {
+            IsSystemTweet = true,
+            Id = Guid.NewGuid(),
+            Since = DateTimeOffset.MinValue,
+            Until = until,
+            CreateAt = until.AddTicks(-1),
+            UpdateAt = until.AddTicks(-1)
+        };
 }

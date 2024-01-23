@@ -98,6 +98,23 @@ public class TwiHighAuthenticationStateProvider : AuthenticationStateProvider
         return userid;
     }
 
+    public async ValueTask<string> GetLoggedInUserAvatarUrlAsync()
+    {
+        var jwt = await EnsureWithinExpirationAsync(
+            await GetTokenFromLocalStorageAsync(),
+            TimeSpan.FromDays(1));
+        if (string.IsNullOrEmpty(jwt))
+        {
+            return string.Empty;
+        }
+
+        var url = ParseClaimsFromJwt(jwt)
+            .FirstOrDefault(claim => claim.Type == nameof(ResponseTwiHighUserContext.AvatarUrl))?
+            .Value ?? string.Empty;
+
+        return url;
+    }
+
     /// <summary>
     /// Parse claims from jwt.
     /// </summary>
