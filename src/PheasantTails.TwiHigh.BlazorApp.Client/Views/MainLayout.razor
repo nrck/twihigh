@@ -1,10 +1,10 @@
 ﻿@inherits LayoutComponentBase
+@inject IMessageService MessageService
 
 <div class="page">
     <div class="sidebar">
         <NavMenu />
     </div>
-
     <main>
         <div class="top-row px-4">
             <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
@@ -13,6 +13,13 @@
         <article class="content px-4">
             @Body
         </article>
+
+        <section style="position: fixed; bottom: 0; z-index: 100; width: 100%; max-width: 640px;">
+            @foreach (var item in MessageService.Messages)
+            {
+                <THMessage Context="item" />
+            }
+        </section>
     </main>
 </div>
 
@@ -21,3 +28,15 @@
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
+
+@*
+<PWAUpdater Text="TwiHighの新しいバージョンがあります！" ButtonCaption="アップデートする" Align="PWAUpdater.Aligns.Buttom" />
+*@
+@code
+{
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        MessageService.OnChangedMessage = StateHasChanged;
+    }
+}

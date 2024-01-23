@@ -5,7 +5,7 @@ using PheasantTails.TwiHigh.Data.Model.TwiHighUsers;
 using System.Net;
 using System.Net.Http.Json;
 
-namespace PheasantTails.TwiHigh.Client.Pages
+namespace PheasantTails.TwiHigh.BlazorApp.Client.Views.Pages
 {
     public partial class Home : TwiHighPageBase, IAsyncDisposable
     {
@@ -221,25 +221,6 @@ namespace PheasantTails.TwiHigh.Client.Pages
         private void OnClickProfileEditor() => Navigation.NavigateTo(DefinePaths.PAGE_PATH_PROFILE_EDITOR);
 
         private void OnClickProfile(TweetViewModel tweetViewModel) => Navigation.NavigateTo(string.Format(DefinePaths.PAGE_PATH_PROFILE, tweetViewModel.UserDisplayId));
-
-        private async Task PostTweetAsync(PostTweetContext postTweet)
-        {
-            var res = await TweetHttpClient.PostTweetAsync(postTweet);
-            if (res != null && res.IsSuccessStatusCode)
-            {
-                SetSucessMessage("ツイートを送信しました！");
-                var tweet = await res.Content.ReadFromJsonAsync<TweetViewModel>();
-                if (tweet != null)
-                {
-                    var viewModel = new TweetViewModel(tweet);
-                    MergeTimeline(new List<TweetViewModel> { viewModel });
-                }
-            }
-            else
-            {
-                SetErrorMessage("ツイートできませんでした。");
-            }
-        }
 
         private void OnClickDetail(TweetViewModel tweetViewModel) => Navigation.NavigateTo(string.Format(DefinePaths.PAGE_PATH_STATUS, tweetViewModel.UserDisplayId, tweetViewModel.Id));
 

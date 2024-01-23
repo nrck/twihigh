@@ -1,0 +1,29 @@
+﻿@*
+    Tweet post form component.
+*@
+@inherits TwiHighComponentBase
+<article class="post-article">
+    <div class="post-article-left">
+        <AvatarComponent UserAvatarUrl="@UserAvatarUrl" @onclick="OnClickMyAvatar" />
+    </div>
+    <div class="tweet-post-form">
+        <div class="tweet-post-textarea">
+            <textarea @ref="TextArea" value="@TweetText" placeholder="いまどうしてる？" @onkeypress="OnKeyPressAsync" @oninput="OnInputTextarea" disabled="@IsPosting" />
+        </div>
+        <div class="tweet-post-submit-button">
+
+            @if (IsPosting)
+            {
+                <button type="button" disabled>
+                    送信中
+                </button>
+            }
+            else
+            {
+                <button type="button" @onclick="OnSubmitAsync">
+                    ツイートする
+                </button>
+            }
+        </div>
+    </div>
+</article>

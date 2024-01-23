@@ -1,0 +1,13 @@
+﻿@*
+    Page header title component.
+*@
+@inherits TwiHighComponentBase
+
+<h2 class="page-title">
+    @Title
+</h2>
+
+@code{
+    [Parameter]
+    public string Title { get; set; } = string.Empty;
+}

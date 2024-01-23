@@ -4,34 +4,35 @@
 *@
 @attribute [Authorize]
 @inherits TwiHighPageBase
+@inject IHomeViewModel ViewModel
 
 @* Title *@
 <PageTitle>ホーム - ツイハイ！</PageTitle>
-<PageTitleComponent Title="ホーム" />
+<THPageHeaderTitle Title="ホーム" />
 
 @* Tweet post form *@
 <section>
-    <PostFormComponent UserAvatarUrl="@AvatarUrl"
-                       OnClickAvatar="OnClickProfileEditor"
-                       OnPostTweet="PostTweetAsync"
-                       IsForceForcus=true />
+    <THPostForm UserAvatarUrl="@ViewModel.AvatarUrl.Value"
+                OnClickAvatarCommand="ViewModel.NavigateProfileEditorPageCommand"
+                OnPostTweetCommand="ViewModel.PostTweetCommand"
+                IsForceForcus=true />
 </section>
 
 @* Timeline *@
 @if (Tweets == null)
 {
-    <NoContentsComponent NoContentsText="@("まずは @twihigh をフォローしてみよう！")" />
+    <THNoContents NoContentsText="@("まずは @twihigh をフォローしてみよう！")" />
 }
 else
 {
 
     <TimelineComponent @key="MyTwiHithUserId"
-                   Tweets="Tweets"
-                   MyTwiHithUserId=MyTwiHithUserId
-                   OnClickDelete="OnClickDeleteButtonAsync"
-                   OnPostReply="PostTweetAsync"
-                   OnClickProfileEditor="OnClickProfileEditor"
-                   OnClickProfile="OnClickProfile"
-                   OnClickGapTweetsLoad="OnClickGetGapTweets"
-                   OnClickDetail="OnClickDetail" />
+                       Tweets="Tweets"
+                       MyTwiHithUserId=MyTwiHithUserId
+                       OnClickDelete="async () => await ViewModel.DeleteMyTweetCommand.ExecuteAsync();"
+                       OnPostReply="PostTweetAsync"
+                       OnClickProfileEditor="OnClickProfileEditor"
+                       OnClickProfile="OnClickProfile"
+                       OnClickGapTweetsLoad="OnClickGetGapTweets"
+                       OnClickDetail="OnClickDetail" />
 }

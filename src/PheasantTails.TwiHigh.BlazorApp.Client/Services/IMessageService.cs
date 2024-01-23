@@ -1,5 +1,5 @@
 ﻿using System.Collections.ObjectModel;
-using static PheasantTails.TwiHigh.BlazorApp.Client.Views.Components.MessageComponent;
+using static PheasantTails.TwiHigh.BlazorApp.Client.Views.Components.THMessage;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.Services;
 

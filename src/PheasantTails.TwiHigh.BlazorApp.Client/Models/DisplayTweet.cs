@@ -17,4 +17,5 @@ public class DisplayTweet : ITweet
     public string UserDisplayId { get; set; } = string.Empty;
     public string UserDisplayName { get; set; } = string.Empty;
     public string UserAvatarUrl { get; set; } = string.Empty;
+    public bool IsSystemTweet { get; set; }
 }
