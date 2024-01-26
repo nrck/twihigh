@@ -10,10 +10,10 @@ public interface IScrollInfoService
     /// <summary>
     /// Disable scroll event handling.
     /// </summary>
-    ValueTask Disable();
+    ValueTask DisableAsync();
 
     /// <summary>
     /// Enable scroll event handling.
     /// </summary>
-    ValueTask Enable();
+    ValueTask EnableAsync();
 }

@@ -22,10 +22,10 @@ public class ScrollInfoService : IScrollInfoService
     public void JsOnScroll(string[] articleIds) => OnScroll?.Invoke(articleIds);
 
     /// <inheritdoc/>
-    public ValueTask Enable() => _jsRuntime.InvokeVoidAsync("EnableScrollEventHandling");
+    public async ValueTask EnableAsync() => await _jsRuntime.InvokeVoidAsync("EnableScrollEventHandling");
 
     /// <inheritdoc/>
-    public ValueTask Disable() => _jsRuntime.InvokeVoidAsync("DisableScrollEventHandling");
+    public async ValueTask DisableAsync() => await _jsRuntime.InvokeVoidAsync("DisableScrollEventHandling");
 
     /// <summary>
     /// Register service via JS.
