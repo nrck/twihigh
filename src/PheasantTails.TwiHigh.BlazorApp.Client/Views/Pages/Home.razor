@@ -5,8 +5,10 @@
 @rendermode InteractiveWebAssembly
 @attribute [Authorize]
 @inherits TwiHighPageBase
+@implements IAsyncDisposable
 @inject IHomeViewModel ViewModel
 @inject ITimelineWorkerService WorkerService
+@inject IScrollInfoService ScrollInfoService
 
 @* Title *@
 <PageTitle>ホーム - ツイハイ！</PageTitle>
@@ -21,7 +23,7 @@
 </section>
 
 @* Timeline *@
-@if (Tweets == null)
+@if (WorkerService.Timeline.Count == 0)
 {
     <THNoContents NoContentsText="@("まずは @twihigh をフォローしてみよう！")" />
 }
@@ -43,13 +45,30 @@ else
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync().ConfigureAwait(false);
+        ScrollInfoService.OnScroll += ViewModel.MarkAsReadedTweetCommand.Execute;
+        WorkerService.OnChangedTimeline += InvokeRender;
         await ViewModel.GetLoginUserIdCommand.ExecuteAsync().ConfigureAwait(false);
         await ViewModel.GetMyAvatarUrlCommand.ExecuteAsync().ConfigureAwait(false);
-        StateHasChanged();
-
-        await ScrollInfoService.Enable();
-        ScrollInfoService.OnScroll += MarkAsReadedTweet;
-
-        await GetMyTimelineEvery5secAsync(WorkerCancellationTokenSource.Token);
     }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender).ConfigureAwait(false);
+        if (firstRender)
+        {
+            await ScrollInfoService.EnableAsync();
+            WorkerService.Run();
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        ScrollInfoService.OnScroll -= ViewModel.MarkAsReadedTweetCommand.Execute;
+        WorkerService.OnChangedTimeline -= InvokeRender;
+        WorkerService.Stop();
+        await ScrollInfoService.DisableAsync();
+        GC.SuppressFinalize(this);
+    }
+
+    private async void InvokeRender() => await InvokeRenderAsync().ConfigureAwait(false);
 }
