@@ -22,6 +22,7 @@ internal static class DependencyInjections
         services.AddSingleton<ITimelineWorkerService, TimelineWorkerService>();
         services.AddSingleton<IMessageService, MessageService>();
         services.AddSingleton<AuthenticationStateProvider, TwiHighAuthenticationStateProvider>();
+        services.AddSingleton<IScrollInfoService, ScrollInfoService>();
 
         return services;
     }
