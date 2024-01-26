@@ -78,6 +78,10 @@ public class HomeViewModel : ViewModelBase, IHomeViewModel
 
     public AsyncReactiveCommand GetMyAvatarUrlCommand { get; private set; } = default!;
 
+    public ReactiveCommandSlim<IEnumerable<string>> MarkAsReadedTweetCommand { get; private set; } = default!;
+
+    public ReactivePropertySlim<bool> IsProcessingMarkAsReaded { get; private set; } = default!;
+
     public HomeViewModel(AuthenticationStateProvider authenticationStateProvider, HttpClient httpClient, IConfiguration configuration, ITimelineWorkerService timelineWorkerService, NavigationManager navigation, IMessageService messageService)
         : base(navigation, messageService)
     {
@@ -105,6 +109,7 @@ public class HomeViewModel : ViewModelBase, IHomeViewModel
         GetLoginUserIdCommand = new AsyncReactiveCommand().AddTo(_disposable);
         GetGapTweetCommand = new AsyncReactiveCommand<DisplayTweet>().AddTo(_disposable);
         GetMyAvatarUrlCommand = new AsyncReactiveCommand().AddTo(_disposable);
+        MarkAsReadedTweetCommand = new ReactiveCommandSlim<IEnumerable<string>>(IsProcessingMarkAsReaded).AddTo(_disposable);
     }
 
     protected override void Subscribe()
@@ -117,6 +122,7 @@ public class HomeViewModel : ViewModelBase, IHomeViewModel
         GetLoginUserIdCommand.Subscribe(SetMyTwiHighUserIdAsync);
         GetGapTweetCommand.Subscribe(GetGapTweetsAsync);
         GetMyAvatarUrlCommand.Subscribe(SetMyTwiHighUserAvatarUrlAsync);
+        MarkAsReadedTweetCommand.Subscribe(MarkAsReadedTweets);
     }
 
     private async Task PostTweetAsync(PostTweetContext postTweet)
@@ -163,4 +169,7 @@ public class HomeViewModel : ViewModelBase, IHomeViewModel
 
     private async Task SetMyTwiHighUserAvatarUrlAsync()
         => AvatarUrl.Value = await _authenticationStateProvider.GetLoggedInUserAvatarUrlAsync().ConfigureAwait(false);
+
+    private void MarkAsReadedTweets(IEnumerable<string> ids)
+        => _timelineWorkerService.MarkAsReadedTweets(ids.ToArray().Select(id => Guid.Parse(id[6..])).ToArray());
 }

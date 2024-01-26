@@ -22,4 +22,6 @@ public interface IHomeViewModel : IViewModelBase
     AsyncReactiveCommand GetLoginUserIdCommand { get; }
     AsyncReactiveCommand<DisplayTweet> GetGapTweetCommand { get; }
     AsyncReactiveCommand GetMyAvatarUrlCommand { get; }
+    ReactiveCommandSlim<IEnumerable<string>> MarkAsReadedTweetCommand { get; }
+    ReactivePropertySlim<bool> IsProcessingMarkAsReaded { get; }
 }
