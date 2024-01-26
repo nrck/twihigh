@@ -15,7 +15,7 @@ public class TwiHighUIBase : ComponentBase
 
     public async Task InvokeRenderAsync() => await InvokeAsync(StateHasChanged);
 
-    public IDisposable SubscribeStateHasChanged<T>(ReactiveCommand<T> command) => command.Subscribe(async (_) => await InvokeRenderAsync());
+    public IDisposable SubscribeStateHasChanged<T>(IObservable<T> command) => command.Subscribe(async (_) => await InvokeRenderAsync());
 
     public IDisposable SubscribeStateHasChanged<T>(AsyncReactiveCommand<T> command) => command.Subscribe(async (_) => await InvokeRenderAsync());
 
