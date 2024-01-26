@@ -10,6 +10,8 @@ public interface ITimelineWorkerService
     /// </summary>
     public ReadOnlyCollection<DisplayTweet> Timeline { get; }
 
+    event Action? OnChangedTimeline;
+
     /// <summary>
     /// Adds a tweet to this instance's timeline.
     /// </summary>
@@ -59,4 +61,6 @@ public interface ITimelineWorkerService
     /// <param name="tweet">Tweet</param>
     /// <returns>This instance's timeline size after deleted.</returns>
     public ValueTask<int> RemoveAsync(Guid tweetId);
+    void Run();
+    void Stop();
 }

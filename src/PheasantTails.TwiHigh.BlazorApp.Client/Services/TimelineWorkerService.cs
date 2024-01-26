@@ -31,7 +31,7 @@ public class TimelineWorkerService : IAsyncDisposable, ITimelineWorkerService
 
     public ReadOnlyCollection<DisplayTweet> Timeline => _store.Timeline.AsReadOnly<DisplayTweet>();
 
-    public Action? OnChangedTimeline { get; set; }
+    public event Action? OnChangedTimeline;
 
     private CancellationToken WorkerCancellationToken => _cancellationTokenSource.Token;
 
@@ -133,6 +133,15 @@ public class TimelineWorkerService : IAsyncDisposable, ITimelineWorkerService
             tweet.IsReaded = true;
         }
         OnChangedTimeline?.Invoke();
+    }
+
+    public async void Run() => await RunAsync().ConfigureAwait(false);
+
+    public void Stop()
+    {
+        _cancellationTokenSource.Cancel();
+        _cancellationTokenSource.Dispose();
+        _cancellationTokenSource = new CancellationTokenSource();
     }
     #endregion
 
