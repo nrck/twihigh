@@ -40,6 +40,11 @@ public interface ITimelineWorkerService
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public ValueTask ForceSaveAsync(CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Marks tweets as readed.
+    /// </summary>
+    void MarkAsReadedTweets(IEnumerable<Guid> ids);
 
     /// <summary>
     /// Deletes a tweet from this instance's timeline.

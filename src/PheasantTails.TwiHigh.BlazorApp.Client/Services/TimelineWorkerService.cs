@@ -119,6 +119,21 @@ public class TimelineWorkerService : IAsyncDisposable, ITimelineWorkerService
         AddRange(tweets);
         OnChangedTimeline?.Invoke();
     }
+
+    public void MarkAsReadedTweets(IEnumerable<Guid> ids)
+    {
+        var tweetIds = ids.ToArray();
+        foreach (var tweetId in tweetIds)
+        {
+            var tweet = _store.Timeline.FirstOrDefault(t => t.Id == tweetId);
+            if (tweet == null)
+            {
+                continue;
+            }
+            tweet.IsReaded = true;
+        }
+        OnChangedTimeline?.Invoke();
+    }
     #endregion
 
     #region private
