@@ -1,7 +1,8 @@
-﻿using System.ComponentModel;
+﻿namespace PheasantTails.TwiHigh.BlazorApp.Client.ViewModels;
 
-namespace PheasantTails.TwiHigh.BlazorApp.Client.ViewModels;
-
-public interface IViewModelBase : IDisposable, INotifyPropertyChanged
+/// <summary>
+/// ViewModel Base Interface
+/// </summary>
+public interface IViewModelBase : IDisposable
 {
 }
