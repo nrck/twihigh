@@ -143,12 +143,7 @@ public class TimelineWorkerService : IAsyncDisposable, ITimelineWorkerService
 
     public async void Run() => await RunAsync().ConfigureAwait(false);
 
-    public void Stop()
-    {
-        _cancellationTokenSource.Cancel();
-        _cancellationTokenSource.Dispose();
-        _cancellationTokenSource = new CancellationTokenSource();
-    }
+    public async void Stop() => await StopAsync().ConfigureAwait(false);
     #endregion
 
     #region private
@@ -242,6 +237,8 @@ public class TimelineWorkerService : IAsyncDisposable, ITimelineWorkerService
         {
             await Task.Delay(100, cancellationToken);
         }
+        _cancellationTokenSource.Dispose();
+        _cancellationTokenSource = new CancellationTokenSource();
     }
 
     private void Upsert(DisplayTweet tweet)

@@ -64,7 +64,7 @@ else
     {
         ScrollInfoService.OnScroll -= ViewModel.MarkAsReadedTweetCommand.Execute;
         WorkerService.OnChangedTimeline -= InvokeRender;
-        WorkerService.Stop();
+        WorkerService.StopAsync();
         await ScrollInfoService.DisableAsync();
         GC.SuppressFinalize(this);
     }
