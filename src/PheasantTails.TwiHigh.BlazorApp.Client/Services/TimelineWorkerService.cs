@@ -68,6 +68,7 @@ public class TimelineWorkerService : IAsyncDisposable, ITimelineWorkerService
         _isDispose = true;
         while (_isRunning)
         {
+            await StopAsync();
             await Task.Delay(1000);
         }
         GC.SuppressFinalize(this);
