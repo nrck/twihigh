@@ -5,7 +5,6 @@
 @rendermode InteractiveWebAssembly
 @attribute [Authorize]
 @inherits TwiHighPageBase
-@implements IAsyncDisposable
 @inject IHomeViewModel ViewModel
 @inject ITimelineWorkerService WorkerService
 @inject IScrollInfoService ScrollInfoService
@@ -60,13 +59,13 @@ else
         }
     }
 
-    public async ValueTask DisposeAsync()
+    public override async ValueTask DisposeAsync()
     {
         ScrollInfoService.OnScroll -= ViewModel.MarkAsReadedTweetCommand.Execute;
         WorkerService.OnChangedTimeline -= InvokeRender;
-        WorkerService.StopAsync();
+        WorkerService.Stop();
         await ScrollInfoService.DisableAsync();
-        GC.SuppressFinalize(this);
+        await base.DisposeAsync();
     }
 
     private async void InvokeRender() => await InvokeRenderAsync().ConfigureAwait(false);

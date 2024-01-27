@@ -5,7 +5,7 @@ using Reactive.Bindings;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.Views.Bases;
 
-public class TwiHighUIBase : ComponentBase
+public class TwiHighUIBase : ComponentBase, IDisposable, IAsyncDisposable
 {
     [Inject]
     protected NavigationManager Navigation { get; set; } = default!;
@@ -26,5 +26,16 @@ public class TwiHighUIBase : ComponentBase
     {
         var userId = await ((TwiHighAuthenticationStateProvider)AuthenticationStateProvider).GetLoggedInUserIdAsync();
         return Guid.Parse(userId);
+    }
+
+    public virtual void Dispose()
+    {
+        GC.SuppressFinalize(this);
+    }
+
+    public virtual ValueTask DisposeAsync()
+    {
+        GC.SuppressFinalize(this);
+        return ValueTask.CompletedTask;
     }
 }

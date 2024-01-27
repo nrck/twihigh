@@ -2,13 +2,15 @@
 @using PheasantTails.TwiHigh.Data.Model.Feeds
 @attribute [Authorize]
 @inherits TwiHighPageBase
-@inject IFeedsViewModel ViewModel2
+@inject IFeedsViewModel ViewModel
+@inject IFeedService FeedService
+@inject IScrollInfoService ScrollInfoService
 
 <PageTitle>通知 - ツイハイ！</PageTitle>
 <THPageHeaderTitle Title="通知" />
 
 <section>
-    @if (0 < ViewModel2.MyFeeds.Count)
+    @if (0 < ViewModel.MyFeeds.Count)
     {
         @foreach (var feed in ViewModel.MyFeeds)
         {
@@ -34,8 +36,8 @@
                     tweet.IsReaded = feed.IsOpened;
                     <THTweet @key="tweet.Id"
                              Tweet="tweet"
-                             OnClickDetail="async (t) => await ViewModel2.NavigateStatePageCommand.ExecuteAsync(tweet)"
-                             OnClickProfile="(t) => ViewModel2.NavigateUserPageCommand.Execute(t.UserDisplayId)" />
+                             OnClickDetail="async (t) => await ViewModel.NavigateStatePageCommand.ExecuteAsync(tweet)"
+                             OnClickProfile="(t) => ViewModel.NavigateUserPageCommand.Execute(t.UserDisplayId)" />
                 }
             }
             else
@@ -51,7 +53,7 @@
                         else
                         {
                             <THAvatar UserAvatarUrl="@(feed.FeedByUser.AvatarUrl)"
-                                      OnClick="() => ViewModel2.NavigateUserPageCommand.Execute(feed.FeedByUser.DisplayId)" />
+                                      OnClick="() => ViewModel.NavigateUserPageCommand.Execute(feed.FeedByUser.DisplayId)" />
                         }
                     </div>
                     @* 右 *@
@@ -66,11 +68,11 @@
                             <div class="feed-item-right-header">
                                 @* ユーザー名 *@
                                 <div class="user-display-name">
-                                    <span @onclick="() => ViewModel2.NavigateUserPageCommand.Execute(feed.FeedByUser.DisplayId)">@feed.FeedByUser.DisplayName</span>
+                                    <span @onclick="() => ViewModel.NavigateUserPageCommand.Execute(feed.FeedByUser.DisplayId)">@feed.FeedByUser.DisplayName</span>
                                 </div>
                                 @* ユーザーID *@
                                 <div class="user-display-id">
-                                    <span @onclick="() => ViewModel2.NavigateUserPageCommand.Execute(feed.FeedByUser.DisplayId)">@@@feed.FeedByUser.DisplayId</span>
+                                    <span @onclick="() => ViewModel.NavigateUserPageCommand.Execute(feed.FeedByUser.DisplayId)">@@@feed.FeedByUser.DisplayId</span>
                                 </div>
                             </div>
                         }
@@ -102,3 +104,19 @@
         <THNoContents NoContentsText="通知はありません。" />
     }
 </section>
+
+@code {
+    public override void Dispose()
+    {
+        FeedService.NotifyChangedFeeds -= InvokeRender;
+        base.Dispose();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        FeedService.NotifyChangedFeeds += InvokeRender;
+    }
+
+    private async void InvokeRender() => await InvokeRenderAsync().ConfigureAwait(false);
+}
