@@ -10,8 +10,8 @@ public interface IHomeViewModel : IViewModelBase
     ReactiveCommand<(ICosmosDbItemId Tweet, ICosmosDbItemId Sticker)> AddReactionCommand { get; }
     ReactiveCommand<ICosmosDbItemId> AddRetweetCommand { get; }
     AsyncReactiveCommand<ICosmosDbItemId> DeleteMyTweetCommand { get; }
-    ReactiveCommand<(ICosmosDbItemId Tweet, ITwiHighUserSummary User)> NavigateStatePageCommand { get; }
-    ReactiveCommand<(ICosmosDbItemId Tweet, ITwiHighUserSummary User)> NavigateStatePageWithReplyCommand { get; }
+    ReactiveCommand<ITweet> NavigateStatePageCommand { get; }
+    ReactiveCommand<ITweet> NavigateStatePageWithReplyCommand { get; }
     ReactiveCommand<ITwiHighUserSummary> NavigateUserPageCommand { get; }
     ReactiveCommand<(ICosmosDbItemId Tweet, ICosmosDbItemId User)> RemoveReactionCommand { get; }
     ReactiveCommand<ICosmosDbItemId> RemoveRetweetCommand { get; }

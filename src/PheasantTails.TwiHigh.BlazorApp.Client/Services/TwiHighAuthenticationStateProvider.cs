@@ -135,9 +135,9 @@ public class TwiHighAuthenticationStateProvider : AuthenticationStateProvider
         }
 
         var jwtSecurityToken = _defaultJwtSecurityTokenHandler.ReadJwtToken(jwt);
-        if (jwtSecurityToken.Payload.Exp.HasValue)
+        if (jwtSecurityToken.Payload.Expiration.HasValue)
         {
-            return DateTimeOffset.FromUnixTimeSeconds(jwtSecurityToken.Payload.Exp.Value).UtcDateTime;
+            return DateTimeOffset.FromUnixTimeSeconds(jwtSecurityToken.Payload.Expiration.Value).UtcDateTime;
         }
 
         return DateTime.MinValue;

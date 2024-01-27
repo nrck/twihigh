@@ -29,7 +29,6 @@
 }
 else
 {
-
     <THTimeline @key="@ViewModel.MyTwiHighUserId.Value"
                 Tweets="@WorkerService.Timeline"
                 MyTwiHithUserId=@ViewModel.MyTwiHighUserId.Value
@@ -38,7 +37,7 @@ else
                 OnClickProfileEditor="() => ViewModel.NavigateProfileEditorPageCommand.Execute()"
                 OnClickProfile="(t) => ViewModel.NavigateUserPageCommand.Execute(t)"
                 OnClickGapTweetsLoad="async (t) => await ViewModel.GetGapTweetCommand.ExecuteAsync(t)"
-                OnClickDetail="(t) => ViewModel.NavigateStatePageCommand.Execute((t, t))" />
+                OnClickDetail="(t) => ViewModel.NavigateStatePageCommand.Execute(t)" />
 }
 
 @code {

@@ -1,4 +1,5 @@
 ﻿using PheasantTails.TwiHigh.Interface;
+using System.Text.Json.Serialization;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.Models;
 
@@ -21,6 +22,36 @@ public class DisplayTweet : ITweet
     public bool IsSystemTweet { get; set; }
     public DateTimeOffset Since { get; set; }
     public DateTimeOffset Until { get; set; }
+    public bool IsOpendReplyPostForm { get; set; }
+    public bool IsEmphasized { get; set; }
+    public string ReplyToUserDisplayId { get; set; } = string.Empty;
+    [JsonIgnore]
+    public string CreateAtDatetimeString
+    {
+        get
+        {
+            // 1年前ならyyyy/mm/dd
+            if (CreateAt <= DateTimeOffset.UtcNow.AddYears(-1))
+            {
+                return CreateAt.ToLocalTime().ToString("yyyy/MM/dd");
+            }
+
+            // 24時間より前ならm/d
+            if (CreateAt <= DateTimeOffset.UtcNow.AddDays(-1))
+            {
+                return CreateAt.ToLocalTime().ToString("M/d");
+            }
+
+            // 1時間より前なら H:mm
+            if (CreateAt <= DateTimeOffset.UtcNow.AddHours(-1))
+            {
+                return CreateAt.ToLocalTime().ToString("H:mm");
+            }
+
+            // H:mm:ss
+            return CreateAt.ToLocalTime().ToString("H:mm:ss");
+        }
+    }
 
     public static DisplayTweet[] ConvertFrom (IEnumerable<ITweet> tweets)
     {

@@ -13,6 +13,9 @@ public class TwiHighUIBase : ComponentBase
     [Inject]
     protected AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
 
+    [CascadingParameter]
+    protected Task<AuthenticationState>? AuthenticationState { get; set; }
+
     public async Task InvokeRenderAsync() => await InvokeAsync(StateHasChanged);
 
     public IDisposable SubscribeStateHasChanged<T>(IObservable<T> command) => command.Subscribe(async (_) => await InvokeRenderAsync());

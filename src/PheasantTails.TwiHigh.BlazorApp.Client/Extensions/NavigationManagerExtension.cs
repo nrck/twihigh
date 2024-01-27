@@ -17,16 +17,22 @@ internal static class NavigationManagerExtension
     internal const string PAGE_PATH_LICENCE = "/licence";
     internal const string PAGE_PATH_FEED = "/feeds";
 
-    internal static void NavigateToStatePage(this NavigationManager navigationManager, string UserDisplayId, ICosmosDbItemId tweet, bool forceLoad = false, bool replace = false)
+    internal static void NavigateToStatePage(this NavigationManager navigationManager, ITweet tweet, bool isReply = false, bool forceLoad = false, bool replace = false)
     {
         ArgumentNullException.ThrowIfNull(navigationManager);
         ArgumentNullException.ThrowIfNull(tweet);
-        if (string.IsNullOrEmpty(UserDisplayId))
+        if (tweet == null)
         {
-            throw new ArgumentException($"'{nameof(UserDisplayId)}' を NULL または空にすることはできません。", nameof(UserDisplayId));
+            throw new ArgumentException($"'{nameof(tweet)}' を NULL または空にすることはできません。", nameof(tweet));
         }
-
-        navigationManager.NavigateTo(string.Format(PAGE_PATH_STATUS, UserDisplayId, tweet.Id), forceLoad, replace);
+        if (isReply)
+        {
+            navigationManager.NavigateTo($"{string.Format(PAGE_PATH_STATUS, tweet.UserDisplayId, tweet.Id)}/reply", forceLoad, replace);
+        }
+        else
+        {
+            navigationManager.NavigateTo(string.Format(PAGE_PATH_STATUS, tweet.UserDisplayId, tweet.Id), forceLoad, replace);
+        }
     }
 
     internal static void NavigateToProfilePage(this NavigationManager navigationManager, ITwiHighUserSummary user, bool forceLoad = false, bool replace = false)

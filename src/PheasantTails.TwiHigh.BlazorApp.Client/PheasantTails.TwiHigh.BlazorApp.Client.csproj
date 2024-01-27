@@ -23,7 +23,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PheasantTails.TwiHigh.Data.Model\PheasantTails.TwiHigh.Data.Model.csproj" />
-    <ProjectReference Include="..\PheasantTails.TwiHigh.Interface\PheasantTails.TwiHigh.Interface.csproj" />
   </ItemGroup>
 
 </Project>

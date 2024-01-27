@@ -14,11 +14,11 @@
         <Virtualize Items="@Tweets" Context="Tweet" ItemSize="72" OverscanCount="15">
             @if (Tweet.IsSystemTweet)
             {
-                <GapTweetsLoadButtonComponent @key="Tweet.Id" Tweet="Tweet" OnClick="OnClickGapTweetsLoadAsync" />
+                <THGapTweetsFetchButton @key="Tweet.Id" Tweet="Tweet" OnClick="OnClickGapTweetsLoadAsync" />
             }
             else
             {
-                <TweetComponent @key="Tweet.Id"
+                <THTweet @key="Tweet.Id"
                         Tweet="Tweet"
                         IsMyTweet=@(MyTwiHithUserId == Tweet.UserId)
                         OnClickDelete="OnClickDeleteAsync"

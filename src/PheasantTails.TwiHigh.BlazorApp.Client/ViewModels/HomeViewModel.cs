@@ -54,7 +54,7 @@ public class HomeViewModel : ViewModelBase, IHomeViewModel
     /// <summary>
     /// Navigate to state page command.
     /// </summary>
-    public ReactiveCommand<(ICosmosDbItemId Tweet, ITwiHighUserSummary User)> NavigateStatePageCommand { get; private set; } = default!;
+    public ReactiveCommand<ITweet> NavigateStatePageCommand { get; private set; } = default!;
 
     /// <summary>
     /// Navigate to user page command.
@@ -64,7 +64,7 @@ public class HomeViewModel : ViewModelBase, IHomeViewModel
     /// <summary>
     /// Navigate to reply form at state page command.
     /// </summary>
-    public ReactiveCommand<(ICosmosDbItemId Tweet, ITwiHighUserSummary User)> NavigateStatePageWithReplyCommand { get; private set; } = default!;
+    public ReactiveCommand<ITweet> NavigateStatePageWithReplyCommand { get; private set; } = default!;
 
     public ReactiveCommand NavigateProfileEditorPageCommand { get; private set; } = default!;
 
@@ -96,9 +96,9 @@ public class HomeViewModel : ViewModelBase, IHomeViewModel
     {
         AvatarUrl = new ReactivePropertySlim<string>(string.Empty).AddTo(_disposable);
         DeleteMyTweetCommand = new AsyncReactiveCommand<ICosmosDbItemId>().AddTo(_disposable);
-        NavigateStatePageCommand = new ReactiveCommand<(ICosmosDbItemId Tweet, ITwiHighUserSummary User)>().AddTo(_disposable);
+        NavigateStatePageCommand = new ReactiveCommand<ITweet>().AddTo(_disposable);
         NavigateUserPageCommand = new ReactiveCommand<ITwiHighUserSummary>().AddTo(_disposable);
-        NavigateStatePageWithReplyCommand = new ReactiveCommand<(ICosmosDbItemId Tweet, ITwiHighUserSummary User)>().AddTo(_disposable);
+        NavigateStatePageWithReplyCommand = new ReactiveCommand<ITweet>().AddTo(_disposable);
         AddReactionCommand = new ReactiveCommand<(ICosmosDbItemId Tweet, ICosmosDbItemId Sticker)>().AddTo(_disposable);
         RemoveReactionCommand = new ReactiveCommand<(ICosmosDbItemId Tweet, ICosmosDbItemId User)>().AddTo(_disposable);
         AddRetweetCommand = new ReactiveCommand<ICosmosDbItemId>().AddTo(_disposable);
@@ -115,7 +115,8 @@ public class HomeViewModel : ViewModelBase, IHomeViewModel
     protected override void Subscribe()
     {
         DeleteMyTweetCommand.Subscribe(async tweet => await _timelineWorkerService.RemoveAsync(tweet.Id));
-        NavigateStatePageCommand.Subscribe(args => _navigationManager.NavigateToStatePage(args.User.UserDisplayId, args.Tweet));
+        NavigateStatePageCommand.Subscribe(tweet => _navigationManager.NavigateToStatePage(tweet));
+        NavigateStatePageWithReplyCommand.Subscribe(tweet => _navigationManager.NavigateToStatePage(tweet, true));
         NavigateProfileEditorPageCommand.Subscribe(() => _navigationManager.NavigateToProfileEditorPage());
         NavigateUserPageCommand.Subscribe((t) => _navigationManager.NavigateToProfilePage(t));
         PostTweetCommand.Subscribe(PostTweetAsync);

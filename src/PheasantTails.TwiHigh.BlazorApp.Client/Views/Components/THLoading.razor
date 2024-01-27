@@ -5,11 +5,11 @@
 </div>
 
 @code {
-    private bool isDisplay { get; set; }
+    private bool isDisplay { get; set; } = false;
     protected async override Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
-        await Task.Delay(300);
+        await base.OnInitializedAsync().ConfigureAwait(false);
+        await Task.Delay(500).ConfigureAwait(false);
         isDisplay = true;
     }
 }
