@@ -3,12 +3,12 @@ using System.Text.Json.Serialization;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.Models;
 
-public class DisplayTweet : ITweet
+public class DisplayTweet : ITweet, ITwiHighUserSummary
 {
     public string Text { get; set; } = string.Empty;
     public bool IsDeleted { get; set; }
     public Guid? ReplyTo { get; set; }
-    public Guid[] ReplyFrom { get; set; } = Array.Empty<Guid>();
+    public Guid[] ReplyFrom { get; set; } = [];
     public IdTimeStampPair[]? FavoriteFrom { get; set; }
     public IdTimeStampPair[]? RetweetFrom { get; set; }
     public Guid Id { get; set; }
@@ -52,6 +52,24 @@ public class DisplayTweet : ITweet
             return CreateAt.ToLocalTime().ToString("H:mm:ss");
         }
     }
+    public DisplayTweet() { }
+
+    public DisplayTweet(ITweet tweet)
+    {
+        CreateAt = tweet.CreateAt;
+        FavoriteFrom = tweet.FavoriteFrom;
+        Id = tweet.Id;
+        IsDeleted = tweet.IsDeleted;
+        ReplyFrom = tweet.ReplyFrom;
+        ReplyTo = tweet.ReplyTo;
+        RetweetFrom = tweet.RetweetFrom;
+        Text = tweet.Text;
+        UpdateAt = tweet.UpdateAt;
+        UserAvatarUrl = tweet.UserAvatarUrl;
+        UserDisplayId = tweet.UserDisplayId;
+        UserDisplayName = tweet.UserDisplayName;
+        UserId = tweet.UserId;
+    }
 
     public static DisplayTweet[] ConvertFrom (IEnumerable<ITweet> tweets)
     {
@@ -64,22 +82,7 @@ public class DisplayTweet : ITweet
             }
             else
             {
-                var converted = new DisplayTweet
-                {
-                    CreateAt = tweet.CreateAt,
-                    FavoriteFrom = tweet.FavoriteFrom,
-                    Id = tweet.Id,
-                    IsDeleted = tweet.IsDeleted,
-                    ReplyFrom = tweet.ReplyFrom,
-                    ReplyTo = tweet.ReplyTo,
-                    RetweetFrom = tweet.RetweetFrom,
-                    Text = tweet.Text,
-                    UpdateAt = tweet.UpdateAt,
-                    UserAvatarUrl = tweet.UserAvatarUrl,
-                    UserDisplayId = tweet.UserDisplayId,
-                    UserDisplayName = tweet.UserDisplayName,
-                    UserId = tweet.UserId
-                };
+                var converted = new DisplayTweet(tweet);
                 array = [.. array, converted];
             }
         }
