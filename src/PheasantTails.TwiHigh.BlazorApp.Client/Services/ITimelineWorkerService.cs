@@ -25,6 +25,7 @@ public interface ITimelineWorkerService
     /// <param name="tweets">Tweets</param>
     /// <returns>This instance's timeline size after added.</returns>
     public int AddRange(IEnumerable<DisplayTweet> tweets);
+    ValueTask CacheClearAsync();
 
     /// <summary>
     /// Force to fetch timeline from TwiHigh server.

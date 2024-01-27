@@ -12,8 +12,9 @@ public class LocalTimelineStore
         UserId = UserId,
         Latest = Latest,
         Oldest = Oldest,
-        Timeline = Timeline.OrderByDescending(t => t.CreateAt)
+        Timeline = 0 < Timeline.Count ? Timeline.OrderByDescending(t => t.CreateAt)
             .Take(MaximumTweets)
             .ToList()
+            : []
     };
 }

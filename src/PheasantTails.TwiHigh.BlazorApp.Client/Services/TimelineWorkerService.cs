@@ -107,6 +107,12 @@ public class TimelineWorkerService : IAsyncDisposable, ITimelineWorkerService
         return RemoveTweetAtLocal(tweetId);
     }
 
+    public async ValueTask CacheClearAsync()
+    {
+        _store = new LocalTimelineStore();
+        await ForceSaveAsync();
+    }
+
     public async ValueTask ForceSaveAsync(CancellationToken cancellationToken = default)
         => await _localStorageService.SetItemAsync(GetLocalStorageKeyUserTimeline(), _store.GetSaveData(), cancellationToken);
 
