@@ -26,19 +26,6 @@ namespace PheasantTails.TwiHigh.BlazorApp.Client.Services
             _authenticationStateProvider.AuthenticationStateChanged += AuthenticationStateChangedHandlerAsync;
         }
 
-        public async Task InitializeAsync(string jwt)
-        {
-            if (string.IsNullOrEmpty(jwt))
-            {
-                return;
-            }
-
-            _httpClient.SetToken(jwt);
-            await SetUserIdAsync(_authenticationStateProvider.GetAuthenticationStateAsync());
-            FeedContexts = new ObservableCollection<FeedContext>();
-            _ = GetMyFeedsWorkerAsync(_workerCancellationTokenSource.Token);
-        }
-
         public async Task MarkAsReadedFeedAsync(IEnumerable<Guid> ids)
         {
             var opendFeeds = FeedContexts.Where(f => f.IsOpened == false && ids.Any(i => i == f.Id)).ToList();
@@ -70,9 +57,38 @@ namespace PheasantTails.TwiHigh.BlazorApp.Client.Services
             await SetUserIdAsync(authenticationState);
         }
 
-        private Task SetUserIdAsync(Task<AuthenticationState> authenticationState)
+        private async Task SetUserIdAsync(Task<AuthenticationState> authenticationState)
         {
-            return Task.CompletedTask;
+            AuthenticationState state = await authenticationState;
+            if (!(state?.User?.Identity?.IsAuthenticated ?? false))
+            {
+                // Not Authenticated.
+                if (_store.UserId != default)
+                {
+                    await ForceSaveAsync();
+                    _store = new();
+                }
+                await StopAsync();
+
+                return;
+            }
+
+            // Set new user id.
+            var userIdFromClaims = state.User.Claims.FirstOrDefault(x => x.Type == "Id")?.Value;
+            if (Guid.TryParse(userIdFromClaims, out var userId) && _store.UserId != userId)
+            {
+                // If logged in user was changed, Load new user's timeline to local timeline store. 
+                await ForceSaveAsync();
+                _store = new()
+                {
+                    UserId = userId
+                };
+                await ForceLoadAsync();
+            }
+
+            // Set new bearer token.
+            var token = await _authenticationStateProvider.GetTokenFromLocalStorageAsync();
+            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
         }
 
         private async Task GetMyFeedsWorkerAsync(CancellationToken cancellationToken)
