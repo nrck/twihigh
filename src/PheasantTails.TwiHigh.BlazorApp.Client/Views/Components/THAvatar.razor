@@ -2,3 +2,11 @@
 <div class="user-avatar-icon">
     <img src="@UserAvatarUrl" @onclick="OnClick" loading="lazy" />
 </div>
+
+@code{
+    [Parameter]
+    public string UserAvatarUrl { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClick { get; set; }
+}

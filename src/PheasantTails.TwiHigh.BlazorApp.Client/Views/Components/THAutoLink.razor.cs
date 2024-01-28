@@ -24,7 +24,6 @@ public partial class THAutoLink : TwiHighComponentBase
         ContentString = Text;
         if (ReplaceDisplayId)
         {
-            //Content = Regex.Replace(Content, "@([a-zA-Z0-9._-]+)", "<a href=\"/profile/$1\">@$1</a>");
             ContentString = Regex.Replace(ContentString, "@([a-zA-Z0-9._-]+)", $"{Environment.NewLine}$1{Environment.NewLine}");
         }
         if (ReplaceUrl)
@@ -40,7 +39,7 @@ public partial class THAutoLink : TwiHighComponentBase
 
     private RenderFragment GetRenderFragment() => builder =>
     {
-        var sequence = 0;
+        int sequence = 0;
         for (int index = 0; index < ContentArray.Length; index++)
         {
             if (index % 2 == 0)
