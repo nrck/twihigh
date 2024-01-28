@@ -74,7 +74,7 @@ public class DisplayTweet : ITweet, ITwiHighUserSummary
     public static DisplayTweet[] ConvertFrom (IEnumerable<ITweet> tweets)
     {
         DisplayTweet[] array = [];
-        foreach (var tweet in tweets)
+        foreach (ITweet tweet in tweets)
         {
             if(tweet is DisplayTweet displayTweet)
             {
@@ -82,7 +82,7 @@ public class DisplayTweet : ITweet, ITwiHighUserSummary
             }
             else
             {
-                var converted = new DisplayTweet(tweet);
+                DisplayTweet converted = new(tweet);
                 array = [.. array, converted];
             }
         }

@@ -4,7 +4,7 @@ using PheasantTails.TwiHigh.BlazorApp.Client.Views.Bases;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.Views.Components;
 
-public partial class THMessage : TwiHighComponentBase, IDisposable
+public partial class THMessage : TwiHighComponentBase
 {
     public enum MessageLevel
     {
@@ -44,11 +44,6 @@ public partial class THMessage : TwiHighComponentBase, IDisposable
     private bool IsClosed { get; set; }
 
     private Timer AutoCloseTimer { get; set; } = default!;
-
-    public void Dispose()
-    {
-        GC.SuppressFinalize(this);
-    }
 
     protected override void OnInitialized()
     {

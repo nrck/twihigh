@@ -63,14 +63,14 @@ public class LoginViewModel : ViewModelBase, ILoginViewModel
             HttpResponseMessage res;
             try
             {
-                var context = new PostAuthorizationContext
+                PostAuthorizationContext context = new()
                 {
                     DisplayId = DisplayId.Value,
                     PlanePassword = PlainPassword.Value
                 };
                 res = await _httpClient.PostAsJsonAsync(new Uri(_apiUrlLogin), context, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }, cancellationToken: cancellationToken);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // TODO: タイムアウト時の処理を入れる
                 throw;
@@ -81,7 +81,7 @@ public class LoginViewModel : ViewModelBase, ILoginViewModel
                 _messageService.SetErrorMessage($"ログインできませんでした。HTTPステータス：{(int)res.StatusCode}");
                 return;
             }
-            var jwt = await res.Content.ReadFromJsonAsync<ResponseJwtContext>(cancellationToken: cancellationToken);
+            ResponseJwtContext? jwt = await res.Content.ReadFromJsonAsync<ResponseJwtContext>(cancellationToken: cancellationToken);
             if (jwt == null || string.IsNullOrEmpty(jwt.Token))
             {
                 _messageService.SetErrorMessage("ログインできませんでした。ユーザ名とパスワードを確認してください。");
@@ -104,7 +104,7 @@ public class LoginViewModel : ViewModelBase, ILoginViewModel
         try
         {
             AuthenticationState state = await ((TwiHighAuthenticationStateProvider)_authenticationStateProvider).GetAuthenticationStateAsync().ConfigureAwait(false);
-            var isAuthenticated = state.User.Identity?.IsAuthenticated ?? false;
+            bool isAuthenticated = state.User.Identity?.IsAuthenticated ?? false;
             if (isAuthenticated)
             {
                 _navigationManager.NavigateToHomePage(false, true);

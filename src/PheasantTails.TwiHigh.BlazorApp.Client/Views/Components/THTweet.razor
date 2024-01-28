@@ -78,6 +78,6 @@
 @if (IsOpendReplyPostForm)
 {
     <section class="reply-section">
-        <THPostForm ReplyToContext=ReplyToContext TweetText="@($"@{Tweet?.UserDisplayId} ")" OnPostTweet="OnClickPostTweet" @ref="ReplySection" />
+        <THPostForm ReplyToContext=ReplyToContext TweetText="@($"@{Tweet?.UserDisplayId} ")" PostTweetCommand="PostTweetCommand" @ref="ReplySection" />
     </section>
 }

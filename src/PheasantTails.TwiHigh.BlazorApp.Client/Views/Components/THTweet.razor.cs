@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using PheasantTails.TwiHigh.BlazorApp.Client.Extensions;
 using PheasantTails.TwiHigh.BlazorApp.Client.Models;
 using PheasantTails.TwiHigh.BlazorApp.Client.Services;
 using PheasantTails.TwiHigh.BlazorApp.Client.Views.Bases;
 using PheasantTails.TwiHigh.Data.Model.Tweets;
+using Reactive.Bindings;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.Views.Components
 {
@@ -20,7 +22,7 @@ namespace PheasantTails.TwiHigh.BlazorApp.Client.Views.Components
         /// リプライが投稿されたときに発火するイベントコールバック
         /// </summary>
         [Parameter]
-        public EventCallback<PostTweetContext> OnPostReply { get; set; }
+        public AsyncReactiveCommand<PostTweetContext> PostTweetCommand { get; set; } = default!;
 
         /// <summary>
         /// ツイート削除ボタンが押下されたときに発火するイベントコールバック
@@ -86,7 +88,9 @@ namespace PheasantTails.TwiHigh.BlazorApp.Client.Views.Components
 
         private string ArticleId => $"tweet-{Tweet?.Id}";
 
+#pragma warning disable CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
         private THPostForm ReplySection { get; set; }
+#pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
 
         private bool IsAuthenticated { get; set; }
 
@@ -94,7 +98,7 @@ namespace PheasantTails.TwiHigh.BlazorApp.Client.Views.Components
         {
             return Task.Run(async () =>
             {
-                var state = await ((TwiHighAuthenticationStateProvider)AuthenticationStateProvider).GetAuthenticationStateAsync();
+                AuthenticationState state = await ((TwiHighAuthenticationStateProvider)AuthenticationStateProvider).GetAuthenticationStateAsync();
                 IsAuthenticated = state.User.Identity?.IsAuthenticated ?? false;
                 await base.OnInitializedAsync();
             });
@@ -108,7 +112,7 @@ namespace PheasantTails.TwiHigh.BlazorApp.Client.Views.Components
 
         protected override Task OnAfterRenderAsync(bool firstRender)
         {
-            var focusTask = Task.Run(async () =>
+            Task focusTask = Task.Run(async () =>
             {
                 await Task.Delay(500);
                 if (IsOpendReplyPostForm && ReplySection != null)
@@ -116,7 +120,7 @@ namespace PheasantTails.TwiHigh.BlazorApp.Client.Views.Components
                     await ReplySection.TextAreaFocusAsync();
                 }
             });
-            var baseTask = base.OnAfterRenderAsync(firstRender);
+            Task baseTask = base.OnAfterRenderAsync(firstRender);
 
             return Task.WhenAll(focusTask, baseTask);
         }
@@ -141,12 +145,6 @@ namespace PheasantTails.TwiHigh.BlazorApp.Client.Views.Components
                 return;
             }
             Navigation.NavigateToStatePage(Tweet, true);
-        }
-
-        private async Task OnClickPostTweet(PostTweetContext postTweet)
-        {
-            await OnPostReply.InvokeAsync(postTweet);
-            IsOpendReplyPostForm = false;
         }
 
         private void OnClickTweetArea(MouseEventArgs _) => OnClickDetail.InvokeAsync(Tweet);

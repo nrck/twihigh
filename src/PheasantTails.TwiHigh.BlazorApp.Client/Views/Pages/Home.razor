@@ -17,7 +17,7 @@
 <section>
     <THPostForm UserAvatarUrl="@ViewModel.AvatarUrl.Value"
                 OnClickAvatarCommand="@ViewModel.NavigateProfileEditorPageCommand"
-                OnPostTweetCommand="@ViewModel.PostTweetCommand"
+                PostTweetCommand="@ViewModel.PostTweetCommand"
                 IsForceForcus=true />
 </section>
 
@@ -32,7 +32,7 @@ else
                 Tweets="@WorkerService.Timeline"
                 MyTwiHithUserId=@ViewModel.MyTwiHighUserId.Value
                 OnClickDelete="async (t) => await ViewModel.DeleteMyTweetCommand.ExecuteAsync(t)"
-                OnPostReply="async (t) => await ViewModel.PostTweetCommand.ExecuteAsync(t)"
+                PostTweetCommand="ViewModel.PostTweetCommand"
                 OnClickProfileEditor="() => ViewModel.NavigateProfileEditorPageCommand.Execute()"
                 OnClickProfile="(t) => ViewModel.NavigateUserPageCommand.Execute(t)"
                 OnClickGapTweetsLoad="async (t) => await ViewModel.GetGapTweetCommand.ExecuteAsync(t)"

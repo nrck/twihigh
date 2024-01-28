@@ -11,7 +11,8 @@ namespace PheasantTails.TwiHigh.BlazorApp.Client.Services;
 
 public class TwiHighAuthenticationStateProvider : AuthenticationStateProvider
 {
-    private const string LOCAL_STORAGE_NAME_JWT = "TwiHighJwt";
+    public const string LOCAL_STORAGE_NAME_JWT = "TwiHighJwt";
+
     private readonly HttpClient _httpClient;
     private readonly ILocalStorageService _localStorage;
     private readonly AuthenticationState _defaultAuthenticationState;
@@ -29,10 +30,10 @@ public class TwiHighAuthenticationStateProvider : AuthenticationStateProvider
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        var jwt = await GetTokenFromLocalStorageAsync();
+        string jwt = await GetTokenFromLocalStorageAsync();
 
         // Check Expiry.
-        var newjwt = await EnsureWithinExpirationAsync(jwt, TimeSpan.FromDays(1));
+        string newjwt = await EnsureWithinExpirationAsync(jwt, TimeSpan.FromDays(1));
         if (string.IsNullOrEmpty(newjwt))
         {
             // If this token is null, Remove token value from local storage.
@@ -41,7 +42,7 @@ public class TwiHighAuthenticationStateProvider : AuthenticationStateProvider
         }
 
         // Create AuthenticationState object.
-        var authState = new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(ParseClaimsFromJwt(newjwt), "apiauth")));
+        AuthenticationState authState = new(new ClaimsPrincipal(new ClaimsIdentity(ParseClaimsFromJwt(newjwt), "apiauth")));
 
         // Update token.
         if (jwt != newjwt)
@@ -62,10 +63,10 @@ public class TwiHighAuthenticationStateProvider : AuthenticationStateProvider
         await SetTokenToLocalStorageAsync(jwt, cancellationToken);
 
         // Parse claims from bearer token, and create CalimsPrincipal object.
-        var authenticatedUser = new ClaimsPrincipal(new ClaimsIdentity(ParseClaimsFromJwt(jwt), "apiauth"));
+        ClaimsPrincipal authenticatedUser = new(new ClaimsIdentity(ParseClaimsFromJwt(jwt), "apiauth"));
 
         // Notify state changed.
-        var authState = Task.FromResult(new AuthenticationState(authenticatedUser));
+        Task<AuthenticationState> authState = Task.FromResult(new AuthenticationState(authenticatedUser));
         NotifyAuthenticationStateChanged(authState);
     }
 
@@ -83,7 +84,7 @@ public class TwiHighAuthenticationStateProvider : AuthenticationStateProvider
     /// </summary>
     public async ValueTask<string> GetLoggedInUserIdAsync()
     {
-        var jwt = await EnsureWithinExpirationAsync(
+        string jwt = await EnsureWithinExpirationAsync(
             await GetTokenFromLocalStorageAsync(),
             TimeSpan.FromDays(1));
         if (string.IsNullOrEmpty(jwt))
@@ -91,7 +92,7 @@ public class TwiHighAuthenticationStateProvider : AuthenticationStateProvider
             return string.Empty;
         }
 
-        var userid = ParseClaimsFromJwt(jwt)
+        string userid = ParseClaimsFromJwt(jwt)
             .FirstOrDefault(claim => claim.Type == nameof(ResponseTwiHighUserContext.Id))?
             .Value ?? string.Empty;
 
@@ -100,7 +101,7 @@ public class TwiHighAuthenticationStateProvider : AuthenticationStateProvider
 
     public async ValueTask<string> GetLoggedInUserAvatarUrlAsync()
     {
-        var jwt = await EnsureWithinExpirationAsync(
+        string jwt = await EnsureWithinExpirationAsync(
             await GetTokenFromLocalStorageAsync(),
             TimeSpan.FromDays(1));
         if (string.IsNullOrEmpty(jwt))
@@ -108,7 +109,7 @@ public class TwiHighAuthenticationStateProvider : AuthenticationStateProvider
             return string.Empty;
         }
 
-        var url = ParseClaimsFromJwt(jwt)
+        string url = ParseClaimsFromJwt(jwt)
             .FirstOrDefault(claim => claim.Type == nameof(ResponseTwiHighUserContext.AvatarUrl))?
             .Value ?? string.Empty;
 
@@ -120,7 +121,7 @@ public class TwiHighAuthenticationStateProvider : AuthenticationStateProvider
     /// </summary>
     private IEnumerable<Claim> ParseClaimsFromJwt(string jwt)
     {
-        var jwtSecurityToken = _defaultJwtSecurityTokenHandler.ReadJwtToken(jwt);
+        JwtSecurityToken jwtSecurityToken = _defaultJwtSecurityTokenHandler.ReadJwtToken(jwt);
         return jwtSecurityToken.Payload.Claims;
     }
 
@@ -134,7 +135,7 @@ public class TwiHighAuthenticationStateProvider : AuthenticationStateProvider
             return DateTime.MinValue;
         }
 
-        var jwtSecurityToken = _defaultJwtSecurityTokenHandler.ReadJwtToken(jwt);
+        JwtSecurityToken jwtSecurityToken = _defaultJwtSecurityTokenHandler.ReadJwtToken(jwt);
         if (jwtSecurityToken.Payload.Expiration.HasValue)
         {
             return DateTimeOffset.FromUnixTimeSeconds(jwtSecurityToken.Payload.Expiration.Value).UtcDateTime;
@@ -154,7 +155,7 @@ public class TwiHighAuthenticationStateProvider : AuthenticationStateProvider
     /// </summary>
     private async ValueTask<string> GetRefreshedTokenAsync(CancellationToken cancellationToken = default)
     {
-        var savedToken = await GetTokenFromLocalStorageAsync(cancellationToken);
+        string savedToken = await GetTokenFromLocalStorageAsync(cancellationToken);
         if (string.IsNullOrWhiteSpace(savedToken) || GetUtcExpiryFromJwt(savedToken) < DateTime.UtcNow)
         {
             // If don't has token, return string.Empty.
@@ -165,13 +166,13 @@ public class TwiHighAuthenticationStateProvider : AuthenticationStateProvider
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", savedToken);
 
         // Get new token from the server.
-        var newToken = string.Empty;
+        string newToken = string.Empty;
         for (int i = 0; i < 5; i++)
         {
             try
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                var newTokenRes = await _httpClient.GetFromJsonAsync<ResponseJwtContext>(_apiUrlRefreshToken, cancellationToken).ConfigureAwait(false);
+                ResponseJwtContext? newTokenRes = await _httpClient.GetFromJsonAsync<ResponseJwtContext>(_apiUrlRefreshToken, cancellationToken).ConfigureAwait(false);
                 newToken = newTokenRes?.Token ?? string.Empty;
             }
             catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.ServiceUnavailable)

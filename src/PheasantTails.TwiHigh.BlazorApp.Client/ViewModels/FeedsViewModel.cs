@@ -38,12 +38,12 @@ internal class FeedsViewModel : ViewModelBase, IFeedsViewModel
 
     private async Task OnClickDetailAsync(ITweet tweet, bool isReply = false)
     {
-        var feedId = MyFeeds.FirstOrDefault(f => f.FeedByTweet?.Id == tweet.Id)?.Id;
+        Guid? feedId = MyFeeds.FirstOrDefault(f => f.FeedByTweet?.Id == tweet.Id)?.Id;
         if (feedId == null)
         {
             return;
         }
-        await _feedService.MarkAsReadedFeedAsync(new[] { feedId.Value });
+        await _feedService.MarkAsReadedFeedsAsync(new[] { feedId.Value });
         _navigationManager.NavigateToStatePage(tweet, isReply);
     }
 }

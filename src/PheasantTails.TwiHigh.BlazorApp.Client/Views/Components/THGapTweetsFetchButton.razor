@@ -4,3 +4,12 @@
         ツイートを更に表示
     </button>
 </article>
+@code{
+    [Parameter, EditorRequired]
+    public DisplayTweet Tweet { get; set; } = default!;
+
+    [Parameter]
+    public EventCallback<DisplayTweet> OnClick { get; set; }
+
+    private Task OnClickGapButton(MouseEventArgs _) => OnClick.InvokeAsync(Tweet);
+}

@@ -19,15 +19,15 @@
             else
             {
                 <THTweet @key="Tweet.Id"
-                        Tweet="Tweet"
-                        IsMyTweet=@(MyTwiHithUserId == Tweet.UserId)
-                        OnClickDelete="OnClickDeleteAsync"
-                        OnClickDetail="OnClickDetailAsync"
-                        OnClickFavorite="OnClickFavoriteAsync"
-                        OnClickProfile="OnClickProfileAsync"
-                        OnClickRetweet="OnClickRetweetAsync"
-                        OnPostReply="OnClickReplyAsync"
-                        OnClickProfileEditor="OnClickProfileEditorAsync" />
+                         Tweet="Tweet"
+                         IsMyTweet=@(MyTwiHithUserId == Tweet.UserId)
+                         OnClickDelete="OnClickDeleteAsync"
+                         OnClickDetail="OnClickDetailAsync"
+                         OnClickFavorite="OnClickFavoriteAsync"
+                         OnClickProfile="OnClickProfileAsync"
+                         OnClickRetweet="OnClickRetweetAsync"
+                         PostTweetCommand="PostTweetCommand"
+                         OnClickProfileEditor="OnClickProfileEditorAsync" />
             }
         </Virtualize>
     }

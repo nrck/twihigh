@@ -84,7 +84,7 @@ public class TimelineWorkerService : ITimelineWorkerService
 
     public int AddRange(IEnumerable<DisplayTweet> tweets)
     {
-        foreach (var tweet in tweets)
+        foreach (DisplayTweet tweet in tweets)
         {
             Upsert(tweet);
         }
@@ -122,17 +122,17 @@ public class TimelineWorkerService : ITimelineWorkerService
 
     public async ValueTask ForceFetchMyTimelineAsync(DateTimeOffset since, DateTimeOffset until, CancellationToken cancellationToken = default)
     {
-        var tweets = await FetchMyTimelineAsync(since, until, cancellationToken).ConfigureAwait(false);
+        DisplayTweet[] tweets = await FetchMyTimelineAsync(since, until, cancellationToken).ConfigureAwait(false);
         AddRange(tweets);
         OnChangedTimeline?.Invoke();
     }
 
     public void MarkAsReadedTweets(IEnumerable<Guid> ids)
     {
-        var tweetIds = ids.ToArray();
-        foreach (var tweetId in tweetIds)
+        Guid[] tweetIds = ids.ToArray();
+        foreach (Guid tweetId in tweetIds)
         {
-            var tweet = _store.Timeline.FirstOrDefault(t => t.Id == tweetId);
+            DisplayTweet? tweet = _store.Timeline.FirstOrDefault(t => t.Id == tweetId);
             if (tweet == null)
             {
                 continue;
@@ -154,22 +154,22 @@ public class TimelineWorkerService : ITimelineWorkerService
         {
             throw new ArgumentException("開始時刻と終了時刻が逆転しています。", nameof(since));
         }
-        var url = string.Format(
+        string url = string.Format(
             _apiUrlTimeline,
             HttpUtility.UrlEncode(since.ToString("yyyy-MM-ddTHH:mm:ss.fffffffzzz")),
             HttpUtility.UrlEncode(until.ToString("yyyy-MM-ddTHH:mm:ss.fffffffzzz"))
         );
-        var response = await _httpClient.GetAsync(url, cancellationToken);
+        HttpResponseMessage response = await _httpClient.GetAsync(url, cancellationToken);
         if (response.StatusCode != HttpStatusCode.OK)
         {
             return [];
         }
-        var context = await response.Content.TwiHighReadFromJsonAsync<ResponseTimelineContext>(cancellationToken: cancellationToken)
+        ResponseTimelineContext context = await response.Content.TwiHighReadFromJsonAsync<ResponseTimelineContext>(cancellationToken: cancellationToken)
             ?? throw new TwiHighApiRequestException("タイムラインの取得でエラーが発生しました。");
-        var tweets = DisplayTweet.ConvertFrom(context.Tweets);
+        DisplayTweet[] tweets = DisplayTweet.ConvertFrom(context.Tweets);
         if (tweets.Length == 100)
         {
-            var systemTweet = DisplayTweet.GetSystemTweet(context.Oldest);
+            DisplayTweet systemTweet = DisplayTweet.GetSystemTweet(context.Oldest);
             tweets = [.. tweets, systemTweet];
         }
 
@@ -187,7 +187,7 @@ public class TimelineWorkerService : ITimelineWorkerService
             }
 
             // Check user id.
-            var userId = await _authenticationStateProvider.GetLoggedInUserIdAsync().ConfigureAwait(false);
+            string userId = await _authenticationStateProvider.GetLoggedInUserIdAsync().ConfigureAwait(false);
             if (string.IsNullOrEmpty(userId))
             {
                 throw new InvalidOperationException($"未ログインで{nameof(TimelineWorkerService)}.{nameof(RunAsync)}()を実行することはできません。");
@@ -207,7 +207,7 @@ public class TimelineWorkerService : ITimelineWorkerService
                 await Task.Delay(5000, WorkerCancellationToken);
 
                 // Do REST API.
-                var tweets = await FetchMyTimelineAsync(_store.Latest.AddTicks(1), DateTimeOffset.MaxValue, WorkerCancellationToken).ConfigureAwait(false);
+                DisplayTweet[] tweets = await FetchMyTimelineAsync(_store.Latest.AddTicks(1), DateTimeOffset.MaxValue, WorkerCancellationToken).ConfigureAwait(false);
                 AddRange(tweets);
                 OnChangedTimeline?.Invoke();
 
@@ -244,7 +244,7 @@ public class TimelineWorkerService : ITimelineWorkerService
 
     private void Upsert(DisplayTweet tweet)
     {
-        var oldTweetIndex = _store.Timeline.FindIndex(t => t.Id == tweet.Id && t.UpdateAt < tweet.UpdateAt);
+        int oldTweetIndex = _store.Timeline.FindIndex(t => t.Id == tweet.Id && t.UpdateAt < tweet.UpdateAt);
         if (0 <= oldTweetIndex)
         {
             _store.Timeline[oldTweetIndex] = tweet;
@@ -266,7 +266,7 @@ public class TimelineWorkerService : ITimelineWorkerService
 
     private int RemoveTweetAtLocal(Guid tweetId)
     {
-        var targetTweet = _store.Timeline.Find(t => t.Id == tweetId);
+        DisplayTweet? targetTweet = _store.Timeline.Find(t => t.Id == tweetId);
         if (targetTweet != null)
         {
             _store.Timeline.Remove(targetTweet);
@@ -279,7 +279,7 @@ public class TimelineWorkerService : ITimelineWorkerService
     {
         try
         {
-            var url = string.Format(_apiUrlDeleteTweet, tweetId.ToString());
+            string url = string.Format(_apiUrlDeleteTweet, tweetId.ToString());
             await _httpClient.DeleteAsync(url);
         }
         catch (HttpRequestException ex)
@@ -300,7 +300,7 @@ public class TimelineWorkerService : ITimelineWorkerService
 
     private async void OnChangedAuthenticationState(Task<AuthenticationState> authenticationState)
     {
-        var state = await authenticationState;
+        AuthenticationState state = await authenticationState;
         if (!(state?.User?.Identity?.IsAuthenticated ?? false))
         {
             // Not Authenticated.
@@ -315,8 +315,8 @@ public class TimelineWorkerService : ITimelineWorkerService
         }
 
         // Set new user id.
-        var userIdFromClaims = state.User.Claims.FirstOrDefault(x => x.Type == "Id")?.Value;
-        if (Guid.TryParse(userIdFromClaims, out var userId) && _store.UserId != userId)
+        string? userIdFromClaims = state.User.Claims.FirstOrDefault(x => x.Type == "Id")?.Value;
+        if (Guid.TryParse(userIdFromClaims, out Guid userId) && _store.UserId != userId)
         {
             // If logged in user was changed, Load new user's timeline to local timeline store. 
             await ForceSaveAsync();
@@ -328,7 +328,7 @@ public class TimelineWorkerService : ITimelineWorkerService
         }
 
         // Set new bearer token.
-        var token = await _authenticationStateProvider.GetTokenFromLocalStorageAsync();
+        string token = await _authenticationStateProvider.GetTokenFromLocalStorageAsync();
         _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
     }
     #endregion

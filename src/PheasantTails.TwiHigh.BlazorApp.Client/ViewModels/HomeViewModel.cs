@@ -130,7 +130,7 @@ public class HomeViewModel : ViewModelBase, IHomeViewModel
     {
         try
         {
-            var res = await _httpClient.PostAsJsonAsync(_apiUrlTweet, postTweet, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+            HttpResponseMessage res = await _httpClient.PostAsJsonAsync(_apiUrlTweet, postTweet, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
             res.EnsureSuccessStatusCode();
             _messageService.SetSucessMessage("ツイートを送信しました！");
         }
@@ -146,7 +146,7 @@ public class HomeViewModel : ViewModelBase, IHomeViewModel
 
     private async Task SetMyTwiHighUserIdAsync()
     {
-        var id = await _authenticationStateProvider.GetLoggedInUserIdAsync().ConfigureAwait(false);
+        string id = await _authenticationStateProvider.GetLoggedInUserIdAsync().ConfigureAwait(false);
         if (string.IsNullOrEmpty(id))
         {
             MyTwiHighUserId.Value = new Guid();

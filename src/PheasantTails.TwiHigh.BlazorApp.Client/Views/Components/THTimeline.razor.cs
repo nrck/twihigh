@@ -2,6 +2,7 @@
 using PheasantTails.TwiHigh.BlazorApp.Client.Models;
 using PheasantTails.TwiHigh.BlazorApp.Client.Views.Bases;
 using PheasantTails.TwiHigh.Data.Model.Tweets;
+using Reactive.Bindings;
 using System.Collections.ObjectModel;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.Views.Components
@@ -11,8 +12,8 @@ namespace PheasantTails.TwiHigh.BlazorApp.Client.Views.Components
         /// <summary>
         /// タイムラインに表示するツイートList
         /// </summary>
-        [Parameter]
-        public ReadOnlyCollection<DisplayTweet>? Tweets { get; set; }
+        [Parameter, EditorRequired]
+        public ReadOnlyCollection<DisplayTweet> Tweets { get; set; } = default!;
 
         [Parameter]
         public Guid MyTwiHithUserId { get; set; }
@@ -21,7 +22,7 @@ namespace PheasantTails.TwiHigh.BlazorApp.Client.Views.Components
         /// リプライが投稿されたときに発火するイベントコールバック
         /// </summary>
         [Parameter]
-        public EventCallback<PostTweetContext> OnPostReply { get; set; }
+        public AsyncReactiveCommand<PostTweetContext> PostTweetCommand { get; set; } = default!;
 
         /// <summary>
         /// ツイート削除ボタンが押下されたときに発火するイベントコールバック
@@ -64,8 +65,6 @@ namespace PheasantTails.TwiHigh.BlazorApp.Client.Views.Components
         /// </summary>
         [Parameter]
         public EventCallback<DisplayTweet> OnClickGapTweetsLoad { get; set; }
-
-        private Task OnClickReplyAsync(PostTweetContext tweet) => OnPostReply.InvokeAsync(tweet);
 
         private Task OnClickDeleteAsync(DisplayTweet tweet) => OnClickDelete.InvokeAsync(tweet);
 

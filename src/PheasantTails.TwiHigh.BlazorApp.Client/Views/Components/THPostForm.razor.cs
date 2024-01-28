@@ -19,8 +19,8 @@ namespace PheasantTails.TwiHigh.BlazorApp.Client.Views.Components
         [Parameter]
         public ICommand OnClickAvatarCommand { get; set; } = default!;
 
-        [Parameter]
-        public AsyncReactiveCommand<PostTweetContext> OnPostTweetCommand { get; set; } = default!;
+        [Parameter, EditorRequired]
+        public AsyncReactiveCommand<PostTweetContext> PostTweetCommand { get; set; } = default!;
 
         [Parameter]
         public string TweetText { get; set; } = string.Empty;
@@ -56,7 +56,7 @@ namespace PheasantTails.TwiHigh.BlazorApp.Client.Views.Components
             StateHasChanged();
             PostTweetContext.Text = TweetText;
             PostTweetContext.ReplyTo = ReplyToContext;
-            await OnPostTweetCommand.ExecuteAsync(PostTweetContext);
+            await PostTweetCommand.ExecuteAsync(PostTweetContext).ConfigureAwait(false);
             PostTweetContext.Text = string.Empty;
             PostTweetContext.ReplyTo = null;
             TweetText = string.Empty;

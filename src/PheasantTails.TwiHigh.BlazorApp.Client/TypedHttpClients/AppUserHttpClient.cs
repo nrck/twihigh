@@ -44,7 +44,7 @@ public class AppUserHttpClient
     {
         try
         {
-            var res = await _httpClient.PostAsJsonAsync(_apiUrlLogin, authorizationContext);
+            HttpResponseMessage res = await _httpClient.PostAsJsonAsync(_apiUrlLogin, authorizationContext);
             return await res.Content.TwiHighReadFromJsonAsync<ResponseJwtContext>();
         }
         catch (Exception)
@@ -57,7 +57,7 @@ public class AppUserHttpClient
     {
         try
         {
-            var res = await _httpClient.GetAsync(_apiUrlRefresh);
+            HttpResponseMessage res = await _httpClient.GetAsync(_apiUrlRefresh);
             res.EnsureSuccessStatusCode();
 
             return await res.Content.ReadFromJsonAsync<ResponseJwtContext>();
@@ -77,10 +77,10 @@ public class AppUserHttpClient
     {
         try
         {
-            var url = string.Format(_apiUrlGetTwihighUser, id);
+            string url = string.Format(_apiUrlGetTwihighUser, id);
             return await _httpClient.GetFromJsonAsync<ResponseTwiHighUserContext>(url);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return null;
         }
@@ -91,10 +91,10 @@ public class AppUserHttpClient
     {
         try
         {
-            var url = string.Format(_apiUrlGetTwihighUserFollows, id);
+            string url = string.Format(_apiUrlGetTwihighUserFollows, id);
             return await _httpClient.GetFromJsonAsync<ResponseTwiHighUserContext[]>(url);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return null;
         }
@@ -104,10 +104,10 @@ public class AppUserHttpClient
     {
         try
         {
-            var url = string.Format(_apiUrlGetTwihighUserFollowes, id);
+            string url = string.Format(_apiUrlGetTwihighUserFollowes, id);
             return await _httpClient.GetFromJsonAsync<ResponseTwiHighUserContext[]>(url);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return null;
         }
@@ -117,11 +117,11 @@ public class AppUserHttpClient
     {
         try
         {
-            var res = await _httpClient.PatchAsync(_apiUrlPatchTwihighUser, JsonContent.Create(patchTwiHighUserContext));
+            HttpResponseMessage res = await _httpClient.PatchAsync(_apiUrlPatchTwihighUser, JsonContent.Create(patchTwiHighUserContext));
             res.EnsureSuccessStatusCode();
             return await res.Content.ReadFromJsonAsync<ResponseTwiHighUserContext>();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return null;
         }
