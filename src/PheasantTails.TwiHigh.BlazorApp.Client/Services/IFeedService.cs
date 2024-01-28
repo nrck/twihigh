@@ -3,14 +3,17 @@ using System.Collections.ObjectModel;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.Services;
 
-public interface IFeedService
+public interface IFeedService : IAsyncDisposable
 {
-    public event Action? NotifyChangedFeeds;
-    public ObservableCollection<FeedContext> FeedContexts { get; set; }
-    public int FeedDotCount { get; set; }
+    ReadOnlyCollection<FeedContext> FeedTimeline { get; }
 
-    public void Dispose();
-    public ValueTask DisposeAsync();
-    public Task InitializeAsync(string jwt);
-    public Task MarkAsReadedFeedAsync(IEnumerable<Guid> ids);
+    event Action? OnChangedFeedTimeline;
+
+    ValueTask CacheClearAsync();
+    ValueTask ForceFetchMyFeedTimelineAsync(DateTimeOffset since, DateTimeOffset until, CancellationToken cancellationToken = default);
+    ValueTask ForceLoadAsync(CancellationToken cancellationToken = default);
+    ValueTask ForceSaveAsync(CancellationToken cancellationToken = default);
+    Task MarkAsReadedFeedsAsync(IEnumerable<Guid> ids, CancellationToken cancellationToken = default);
+    void Run();
+    void Stop();
 }
