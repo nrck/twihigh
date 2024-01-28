@@ -1,0 +1,18 @@
+﻿@page "/Logout"
+@inherits TwiHighPageBase
+@inject IMessageService MessageService
+
+<THLoading />
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnInitializedAsync();
+        if (firstRender)
+        {
+            await ((TwiHighAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsLoggedOutAsync();
+            MessageService.SetInfoMessage("ログアウトしました。");
+            Navigation.NavigateToLoginPage(replace: true);
+        }
+    }
+}
