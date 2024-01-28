@@ -1,7 +1,8 @@
 ﻿@page "/clear"
 @attribute [Authorize]
 @inherits TwiHighPageBase
-@inject ITimelineWorkerService WorkerService
+@inject ITimelineWorkerService TimelineWorkerService
+@inject IFeedWorkerService FeedWorkerService
 
 <PageTitle>キャッシュクリア中 - ツイハイ！</PageTitle>
 <THLoading />
@@ -14,7 +15,8 @@
         {
             return;
         }
-        await WorkerService.CacheClearAsync();
+        await TimelineWorkerService.CacheClearAsync();
+        await FeedWorkerService.CacheClearAsync();
         Navigation.NavigateToHomePage(false, true);
     }
 }

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Components.Authorization;
 using PheasantTails.TwiHigh.BlazorApp.Client.Services;
 using PheasantTails.TwiHigh.BlazorApp.Client.TypedHttpClients;
 using PheasantTails.TwiHigh.BlazorApp.Client.ViewModels;
-using System.Net.Sockets;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.Extensions;
 
