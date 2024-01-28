@@ -2,13 +2,12 @@
 using PheasantTails.TwiHigh.Interface;
 using Reactive.Bindings;
 
-namespace PheasantTails.TwiHigh.BlazorApp.Client.ViewModels
+namespace PheasantTails.TwiHigh.BlazorApp.Client.ViewModels;
+
+public interface IFeedsViewModel
 {
-    internal interface IFeedsViewModel
-    {
-        ReactiveCollection<FeedContext> MyFeeds { get; }
-        AsyncReactiveCommand<ITweet> NavigateStatePageCommand { get; }
-        AsyncReactiveCommand<ITweet> NavigateStatePageWithReplyCommand { get; }
-        ReactiveCommandSlim<string> NavigateUserPageCommand { get; }
-    }
+    ReactiveCollection<FeedContext> MyFeeds { get; }
+    AsyncReactiveCommand<ITweet> NavigateStatePageCommand { get; }
+    AsyncReactiveCommand<ITweet> NavigateStatePageWithReplyCommand { get; }
+    ReactiveCommandSlim<string> NavigateUserPageCommand { get; }
 }

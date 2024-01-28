@@ -13,6 +13,7 @@ public static class DependencyInjections
         services.AddScoped<IHomeViewModel, HomeViewModel>();
         services.AddScoped<IIndexViewModel, ViewModels.IndexViewModel>();
         services.AddScoped<ILoginViewModel, LoginViewModel>();
+        services.AddScoped<IFeedsViewModel, FeedsViewModel>();
 
         return services;
     }
@@ -22,17 +23,17 @@ public static class DependencyInjections
         services.AddScoped<ITimelineWorkerService, TimelineWorkerService>();
         services.AddScoped<IMessageService, MessageService>();
         services.AddScoped<AuthenticationStateProvider, TwiHighAuthenticationStateProvider>();
+        services.AddScoped<IScrollInfoService, ScrollInfoService>();
+        services.AddScoped<IFeedWorkerService, FeedWorkerService>();
 
         return services;
     }
 
     internal static IServiceCollection AddTwiHighApiClient(this IServiceCollection services)
     {
-        services.AddHttpClient<TimelineHttpClient>();
         services.AddHttpClient<AppUserHttpClient>();
         services.AddHttpClient<TweetHttpClient>();
         services.AddHttpClient<FollowHttpClient>();
-        services.AddHttpClient<FeedHttpClient>();
 
         return services;
     }

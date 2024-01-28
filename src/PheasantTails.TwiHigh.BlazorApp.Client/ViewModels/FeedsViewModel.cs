@@ -8,7 +8,7 @@ using Reactive.Bindings.Extensions;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.ViewModels;
 
-internal class FeedsViewModel : ViewModelBase, IFeedsViewModel
+public class FeedsViewModel : ViewModelBase, IFeedsViewModel
 {
     private readonly IFeedWorkerService _feedService;
     public ReactiveCollection<FeedContext> MyFeeds { get; private set; } = default!;
