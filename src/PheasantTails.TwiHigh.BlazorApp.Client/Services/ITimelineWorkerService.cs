@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.Services;
 
-public interface ITimelineWorkerService
+public interface ITimelineWorkerService : IAsyncDisposable
 {
     /// <summary>
     /// Loged in user's timeline.

@@ -10,13 +10,13 @@ namespace PheasantTails.TwiHigh.BlazorApp.Client.ViewModels;
 
 internal class FeedsViewModel : ViewModelBase, IFeedsViewModel
 {
-    private readonly IFeedService _feedService;
+    private readonly IFeedWorkerService _feedService;
     public ReactiveCollection<FeedContext> MyFeeds { get; private set; } = default!;
     public AsyncReactiveCommand<ITweet> NavigateStatePageCommand { get; private set; } = default!;
     public AsyncReactiveCommand<ITweet> NavigateStatePageWithReplyCommand { get; private set; } = default!;
     public ReactiveCommandSlim<string> NavigateUserPageCommand { get; private set; } = default!;
 
-    public FeedsViewModel(IFeedService feedService, NavigationManager navigationManager, IMessageService messageService) : base(navigationManager, messageService)
+    public FeedsViewModel(IFeedWorkerService feedService, NavigationManager navigationManager, IMessageService messageService) : base(navigationManager, messageService)
     {
         _feedService = feedService;
     }

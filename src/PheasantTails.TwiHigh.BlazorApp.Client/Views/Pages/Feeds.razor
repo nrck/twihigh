@@ -3,7 +3,7 @@
 @attribute [Authorize]
 @inherits TwiHighPageBase
 @inject IFeedsViewModel ViewModel
-@inject IFeedService FeedService
+@inject IFeedWorkerService FeedService
 @inject IScrollInfoService ScrollInfoService
 
 <PageTitle>通知 - ツイハイ！</PageTitle>
@@ -108,14 +108,14 @@
 @code {
     public override void Dispose()
     {
-        FeedService.NotifyChangedFeeds -= InvokeRender;
+        FeedService.OnChangedFeedTimeline -= InvokeRender;
         base.Dispose();
     }
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        FeedService.NotifyChangedFeeds += InvokeRender;
+        FeedService.OnChangedFeedTimeline += InvokeRender;
     }
 
     private async void InvokeRender() => await InvokeRenderAsync().ConfigureAwait(false);

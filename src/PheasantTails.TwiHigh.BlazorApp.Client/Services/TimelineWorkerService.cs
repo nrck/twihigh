@@ -10,7 +10,7 @@ using System.Web;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.Services;
 
-public class TimelineWorkerService : IAsyncDisposable, ITimelineWorkerService
+public class TimelineWorkerService : ITimelineWorkerService
 {
     public const string LOCAL_STORAGE_KEY_USER_TIMELINE = "UserTimelines_{0}_v3";
 
@@ -44,7 +44,7 @@ public class TimelineWorkerService : IAsyncDisposable, ITimelineWorkerService
     {
         _store = new LocalTimelineStore();
         _localStorageService = localStorageService;
-        _authenticationStateProvider = (TwiHighAuthenticationStateProvider)authenticationStateProvider;
+        _authenticationStateProvider = authenticationStateProvider as TwiHighAuthenticationStateProvider ?? throw new ArgumentNullException(nameof(authenticationStateProvider));
         _cancellationTokenSource = new CancellationTokenSource();
         _httpClient = httpClientFactory.CreateClient();
 
@@ -66,9 +66,9 @@ public class TimelineWorkerService : IAsyncDisposable, ITimelineWorkerService
             return;
         }
         _isDispose = true;
+        await StopAsync();
         while (_isRunning)
         {
-            await StopAsync();
             await Task.Delay(1000);
         }
         GC.SuppressFinalize(this);
@@ -247,8 +247,7 @@ public class TimelineWorkerService : IAsyncDisposable, ITimelineWorkerService
         var oldTweetIndex = _store.Timeline.FindIndex(t => t.Id == tweet.Id && t.UpdateAt < tweet.UpdateAt);
         if (0 <= oldTweetIndex)
         {
-            _store.Timeline.RemoveAt(oldTweetIndex);
-            _store.Timeline.Add(tweet);
+            _store.Timeline[oldTweetIndex] = tweet;
         }
     }
 
