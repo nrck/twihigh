@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.Services;
 
-public interface IFeedService : IAsyncDisposable
+public interface IFeedWorkerService : IAsyncDisposable
 {
     ReadOnlyCollection<FeedContext> FeedTimeline { get; }
 

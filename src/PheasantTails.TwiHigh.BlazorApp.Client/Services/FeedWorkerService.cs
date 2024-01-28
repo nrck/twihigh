@@ -11,7 +11,7 @@ using System.Web;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.Services;
 
-public class FeedService : IFeedService
+public class FeedWorkerService : IFeedWorkerService
 {
     public const string LOCAL_STORAGE_KEY_USER_FEEDS_TIMELINE = "UserFeedsTimelines_{0}_v1";
 
@@ -33,7 +33,7 @@ public class FeedService : IFeedService
 
     private CancellationToken WorkerCancellationToken => _cancellationTokenSource.Token;
 
-    public FeedService(
+    public FeedWorkerService(
         ILocalStorageService localStorageService,
         AuthenticationStateProvider authenticationStateProvider,
         IHttpClientFactory httpClientFactory,
