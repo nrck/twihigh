@@ -1,4 +1,5 @@
-﻿@inherits LayoutComponentBase
+﻿@using Toolbelt.Blazor.PWA.Updater
+@inherits LayoutComponentBase
 @inject IMessageService MessageService
 
 <div class="page">
@@ -29,9 +30,9 @@
     <a class="dismiss">🗙</a>
 </div>
 
-@*
+
 <PWAUpdater Text="TwiHighの新しいバージョンがあります！" ButtonCaption="アップデートする" Align="PWAUpdater.Aligns.Buttom" />
-*@
+
 @code
 {
     protected override void OnInitialized()

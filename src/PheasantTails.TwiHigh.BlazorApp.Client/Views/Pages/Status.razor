@@ -1,0 +1,20 @@
+﻿@page "/{UserDisplayId}/Status/{TweetId}"
+@page "/{UserDisplayId}/Status/{TweetId}/reply"
+@inherits TwiHighPageBase
+@*
+    ツイート単一
+*@
+
+@* タイトル *@
+<PageTitle>@(Title) - @(BRAND_NAME)</PageTitle>
+<THPageHeaderTitle Title="ツイート" />
+
+@* タイムライン *@
+<THTimeline @key="TweetId"
+            Tweets="Tweets"
+            MyTwiHithUserId=MyTwiHithUserId
+            OnClickDelete="OnClickDeleteButtonAsync"
+            PostTweetCommand="PostTweetAsync"
+            OnClickProfileEditor="OnClickProfileEditor"
+            OnClickProfile="OnClickProfile"
+            OnClickDetail="OnClickDetail" />

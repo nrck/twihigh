@@ -1,22 +1,27 @@
-﻿@page "/clear"
+﻿@*
+    Remove timeline and feed in local storage.
+*@
+@page "/clear"
 @attribute [Authorize]
 @inherits TwiHighPageBase
 @inject ITimelineWorkerService TimelineWorkerService
 @inject IFeedWorkerService FeedWorkerService
 
-<PageTitle>キャッシュクリア中 - ツイハイ！</PageTitle>
+<PageTitle>キャッシュクリア中 - @(BRAND_NAME)</PageTitle>
 <THLoading />
 
 @code
 {
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender)
+        if (firstRender)
         {
-            return;
+            // Clear local storage.
+            await TimelineWorkerService.CacheClearAsync();
+            await FeedWorkerService.CacheClearAsync();
+
+            // Navigate to home page.
+            Navigation.NavigateToHomePage(replace: true);
         }
-        await TimelineWorkerService.CacheClearAsync();
-        await FeedWorkerService.CacheClearAsync();
-        Navigation.NavigateToHomePage(false, true);
     }
 }

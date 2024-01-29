@@ -7,6 +7,8 @@ namespace PheasantTails.TwiHigh.BlazorApp.Client.Views.Bases;
 
 public class TwiHighUIBase : ComponentBase, IDisposable, IAsyncDisposable
 {
+    protected const string BRAND_NAME = "ツイハイ！";
+
     [Inject]
     protected NavigationManager Navigation { get; set; } = default!;
 
