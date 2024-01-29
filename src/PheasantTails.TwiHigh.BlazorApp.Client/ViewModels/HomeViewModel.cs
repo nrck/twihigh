@@ -7,10 +7,7 @@ using PheasantTails.TwiHigh.Data.Model.Tweets;
 using PheasantTails.TwiHigh.Interface;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-using System;
-using System.Net.Http.Json;
 using System.Reactive.Linq;
-using System.Text.Json;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.ViewModels;
 
@@ -20,8 +17,6 @@ namespace PheasantTails.TwiHigh.BlazorApp.Client.ViewModels;
 public class HomeViewModel : ViewModelBase, IHomeViewModel
 {
     private readonly ITimelineWorkerService _timelineWorkerService;
-    private readonly HttpClient _httpClient;
-    private readonly Uri _apiUrlTweet;
     private readonly TwiHighAuthenticationStateProvider _authenticationStateProvider;
 
     public ReactivePropertySlim<string> AvatarUrl { get; private set; } = default!;
@@ -82,12 +77,10 @@ public class HomeViewModel : ViewModelBase, IHomeViewModel
 
     public ReactivePropertySlim<bool> IsProcessingMarkAsReaded { get; private set; } = default!;
 
-    public HomeViewModel(AuthenticationStateProvider authenticationStateProvider, HttpClient httpClient, IConfiguration configuration, ITimelineWorkerService timelineWorkerService, NavigationManager navigation, IMessageService messageService)
+    public HomeViewModel(AuthenticationStateProvider authenticationStateProvider, ITimelineWorkerService timelineWorkerService, NavigationManager navigation, IMessageService messageService)
         : base(navigation, messageService)
     {
         // Inject
-        _httpClient = httpClient;
-        _apiUrlTweet = new($"{configuration["TweetApiUrl"]}/");
         _timelineWorkerService = timelineWorkerService;
         _authenticationStateProvider = (TwiHighAuthenticationStateProvider)authenticationStateProvider;
     }

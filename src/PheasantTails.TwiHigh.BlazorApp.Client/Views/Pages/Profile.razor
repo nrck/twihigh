@@ -1,0 +1,73 @@
+﻿@*
+    User profile page
+*@
+@page "/profile/{Id?}"
+@inherits TwiHighPageBase
+
+<PageTitle>@(Title) - @(BRAND_NAME)</PageTitle>
+<THPageHeaderTitle Title="@Title" />
+
+@if (User == null)
+{
+    <THLoading />
+}
+else
+{
+    <section class="px-3">
+        <div class="profile-header">
+            @* アイコン *@
+            <BigAvatarComponent UserAvatarUrl="@User.AvatarUrl" />
+
+            @* フォローボタン *@
+            @if (IsMyTwiHighUser)
+            {
+                <button class="profile-edit-button" @onclick="() => ViewModel.NavigateProfileEditorPageCommand.Execute()">プロフィールを編集</button>
+            }
+            else
+            {
+                <FollowButtonComponent IsFollowing=@IsFollowing OnClickFollowButton="OnClickFollowButton" OnClickRemoveButton="OnClickRemoveButton" />
+            }
+        </div>
+
+        @* プロフィール *@
+        <div class="profile-display-name">
+            @User.DisplayName
+        </div>
+        <div>
+            <span class="profile-display-id">@@@User.DisplayId</span>
+            @if (IsFollowed)
+            {
+                <span class="is-followed">フォローされています</span>
+            }
+        </div>
+        @* アカウント作成日 *@
+        <div class="profile-createdat">
+            <span>@User.CreateAt.ToLocalTime().ToString("d") からツイハイ！の住人です</span>
+        </div>
+        @* Bio *@
+        <div class="profile-biography">
+            <THAutoLink Text="@User.Biography.GetTextWithNewline()" />
+        </div>
+        @* フォロー人数 *@
+        <div class="profile-follow">
+            <a href="profile/@(Id)/follows" style="text-decoration: none;">
+                <span class="number">@User.Follows.Length</span>
+                <span class="text">フォロー中</span>
+            </a>
+            <span class="space"></span>
+            <a href="profile/@(Id)/followers" style="text-decoration: none;">
+                <span class="number">@User.Followers.Length</span>
+                <span class="text">フォロワー</span>
+            </a>
+        </div>
+    </section>
+    @* ツイート *@
+    <THTimeline @key="User.Id"
+                Tweets="ViewModel.Tweets"
+                MyTwiHithUserId="MyTwiHithUserId"
+                DeleteTweetCommand="ViewModel.DeleteMyTweetCommand"
+                OnClickProfileEditor="() => ViewModel.NavigateProfileEditorPageCommand.Execute()"
+                PostTweetCommand="ViewModel.PostTweetCommand"
+                OnClickProfile="ViewModel.NavigateUserPageCommand.Execute"
+                OnClickDetail="ViewModel.NavigateStatePageCommand.Execute" />
+}

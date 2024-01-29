@@ -43,15 +43,15 @@ internal static class NavigationManagerExtension
         navigationManager.NavigateToProfilePage(user.UserDisplayId, forceLoad, replace);
     }
 
-    internal static void NavigateToProfilePage(this NavigationManager navigationManager, string userDisplayId, bool forceLoad = false, bool replace = false)
+    internal static void NavigateToProfilePage(this NavigationManager navigationManager, string userDisplayIdOrGuidString, bool forceLoad = false, bool replace = false)
     {
         ArgumentNullException.ThrowIfNull(navigationManager);
-        if (string.IsNullOrEmpty(userDisplayId))
+        if (string.IsNullOrEmpty(userDisplayIdOrGuidString))
         {
-            throw new ArgumentException($"'{nameof(userDisplayId)}' を NULL または空にすることはできません。", nameof(userDisplayId));
+            throw new ArgumentException($"'{nameof(userDisplayIdOrGuidString)}' を NULL または空にすることはできません。", nameof(userDisplayIdOrGuidString));
         }
 
-        navigationManager.NavigateTo(string.Format(PAGE_PATH_PROFILE, userDisplayId), forceLoad, replace);
+        navigationManager.NavigateTo(string.Format(PAGE_PATH_PROFILE, userDisplayIdOrGuidString), forceLoad, replace);
     }
 
     internal static void NavigateToHomePage(this NavigationManager navigationManager, bool forceLoad = false, bool replace = false)
