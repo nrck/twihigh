@@ -31,7 +31,7 @@ else
     <THTimeline @key="@ViewModel.MyTwiHighUserId.Value"
                 Tweets="@WorkerService.Timeline"
                 MyTwiHithUserId=@ViewModel.MyTwiHighUserId.Value
-                OnClickDelete="async (t) => await ViewModel.DeleteMyTweetCommand.ExecuteAsync(t)"
+                DeleteTweetCommand="ViewModel.DeleteMyTweetCommand"
                 PostTweetCommand="ViewModel.PostTweetCommand"
                 OnClickProfileEditor="() => ViewModel.NavigateProfileEditorPageCommand.Execute()"
                 OnClickProfile="(t) => ViewModel.NavigateUserPageCommand.Execute(t)"

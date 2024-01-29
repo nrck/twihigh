@@ -29,7 +29,7 @@ public class HomeViewModel : ViewModelBase, IHomeViewModel
     /// <summary>
     /// Delete my tweet command.
     /// </summary>
-    public AsyncReactiveCommand<ICosmosDbItemId> DeleteMyTweetCommand { get; private set; } = default!;
+    public AsyncReactiveCommand<DisplayTweet> DeleteMyTweetCommand { get; private set; } = default!;
 
     /// <summary>
     /// Add reaction command.
@@ -95,7 +95,7 @@ public class HomeViewModel : ViewModelBase, IHomeViewModel
     protected override void Initialize()
     {
         AvatarUrl = new ReactivePropertySlim<string>(string.Empty).AddTo(_disposable);
-        DeleteMyTweetCommand = new AsyncReactiveCommand<ICosmosDbItemId>().AddTo(_disposable);
+        DeleteMyTweetCommand = new AsyncReactiveCommand<DisplayTweet>().AddTo(_disposable);
         NavigateStatePageCommand = new ReactiveCommand<ITweet>().AddTo(_disposable);
         NavigateUserPageCommand = new ReactiveCommand<ITwiHighUserSummary>().AddTo(_disposable);
         NavigateStatePageWithReplyCommand = new ReactiveCommand<ITweet>().AddTo(_disposable);
@@ -119,29 +119,11 @@ public class HomeViewModel : ViewModelBase, IHomeViewModel
         NavigateStatePageWithReplyCommand.Subscribe(tweet => _navigationManager.NavigateToStatePage(tweet, true));
         NavigateProfileEditorPageCommand.Subscribe(() => _navigationManager.NavigateToProfileEditorPage());
         NavigateUserPageCommand.Subscribe((t) => _navigationManager.NavigateToProfilePage(t));
-        PostTweetCommand.Subscribe(PostTweetAsync);
+        PostTweetCommand.Subscribe(async (tweet) => await _timelineWorkerService.PostAsync(tweet));
         GetLoginUserIdCommand.Subscribe(SetMyTwiHighUserIdAsync);
         GetGapTweetCommand.Subscribe(GetGapTweetsAsync);
         GetMyAvatarUrlCommand.Subscribe(SetMyTwiHighUserAvatarUrlAsync);
         MarkAsReadedTweetCommand.Subscribe(MarkAsReadedTweets);
-    }
-
-    private async Task PostTweetAsync(PostTweetContext postTweet)
-    {
-        try
-        {
-            HttpResponseMessage res = await _httpClient.PostAsJsonAsync(_apiUrlTweet, postTweet, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
-            res.EnsureSuccessStatusCode();
-            _messageService.SetSucessMessage("ツイートを送信しました！");
-        }
-        catch (Exception _)
-        {
-#if DEBUG
-            HandleException(_);
-#else
-            _messageService.SetErrorMessage("ツイートできませんでした。");
-#endif
-        }
     }
 
     private async Task SetMyTwiHighUserIdAsync()

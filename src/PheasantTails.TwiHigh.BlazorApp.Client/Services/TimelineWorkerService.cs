@@ -4,8 +4,11 @@ using PheasantTails.TwiHigh.BlazorApp.Client.Exceptions;
 using PheasantTails.TwiHigh.BlazorApp.Client.Extensions;
 using PheasantTails.TwiHigh.BlazorApp.Client.Models;
 using PheasantTails.TwiHigh.Data.Model.Timelines;
+using PheasantTails.TwiHigh.Data.Model.Tweets;
 using System.Collections.ObjectModel;
 using System.Net;
+using System.Net.Http.Json;
+using System.Text.Json;
 using System.Web;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.Services;
@@ -28,6 +31,7 @@ public class TimelineWorkerService : ITimelineWorkerService
     private bool _isDispose;
     private bool _isRunning;
     private CancellationTokenSource _cancellationTokenSource;
+    private readonly IMessageService _messageService;
 
     public ReadOnlyCollection<DisplayTweet> Timeline => _store.Timeline.AsReadOnly<DisplayTweet>();
 
@@ -40,13 +44,15 @@ public class TimelineWorkerService : ITimelineWorkerService
         ILocalStorageService localStorageService,
         AuthenticationStateProvider authenticationStateProvider,
         IHttpClientFactory httpClientFactory,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        IMessageService messageService)
     {
         _store = new LocalTimelineStore();
         _localStorageService = localStorageService;
         _authenticationStateProvider = authenticationStateProvider as TwiHighAuthenticationStateProvider ?? throw new ArgumentNullException(nameof(authenticationStateProvider));
         _cancellationTokenSource = new CancellationTokenSource();
         _httpClient = httpClientFactory.CreateClient();
+        _messageService = messageService;
 
         _apiUrlBase = $"{configuration["TweetApiUrl"]}";
         _apiUrlTweet = $"{_apiUrlBase}/";
@@ -91,6 +97,16 @@ public class TimelineWorkerService : ITimelineWorkerService
         TimelineOrderByDescending();
 
         return _store.Timeline.Count;
+    }
+
+    public async ValueTask PostAsync(PostTweetContext postTweet)
+    {
+        HttpResponseMessage res = await _httpClient.PostAsJsonAsync(_apiUrlTweet, postTweet, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+        res.EnsureSuccessStatusCode();
+        DisplayTweet tweet = await res.Content.TwiHighReadFromJsonAsync<DisplayTweet>() ?? throw new TwiHighApiRequestException();
+        Add(tweet);
+        OnChangedTimeline?.Invoke();
+        _messageService.SetSucessMessage("ツイートを送信しました！");
     }
 
     public async ValueTask<int> RemoveAsync(DisplayTweet tweet)

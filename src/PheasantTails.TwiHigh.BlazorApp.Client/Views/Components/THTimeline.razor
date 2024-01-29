@@ -25,7 +25,7 @@
                 <THTweet @key="Tweet.Id"
                          Tweet="Tweet"
                          IsMyTweet=@(MyTwiHithUserId == Tweet.UserId)
-                         OnClickDelete="OnClickDeleteAsync"
+                         DeleteTweetCommand="DeleteTweetCommand"
                          OnClickDetail="OnClickDetailAsync"
                          OnClickFavorite="OnClickFavoriteAsync"
                          OnClickProfile="OnClickProfileAsync"
@@ -57,7 +57,7 @@
     /// ツイート削除ボタンが押下されたときに発火するイベントコールバック
     /// </summary>
     [Parameter]
-    public EventCallback<DisplayTweet> OnClickDelete { get; set; }
+    public AsyncReactiveCommand<DisplayTweet> DeleteTweetCommand { get; set; } = default!;
 
     /// <summary>
     /// ツイート詳細が押下されたときに発火するイベントコールバック
@@ -94,8 +94,6 @@
     /// </summary>
     [Parameter]
     public EventCallback<DisplayTweet> OnClickGapTweetsLoad { get; set; }
-
-    private Task OnClickDeleteAsync(DisplayTweet tweet) => OnClickDelete.InvokeAsync(tweet);
 
     private Task OnClickDetailAsync(DisplayTweet tweet) => OnClickDetail.InvokeAsync(tweet);
 

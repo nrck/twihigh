@@ -28,7 +28,7 @@ namespace PheasantTails.TwiHigh.BlazorApp.Client.Views.Components
         /// ツイート削除ボタンが押下されたときに発火するイベントコールバック
         /// </summary>
         [Parameter]
-        public EventCallback<DisplayTweet> OnClickDelete { get; set; }
+        public AsyncReactiveCommand<DisplayTweet> DeleteTweetCommand { get; set; } = default!;
 
         /// <summary>
         /// ツイート詳細が押下されたときに発火するイベントコールバック
@@ -131,7 +131,14 @@ namespace PheasantTails.TwiHigh.BlazorApp.Client.Views.Components
 
         private Task OnClickUserDisplayId(MouseEventArgs _) => OnClickProfile.InvokeAsync(Tweet);
 
-        private Task OnClickDeleteButton(MouseEventArgs _) => OnClickDelete.InvokeAsync(Tweet);
+        private async Task OnClickDeleteButton(MouseEventArgs _)
+        {
+            if(Tweet == null)
+            {
+                return;
+            }
+            await DeleteTweetCommand.ExecuteAsync(Tweet);
+        }
 
         private void OnClickReplyButton(MouseEventArgs _)
         {

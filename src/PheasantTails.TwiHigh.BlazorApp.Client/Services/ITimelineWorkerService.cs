@@ -1,4 +1,5 @@
 ﻿using PheasantTails.TwiHigh.BlazorApp.Client.Models;
+using PheasantTails.TwiHigh.Data.Model.Tweets;
 using System.Collections.ObjectModel;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.Services;
@@ -48,6 +49,7 @@ public interface ITimelineWorkerService : IAsyncDisposable
     /// Marks tweets as readed.
     /// </summary>
     void MarkAsReadedTweets(IEnumerable<Guid> ids);
+    ValueTask PostAsync(PostTweetContext postTweet);
 
     /// <summary>
     /// Deletes a tweet from this instance's timeline.
