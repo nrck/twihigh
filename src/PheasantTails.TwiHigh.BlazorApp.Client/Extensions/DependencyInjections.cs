@@ -14,6 +14,7 @@ internal static class DependencyInjections
         services.AddTransient<IIndexViewModel, IndexViewModel>();
         services.AddTransient<ILoginViewModel, LoginViewModel>();
         services.AddTransient<IFeedsViewModel, FeedsViewModel>();
+        services.AddTransient<IStatusViewModel, StatusViewModel>();
 
         return services;
     }

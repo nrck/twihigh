@@ -1,13 +1,10 @@
-﻿@page "/Home"
-@*
+﻿@*
     Home page
 *@
+@page "/Home"
 @rendermode InteractiveWebAssembly
 @attribute [Authorize]
 @inherits TwiHighPageBase
-@inject IHomeViewModel ViewModel
-@inject ITimelineWorkerService WorkerService
-@inject IScrollInfoService ScrollInfoService
 
 @* Title *@
 <PageTitle>ホーム - @(BRAND_NAME)</PageTitle>
@@ -37,36 +34,4 @@ else
                 OnClickProfile="(t) => ViewModel.NavigateUserPageCommand.Execute(t)"
                 OnClickGapTweetsLoad="async (t) => await ViewModel.GetGapTweetCommand.ExecuteAsync(t)"
                 OnClickDetail="(t) => ViewModel.NavigateStatePageCommand.Execute(t)" />
-}
-
-@code {
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync().ConfigureAwait(false);
-        ScrollInfoService.OnScroll += ViewModel.MarkAsReadedTweetCommand.Execute;
-        WorkerService.OnChangedTimeline += InvokeRender;
-        await ViewModel.GetLoginUserIdCommand.ExecuteAsync().ConfigureAwait(false);
-        await ViewModel.GetMyAvatarUrlCommand.ExecuteAsync().ConfigureAwait(false);
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        await base.OnAfterRenderAsync(firstRender).ConfigureAwait(false);
-        if (firstRender)
-        {
-            await ScrollInfoService.EnableAsync();
-            WorkerService.Run();
-        }
-    }
-
-    public override async ValueTask DisposeAsync()
-    {
-        ScrollInfoService.OnScroll -= ViewModel.MarkAsReadedTweetCommand.Execute;
-        WorkerService.OnChangedTimeline -= InvokeRender;
-        WorkerService.Stop();
-        await ScrollInfoService.DisableAsync();
-        await base.DisposeAsync();
-    }
-
-    private async void InvokeRender() => await InvokeRenderAsync().ConfigureAwait(false);
 }

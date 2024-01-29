@@ -1,6 +1,8 @@
-﻿@page "/Licence"
+﻿@*
+    Licence Page.
+*@
+@page "/Licence"
 @inherits TwiHighPageBase
-@inject HttpClient client
 
 <PageTitle>ライセンス - @(BRAND_NAME)</PageTitle>
 <THPageHeaderTitle Title="ライセンス" />
@@ -19,21 +21,4 @@ else if (0 < Licences.Length)
 else
 {
     <THNoContents NoContentsText="表示するライセンスはありません。" />
-}
-
-@code {
-    private Licence[]? Licences { get; set; }
-
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-        try
-        {
-            Licences = await client.GetFromJsonAsync<Licence[]>($"{Navigation.BaseUri}licenses.json") ?? [];
-        }
-        catch (Exception)
-        {
-            Licences = [];
-        }
-    }
 }

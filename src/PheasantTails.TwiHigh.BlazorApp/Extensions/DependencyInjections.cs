@@ -14,6 +14,7 @@ public static class DependencyInjections
         services.AddScoped<IIndexViewModel, ViewModels.IndexViewModel>();
         services.AddScoped<ILoginViewModel, LoginViewModel>();
         services.AddScoped<IFeedsViewModel, FeedsViewModel>();
+        services.AddScoped<IStatusViewModel, StatusViewModel>();
 
         return services;
     }

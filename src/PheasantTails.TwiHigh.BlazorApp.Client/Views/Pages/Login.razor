@@ -1,9 +1,8 @@
-﻿@page "/Login"
-@*
+﻿@*
     Login page
 *@
+@page "/Login"
 @inherits TwiHighPageBase
-@inject ILoginViewModel ViewModel
 
 <PageTitle>ログイン - @(BRAND_NAME)</PageTitle>
 <section>
@@ -31,17 +30,3 @@
         </div>
     </div>
 </section>
-
-@code {
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        SubscribeStateHasChanged(ViewModel.CheckAuthenticationStateCommand);
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        await base.OnInitializedAsync();
-        await ViewModel.CheckAuthenticationStateCommand.ExecuteAsync();
-    }
-}

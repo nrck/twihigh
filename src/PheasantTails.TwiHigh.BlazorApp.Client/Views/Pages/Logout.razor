@@ -1,19 +1,8 @@
-﻿@page "/Logout"
+﻿@*
+    Logout page.
+*@
+@page "/Logout"
 @inherits TwiHighPageBase
-@inject IMessageService MessageService
 
 <PageTitle>ログアウト中 - @(BRAND_NAME)</PageTitle>
 <THLoading />
-
-@code {
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        await base.OnInitializedAsync();
-        if (firstRender)
-        {
-            await ((TwiHighAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsLoggedOutAsync();
-            MessageService.SetInfoMessage("ログアウトしました。");
-            Navigation.NavigateToLoginPage(replace: true);
-        }
-    }
-}

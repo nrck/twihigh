@@ -1,10 +1,10 @@
-﻿@page "/Feeds"
+﻿@*
+    Feed page
+*@
+@page "/Feeds"
 @using PheasantTails.TwiHigh.Data.Model.Feeds
 @attribute [Authorize]
 @inherits TwiHighPageBase
-@inject IFeedsViewModel ViewModel
-@inject IFeedWorkerService FeedService
-@inject IScrollInfoService ScrollInfoService
 
 <PageTitle>通知 - @(BRAND_NAME)</PageTitle>
 <THPageHeaderTitle Title="通知" />
@@ -104,19 +104,3 @@
         <THNoContents NoContentsText="通知はありません。" />
     }
 </section>
-
-@code {
-    public override void Dispose()
-    {
-        FeedService.OnChangedFeedTimeline -= InvokeRender;
-        base.Dispose();
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-        FeedService.OnChangedFeedTimeline += InvokeRender;
-    }
-
-    private async void InvokeRender() => await InvokeRenderAsync().ConfigureAwait(false);
-}

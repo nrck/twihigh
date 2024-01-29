@@ -11,7 +11,7 @@ using System.Collections.ObjectModel;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.ViewModels;
 
-public class StatusViewModel : ViewModelBase
+public class StatusViewModel : ViewModelBase, IStatusViewModel
 {
     private readonly ITimelineWorkerService _timelineWorkerService;
     private readonly IJSRuntime _jSRuntime;
@@ -32,7 +32,7 @@ public class StatusViewModel : ViewModelBase
     public AsyncReactiveCommand<string> FetchTweetsCommand { get; private set; } = default!;
     public AsyncReactiveCommand<string> ScrollToTargetTweetCommand { get; private set; } = default!;
 
-    public StatusViewModel(IJSRuntime jSRuntime,IHttpClientFactory httpClientFactory, IConfiguration configuration, ITimelineWorkerService timelineWorkerService, NavigationManager navigationManager, IMessageService messageService)
+    public StatusViewModel(IJSRuntime jSRuntime, IHttpClientFactory httpClientFactory, IConfiguration configuration, ITimelineWorkerService timelineWorkerService, NavigationManager navigationManager, IMessageService messageService)
         : base(navigationManager, messageService)
     {
         _jSRuntime = jSRuntime;

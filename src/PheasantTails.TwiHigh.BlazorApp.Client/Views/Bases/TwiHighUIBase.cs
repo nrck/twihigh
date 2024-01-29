@@ -18,7 +18,9 @@ public class TwiHighUIBase : ComponentBase, IDisposable, IAsyncDisposable
     [CascadingParameter]
     protected Task<AuthenticationState>? AuthenticationState { get; set; }
 
-    public async Task InvokeRenderAsync() => await InvokeAsync(StateHasChanged);
+    protected async Task InvokeRenderAsync() => await InvokeAsync(StateHasChanged).ConfigureAwait(false);
+
+    protected async void InvokeRender() => await InvokeAsync(StateHasChanged).ConfigureAwait(false);
 
     public IDisposable SubscribeStateHasChanged<T>(IObservable<T> command) => command.Subscribe(async (_) => await InvokeRenderAsync());
 

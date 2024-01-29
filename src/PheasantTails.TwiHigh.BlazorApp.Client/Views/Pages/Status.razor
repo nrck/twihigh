@@ -1,10 +1,9 @@
-﻿@page "/{UserDisplayId}/Status/{TweetId}"
+﻿@*
+    Tweet page
+*@
+@page "/{UserDisplayId}/Status/{TweetId}"
 @page "/{UserDisplayId}/Status/{TweetId}/reply"
 @inherits TwiHighPageBase
-@inject StatusViewModel ViewModel
-@*
-    ツイート単一
-*@
 
 @* タイトル *@
 <PageTitle>@(ViewModel.PageTitle) - @(BRAND_NAME)</PageTitle>
@@ -19,49 +18,3 @@
             OnClickProfileEditor="() => ViewModel.NavigateProfileEditorPageCommand.Execute()"
             OnClickProfile="ViewModel.NavigateUserPageCommand.Execute"
             OnClickDetail="ViewModel.NavigateStatePageCommand.Execute" />
-
-@code {
-    [Parameter]
-    public string UserDisplayId { get; set; } = default!;
-
-    [Parameter]
-    public string TweetId { get; set; } = default!;
-
-    private Guid MyTwiHithUserId { get; set; }
-
-    public override void Dispose()
-    {
-        Navigation.LocationChanged -= OnLocationChanged;
-        base.Dispose();
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-        var id = await ((TwiHighAuthenticationStateProvider)AuthenticationStateProvider).GetLoggedInUserIdAsync().ConfigureAwait(false);
-        if (Guid.TryParse(id, out var result))
-        {
-            MyTwiHithUserId = result;
-        }
-        Navigation.LocationChanged += OnLocationChanged;
-        SubscribeStateHasChanged(ViewModel.FetchTweetsCommand);
-        SubscribeStateHasChanged(ViewModel.PostTweetCommand);
-        SubscribeStateHasChanged(ViewModel.DeleteMyTweetCommand);
-        SubscribeStateHasChanged(ViewModel.PageTitle);
-    }
-
-    protected override async Task OnParametersSetAsync()
-    {
-        await base.OnParametersSetAsync().ConfigureAwait(false);
-        await ViewModel.FetchTweetsCommand.ExecuteAsync(TweetId).ConfigureAwait(false);
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        await base.OnAfterRenderAsync(firstRender);
-        await ViewModel.ScrollToTargetTweetCommand.ExecuteAsync(TweetId);
-    }
-
-    private async void OnLocationChanged(object? sender, LocationChangedEventArgs e)
-        => await ViewModel.ScrollToTargetTweetCommand.ExecuteAsync(TweetId);
-}

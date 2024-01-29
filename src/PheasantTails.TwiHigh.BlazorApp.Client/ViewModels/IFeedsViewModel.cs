@@ -4,7 +4,7 @@ using Reactive.Bindings;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.ViewModels;
 
-public interface IFeedsViewModel
+public interface IFeedsViewModel : IViewModelBase
 {
     ReactiveCollection<FeedContext> MyFeeds { get; }
     AsyncReactiveCommand<ITweet> NavigateStatePageCommand { get; }
