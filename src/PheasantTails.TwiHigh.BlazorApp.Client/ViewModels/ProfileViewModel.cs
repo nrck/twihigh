@@ -81,6 +81,7 @@ public class ProfileViewModel : ViewModelBase
         NavigateStatePageCommand.Subscribe(tweet => _navigationManager.NavigateToStatePage(tweet));
         GetUserTimelineCommand.Subscribe(GetUserTimelineAsync);
         FollowUserDisplayedOnScreenCommand.Subscribe(FollowUserDisplayedOnScreenAsync);
+        RemoveUserDisplayedOnScreenCommand.Subscribe(RemoveUserDisplayedOnScreenAsync);
     }
 
     private async Task GetUserTimelineAsync(string? id)
@@ -152,6 +153,24 @@ public class ProfileViewModel : ViewModelBase
 
     private async Task RemoveUserDisplayedOnScreenAsync()
     {
+        if (UserDisplayedOnScreen.Value == null)
+        {
+            return;
+        }
 
+        try
+        {
+            string url = string.Format(_apiUrlRemoveFollow, UserDisplayedOnScreen.Value.Id);
+            HttpResponseMessage res = await _httpClient.DeleteAsync(url);
+            res.EnsureSuccessStatusCode();
+            _messageService.SetInfoMessage($"@{UserDisplayedOnScreen.Value.DisplayId}さんをリムーブしました！");
+            string urlGetTwihighUser = string.Format(_apiUrlGetTwihighUser, UserDisplayedOnScreen.Value.Id);
+            UserDisplayedOnScreen.Value = await _httpClient.GetFromJsonAsync<ResponseTwiHighUserContext>(urlGetTwihighUser).ConfigureAwait(false);
+
+        }
+        catch (HttpRequestException)
+        {
+            _messageService.SetErrorMessage("リムーブできませんでした。");
+        }
     }
 }

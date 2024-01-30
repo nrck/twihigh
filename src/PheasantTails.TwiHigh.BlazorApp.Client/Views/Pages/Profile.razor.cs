@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using PheasantTails.TwiHigh.BlazorApp.Client.Services;
 using PheasantTails.TwiHigh.BlazorApp.Client.ViewModels;
 using PheasantTails.TwiHigh.BlazorApp.Client.Views.Bases;
@@ -19,8 +20,6 @@ public partial class Profile : TwiHighPageBase
     private bool IsFollowed { get; set; }
 
     private Guid MyTwiHithUserId { get; set; }
-
-    private bool IsProcessing { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -48,51 +47,28 @@ public partial class Profile : TwiHighPageBase
 
     private async Task OnClickRemoveButton()
     {
-        if (User == null)
-        {
-            return;
-        }
-        if (IsProcessing)
-        {
-            return;
-        }
-        IsProcessing = true;
-        try
-        {
-            var res = await FollowHttpClient.DeleteFolloweeAsync(User.Id.ToString());
-            res.EnsureSuccessStatusCode();
-            SetInfoMessage($"@{User.DisplayId}さんをリムーブしました！");
-            User = await AppUserHttpClient.GetTwiHighUserAsync(Id);
-        }
-        catch (HttpRequestException ex)
-        {
-            SetErrorMessage("リムーブできませんでした。");
-        }
-        finally
-        {
-            IsProcessing = false;
-        }
+        await ViewModel.RemoveUserDisplayedOnScreenCommand.ExecuteAsync();
         await SetFollowButtonAsync();
         StateHasChanged();
     }
 
     private async Task SetFollowButtonAsync()
     {
-        if (User == null || AuthenticationState == null)
+        if (ViewModel.UserDisplayedOnScreen.Value == null || AuthenticationState == null)
         {
             return;
         }
-        var state = await AuthenticationState;
+        AuthenticationState state = await AuthenticationState;
         if (state == null || state.User.Identity == null || !state.User.Identity.IsAuthenticated)
         {
             return;
         }
-        var id = state.User.Claims.FirstOrDefault(c => c.Type == nameof(ResponseTwiHighUserContext.Id))?.Value;
-        if (Guid.TryParse(id, out var myGuid))
+        string? id = state.User.Claims.FirstOrDefault(c => c.Type == nameof(ResponseTwiHighUserContext.Id))?.Value;
+        if (Guid.TryParse(id, out Guid myGuid))
         {
-            IsFollowing = User.Followers.Any(guid => guid == myGuid);
-            IsFollowed = User.Follows.Any(guid => guid == myGuid);
-            IsMyTwiHighUser = User.Id == myGuid;
+            IsFollowing = ViewModel.UserDisplayedOnScreen.Value.Followers.Any(guid => guid == myGuid);
+            IsFollowed = ViewModel.UserDisplayedOnScreen.Value.Follows.Any(guid => guid == myGuid);
+            ViewModel.IsMyTwiHighUser.Value = ViewModel.UserDisplayedOnScreen.Value.Id == myGuid;
         }
         StateHasChanged();
     }
