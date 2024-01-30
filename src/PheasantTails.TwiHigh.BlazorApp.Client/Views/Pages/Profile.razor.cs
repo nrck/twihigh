@@ -10,7 +10,7 @@ namespace PheasantTails.TwiHigh.BlazorApp.Client.Views.Pages;
 public partial class Profile : TwiHighPageBase
 {
     [Inject]
-    public ProfileViewModel ViewModel { get; set; } = default!;
+    public IProfileViewModel ViewModel { get; set; } = default!;
 
     [Parameter]
     public string? Id { get; set; }

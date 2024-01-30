@@ -14,7 +14,7 @@ using System.Net.Http.Json;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.ViewModels;
 
-public class ProfileViewModel : ViewModelBase
+public class ProfileViewModel : ViewModelBase, IProfileViewModel
 {
     private readonly ITimelineWorkerService _timelineWorkerService;
     private readonly TwiHighAuthenticationStateProvider _authenticationStateProvider;
