@@ -26,6 +26,8 @@ public class TwiHighUIBase : ComponentBase, IDisposable, IAsyncDisposable
 
     public IDisposable SubscribeStateHasChanged<T>(AsyncReactiveCommand<T> command) => command.Subscribe(async (_) => await InvokeRenderAsync());
 
+    public void SubscribeStateHasChanged<T>(ReactiveCollection<T> collection) => collection.CollectionChanged += (_, _) => InvokeRender();
+
     public async ValueTask<Guid> GetLoginUserIdAsync()
     {
         string userId = await ((TwiHighAuthenticationStateProvider)AuthenticationStateProvider).GetLoggedInUserIdAsync();

@@ -1,0 +1,24 @@
+﻿@page "/Profile/{Id}/Followers"
+@using PheasantTails.TwiHigh.Data.Model.TwiHighUsers
+@inherits TwiHighPageBase
+
+<PageTitle>@(ViewModel.PageTitle.Value) - @(BRAND_NAME)</PageTitle>
+<THPageHeaderTitle Title="@ViewModel.PageTitle.Value" />
+
+<section>
+    @if (ViewModel.UserFollowers == null)
+    {
+        <THLoading />
+    }
+    else if (0 < ViewModel.UserFollowers.Count)
+    {
+        @foreach (ResponseTwiHighUserContext user in ViewModel.UserFollowers)
+        {
+            <THUser User="user" />
+        }
+    }
+    else
+    {
+        <THNoContents NoContentsText="フォロワーはいません。" />
+    }
+</section>
