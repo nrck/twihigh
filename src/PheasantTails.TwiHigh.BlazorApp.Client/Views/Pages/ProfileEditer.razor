@@ -1,0 +1,68 @@
+﻿@page "/profile/editor"
+@inherits PageBase
+@attribute [Authorize]
+@*
+    プロフィール編集
+*@
+
+<PageTitle>@(Title) - ツイハイ！</PageTitle>
+<PageTitleComponent Title="@Title" />
+
+@if (User == null)
+{
+    <Loading />
+}
+else
+{
+    <section class="px-3">
+        <div class="profile-header">
+            @* アイコン *@
+            <div class="file-input-button">
+                <img src="@AvatarUrl" loading="lazy" />
+                <InputFile id="avatar-data" style="display: none;" OnChange="LoadFiles" accept="image/png, image/jpeg" />
+                @if (0 < LocalRowAvatarData.LongLength)
+                {
+                    <label @onclick=OnClickAvatarResetButton>
+                        <span class="oi oi-action-undo camera"></span>
+                    </label>
+                }
+                else
+                {
+                    <label for="avatar-data">
+                        <span class="oi oi-camera-slr camera"></span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        @* プロフィール *@
+        <div class="profile-display-name">
+            <span>アカウント名</span>
+            <span class="help">画面上に表示されるアカウントの名前です。</span>
+            <input type="text" @bind-value=@DisplayName />
+        </div>
+        <div>
+            <span>アカウントID</span>
+            <span class="help">ログイン時やプロフィールページのアドレスに使われます。</span>
+            <input type="text" @bind-value=@DisplayId />
+        </div>
+        @* Bio *@
+        <div class="profile-biography">
+            <span>自己紹介</span>
+            <span class="help">プロフィールページに表示される自己紹介文です。</span>
+            <textarea @bind=@Biography />
+        </div>
+        <div class="profile-save">
+            <button class="profile-save-button" @onclick=OnClickSaveButtonAsync>
+                @if (IsWorking)
+                {
+                    @("更新中...")
+                }
+                else
+                {
+                    @("保存する")
+                }
+            </button>
+        </div>
+    </section>
+}
