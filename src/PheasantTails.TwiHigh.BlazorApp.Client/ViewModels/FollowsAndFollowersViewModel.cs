@@ -7,7 +7,7 @@ using System.Net.Http.Json;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.ViewModels;
 
-public class FollowersViewModel : ViewModelBase
+public class FollowsAndFollowersViewModel : ViewModelBase, IFollowersViewModel
 {
     private readonly HttpClient _httpClient;
     private readonly string _apiUrlBase;
@@ -21,7 +21,7 @@ public class FollowersViewModel : ViewModelBase
     public ReactivePropertySlim<bool> CanExequteGetTwiHighUserFollowersCommand { get; private set; } = default!;
     public AsyncReactiveCommand<string> GetTwiHighUserFollowersCommand { get; private set; } = default!;
 
-    public FollowersViewModel(HttpClient httpClient, IConfiguration configuration, NavigationManager navigationManager, IMessageService messageService)
+    public FollowsAndFollowersViewModel(HttpClient httpClient, IConfiguration configuration, NavigationManager navigationManager, IMessageService messageService)
         : base(navigationManager, messageService)
     {
         _httpClient = httpClient;
@@ -62,7 +62,7 @@ public class FollowersViewModel : ViewModelBase
             PageTitle.Value = $"{UserDisplayedOnScreen.Value.DisplayName}（@{UserDisplayedOnScreen.Value.DisplayId}）のフォロワー";
         }
         string url = string.Format(_apiUrlGetTwihighUserFollowers, id);
-        ResponseTwiHighUserContext[] users =  await _httpClient.GetFromJsonAsync<ResponseTwiHighUserContext[]>(url) ?? [];
+        ResponseTwiHighUserContext[] users = await _httpClient.GetFromJsonAsync<ResponseTwiHighUserContext[]>(url) ?? [];
         UserFollowers.AddRangeOnScheduler(users);
     }
 }
