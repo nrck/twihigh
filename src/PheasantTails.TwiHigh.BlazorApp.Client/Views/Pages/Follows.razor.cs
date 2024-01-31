@@ -4,27 +4,27 @@ using PheasantTails.TwiHigh.BlazorApp.Client.Views.Bases;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.Views.Pages;
 
-public partial class Followers : TwiHighPageBase
+public partial class Follows : TwiHighPageBase
 {
     [Parameter]
     public string Id { get; set; } = string.Empty;
 
     [Inject]
-    public IFollowersViewModel ViewModel { get; set; } = default!;
+    public IFollowsViewModel ViewModel { get; set; } = default!;
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        SubscribeStateHasChanged(ViewModel.GetTwiHighUserFollowersCommand);
+        SubscribeStateHasChanged(ViewModel.GetTwiHighUserFollowsCommand);
         SubscribeStateHasChanged(ViewModel.UserDisplayedOnScreen);
-        SubscribeStateHasChanged(ViewModel.UserFollowers);
+        SubscribeStateHasChanged(ViewModel.UserFollows);
         SubscribeStateHasChanged(ViewModel.PageTitle);
-        SubscribeStateHasChanged(ViewModel.CanExequteGetTwiHighUserFollowersCommand);
+        SubscribeStateHasChanged(ViewModel.CanExequteGetTwiHighUserFollowsCommand);
     }
 
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
-        await ViewModel.GetTwiHighUserFollowersCommand.ExecuteAsync(Id);
+        await ViewModel.GetTwiHighUserFollowsCommand.ExecuteAsync(Id);
     }
 }

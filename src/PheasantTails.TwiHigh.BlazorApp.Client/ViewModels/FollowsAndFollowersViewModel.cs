@@ -7,7 +7,7 @@ using System.Net.Http.Json;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.ViewModels;
 
-public class FollowsAndFollowersViewModel : ViewModelBase, IFollowersViewModel
+public class FollowsAndFollowersViewModel : ViewModelBase, IFollowersViewModel, IFollowsViewModel
 {
     private readonly HttpClient _httpClient;
     private readonly string _apiUrlBase;
@@ -18,8 +18,12 @@ public class FollowsAndFollowersViewModel : ViewModelBase, IFollowersViewModel
     public ReactivePropertySlim<string> PageTitle { get; private set; } = default!;
     public ReactivePropertySlim<ResponseTwiHighUserContext?> UserDisplayedOnScreen { get; private set; } = default!;
     public ReactiveCollection<ResponseTwiHighUserContext> UserFollowers { get; private set; } = default!;
+    public ReactiveCollection<ResponseTwiHighUserContext> UserFollows { get; private set; } = default!;
     public ReactivePropertySlim<bool> CanExequteGetTwiHighUserFollowersCommand { get; private set; } = default!;
+    public ReactivePropertySlim<bool> CanExequteGetTwiHighUserFollowsCommand { get; private set; } = default!;
     public AsyncReactiveCommand<string> GetTwiHighUserFollowersCommand { get; private set; } = default!;
+    public AsyncReactiveCommand<string> GetTwiHighUserFollowsCommand { get; private set; } = default!;
+
 
     public FollowsAndFollowersViewModel(HttpClient httpClient, IConfiguration configuration, NavigationManager navigationManager, IMessageService messageService)
         : base(navigationManager, messageService)
@@ -37,32 +41,59 @@ public class FollowsAndFollowersViewModel : ViewModelBase, IFollowersViewModel
         UserDisplayedOnScreen = new ReactivePropertySlim<ResponseTwiHighUserContext?>().AddTo(_disposable);
         UserFollowers = new ReactiveCollection<ResponseTwiHighUserContext>().AddTo(_disposable);
         CanExequteGetTwiHighUserFollowersCommand = new ReactivePropertySlim<bool>(true).AddTo(_disposable);
-        GetTwiHighUserFollowersCommand = new AsyncReactiveCommand<string>().AddTo(_disposable);
+        CanExequteGetTwiHighUserFollowsCommand = new ReactivePropertySlim<bool>(true).AddTo(_disposable);
+        GetTwiHighUserFollowersCommand = new AsyncReactiveCommand<string>(CanExequteGetTwiHighUserFollowersCommand).AddTo(_disposable);
+        GetTwiHighUserFollowsCommand = new AsyncReactiveCommand<string>(CanExequteGetTwiHighUserFollowsCommand).AddTo(_disposable);
     }
 
     protected override void Subscribe()
     {
         GetTwiHighUserFollowersCommand.Subscribe(GetTwiHighUserFollowersAsync);
+        GetTwiHighUserFollowsCommand.Subscribe(GetTwiHighUserFollowsAsync);
     }
 
     private async Task GetTwiHighUserFollowersAsync(string id)
     {
-        PageTitle.Value = "プロフィール読み込み中";
-        UserDisplayedOnScreen.Value = null;
-        UserFollowers.ClearOnScheduler();
+        ValiableInitialize();
+        UserDisplayedOnScreen.Value = await GetTwiHighUserAsync(id).ConfigureAwait(false);
+        SetPageTitle(false);
+        string url = string.Format(_apiUrlGetTwihighUserFollowers, id);
+        ResponseTwiHighUserContext[] users = await _httpClient.GetFromJsonAsync<ResponseTwiHighUserContext[]>(url) ?? [];
+        UserFollowers.AddRangeOnScheduler(users);
+    }
 
+    private async Task GetTwiHighUserFollowsAsync(string id)
+    {
+        ValiableInitialize();
+        UserDisplayedOnScreen.Value = await GetTwiHighUserAsync(id).ConfigureAwait(false);
+        SetPageTitle(true);
+        string url = string.Format(_apiUrlGetTwihighUserFollows, id);
+        ResponseTwiHighUserContext[] users = await _httpClient.GetFromJsonAsync<ResponseTwiHighUserContext[]>(url) ?? [];
+        UserFollows.AddRangeOnScheduler(users);
+    }
+
+    private async Task<ResponseTwiHighUserContext?> GetTwiHighUserAsync(string id)
+    {
         string urlGetTwihighUser = string.Format(_apiUrlGetTwihighUser, id);
-        UserDisplayedOnScreen.Value = await _httpClient.GetFromJsonAsync<ResponseTwiHighUserContext>(urlGetTwihighUser).ConfigureAwait(false);
+        return await _httpClient.GetFromJsonAsync<ResponseTwiHighUserContext>(urlGetTwihighUser).ConfigureAwait(false);
+    }
+
+    private void SetPageTitle(bool isFollow)
+    {
         if (UserDisplayedOnScreen.Value == null)
         {
             PageTitle.Value = "プロフィールを読み込めませんでした。";
         }
         else
         {
-            PageTitle.Value = $"{UserDisplayedOnScreen.Value.DisplayName}（@{UserDisplayedOnScreen.Value.DisplayId}）のフォロワー";
+            PageTitle.Value = $"{UserDisplayedOnScreen.Value.DisplayName}（@{UserDisplayedOnScreen.Value.DisplayId}）の{(isFollow ? "フォロー" : "フォロワー")}";
         }
-        string url = string.Format(_apiUrlGetTwihighUserFollowers, id);
-        ResponseTwiHighUserContext[] users = await _httpClient.GetFromJsonAsync<ResponseTwiHighUserContext[]>(url) ?? [];
-        UserFollowers.AddRangeOnScheduler(users);
+    }
+
+    private void ValiableInitialize()
+    {
+        PageTitle.Value = "プロフィール読み込み中";
+        UserDisplayedOnScreen.Value = null;
+        UserFollowers.ClearOnScheduler();
     }
 }
