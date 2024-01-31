@@ -1,16 +1,16 @@
 ﻿@page "/profile/editor"
-@inherits PageBase
+@inherits TwiHighPageBase
 @attribute [Authorize]
 @*
     プロフィール編集
 *@
 
 <PageTitle>@(Title) - ツイハイ！</PageTitle>
-<PageTitleComponent Title="@Title" />
+<THPageHeaderTitle Title="@Title" />
 
 @if (User == null)
 {
-    <Loading />
+    <THLoading />
 }
 else
 {

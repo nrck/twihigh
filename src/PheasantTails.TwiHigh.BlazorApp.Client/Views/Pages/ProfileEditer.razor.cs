@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
-using PheasantTails.TwiHigh.Client.TypedHttpClients;
+using PheasantTails.TwiHigh.BlazorApp.Client.Extensions;
+using PheasantTails.TwiHigh.BlazorApp.Client.Services;
+using PheasantTails.TwiHigh.BlazorApp.Client.Views.Bases;
 using PheasantTails.TwiHigh.Data.Model.TwiHighUsers;
 
-namespace PheasantTails.TwiHigh.Client.Pages
+namespace PheasantTails.TwiHigh.BlazorApp.Client.Views.Pages
 {
-    public partial class ProfileEditer : PageBase
+    public partial class ProfileEditer : TwiHighPageBase
     {
         private ResponseTwiHighUserContext? User { get; set; }
 
@@ -27,14 +29,14 @@ namespace PheasantTails.TwiHigh.Client.Pages
             if (string.IsNullOrEmpty(id))
             {
                 await ((TwiHighAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsLoggedOutAsync();
-                Navigation.NavigateTo(DefinePaths.PAGE_PATH_LOGIN);
+                Navigation.NavigateToLoginPage();
             }
 
             User = await AppUserHttpClient.GetTwiHighUserAsync(id);
             if (User == null)
             {
                 await ((TwiHighAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsLoggedOutAsync();
-                Navigation.NavigateTo(DefinePaths.PAGE_PATH_LOGIN);
+                Navigation.NavigateToLoginPage();
                 return;
             }
             SetDisplayVariables();
