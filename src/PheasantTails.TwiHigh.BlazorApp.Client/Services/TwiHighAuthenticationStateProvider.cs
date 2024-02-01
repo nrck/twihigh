@@ -30,25 +30,32 @@ public class TwiHighAuthenticationStateProvider : AuthenticationStateProvider
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        string jwt = await GetTokenFromLocalStorageAsync();
-
-        // Check Expiry.
-        string newjwt = await EnsureWithinExpirationAsync(jwt, TimeSpan.FromDays(1));
-        if (string.IsNullOrEmpty(newjwt))
+        AuthenticationState authState = new(new ClaimsPrincipal(new ClaimsIdentity()));
+        try
         {
-            // If this token is null, Remove token value from local storage.
-            await RemoveTokenFromLocalStorageAsync();
-            return _defaultAuthenticationState;
+            string jwt = await GetTokenFromLocalStorageAsync();
+
+            // Check Expiry.
+            string newjwt = await EnsureWithinExpirationAsync(jwt, TimeSpan.FromDays(1));
+            if (string.IsNullOrEmpty(newjwt))
+            {
+                // If this token is null, Remove token value from local storage.
+                await RemoveTokenFromLocalStorageAsync();
+                return _defaultAuthenticationState;
+            }
+
+            // Create AuthenticationState object.
+            authState = new(new ClaimsPrincipal(new ClaimsIdentity(ParseClaimsFromJwt(newjwt), "apiauth")));
+
+            // Update token.
+            if (jwt != newjwt)
+            {
+                await SetTokenToLocalStorageAsync(newjwt);
+                NotifyAuthenticationStateChanged(Task.FromResult(authState));
+            }
         }
-
-        // Create AuthenticationState object.
-        AuthenticationState authState = new(new ClaimsPrincipal(new ClaimsIdentity(ParseClaimsFromJwt(newjwt), "apiauth")));
-
-        // Update token.
-        if (jwt != newjwt)
+        catch (InvalidOperationException)
         {
-            await SetTokenToLocalStorageAsync(newjwt);
-            NotifyAuthenticationStateChanged(Task.FromResult(authState));
         }
 
         return authState;
