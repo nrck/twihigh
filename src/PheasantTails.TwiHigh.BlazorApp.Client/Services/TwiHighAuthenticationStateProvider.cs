@@ -117,6 +117,20 @@ public class TwiHighAuthenticationStateProvider : AuthenticationStateProvider
     }
 
     /// <summary>
+    /// Refresh the authentication state.
+    /// </summary>
+    public async ValueTask RefreshAuthenticationStateAsync()
+    {
+        string token = await GetRefreshedTokenAsync().ConfigureAwait(false);
+        if (string.IsNullOrEmpty(token))
+        {
+            await MarkUserAsLoggedOutAsync();
+            return;
+        }
+        await MarkUserAsAuthenticatedAsync(token).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Parse claims from jwt.
     /// </summary>
     private IEnumerable<Claim> ParseClaimsFromJwt(string jwt)

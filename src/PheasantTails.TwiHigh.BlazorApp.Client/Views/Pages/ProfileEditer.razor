@@ -1,14 +1,14 @@
-﻿@page "/profile/editor"
+﻿@page "/Profile/Editor"
 @inherits TwiHighPageBase
 @attribute [Authorize]
 @*
     プロフィール編集
 *@
 
-<PageTitle>@(Title) - ツイハイ！</PageTitle>
-<THPageHeaderTitle Title="@Title" />
+<PageTitle>@(ViewModel.HeaderTitle.Value) - @(BRAND_NAME)</PageTitle>
+<THPageHeaderTitle Title="@ViewModel.HeaderTitle.Value" />
 
-@if (User == null)
+@if (ViewModel.User.Value == null)
 {
     <THLoading />
 }
@@ -18,18 +18,18 @@ else
         <div class="profile-header">
             @* アイコン *@
             <div class="file-input-button">
-                <img src="@AvatarUrl" loading="lazy" />
-                <InputFile id="avatar-data" style="display: none;" OnChange="LoadFiles" accept="image/png, image/jpeg" />
-                @if (0 < LocalRowAvatarData.LongLength)
+                <img src="@ViewModel.AvatarUrl.Value" loading="lazy" />
+                <InputFile id="avatar-data" style="display: none;" OnChange="async (e) => await ViewModel.LoadLocalFileCommand.ExecuteAsync(e).ConfigureAwait(false)" accept="image/png, image/jpeg" />
+                @if (ViewModel.LocalRawAvatarContent == null)
                 {
-                    <label @onclick=OnClickAvatarResetButton>
-                        <span class="oi oi-action-undo camera"></span>
+                    <label for="avatar-data">
+                        <span class="oi oi-camera-slr camera"></span>
                     </label>
                 }
                 else
                 {
-                    <label for="avatar-data">
-                        <span class="oi oi-camera-slr camera"></span>
+                    <label @onclick="_ => ViewModel.AvatarResetCommand.Execute()">
+                        <span class="oi oi-action-undo camera"></span>
                     </label>
                 }
             </div>
@@ -39,28 +39,28 @@ else
         <div class="profile-display-name">
             <span>アカウント名</span>
             <span class="help">画面上に表示されるアカウントの名前です。</span>
-            <input type="text" @bind-value=@DisplayName />
+            <input type="text" @bind-value=@ViewModel.DisplayName.Value />
         </div>
         <div>
             <span>アカウントID</span>
             <span class="help">ログイン時やプロフィールページのアドレスに使われます。</span>
-            <input type="text" @bind-value=@DisplayId />
+            <input type="text" @bind-value=@ViewModel.DisplayId.Value />
         </div>
         @* Bio *@
         <div class="profile-biography">
             <span>自己紹介</span>
             <span class="help">プロフィールページに表示される自己紹介文です。</span>
-            <textarea @bind=@Biography />
+            <textarea @bind=@ViewModel.Biography.Value />
         </div>
         <div class="profile-save">
-            <button class="profile-save-button" @onclick=OnClickSaveButtonAsync>
-                @if (IsWorking)
+            <button class="profile-save-button" @onclick="async () => await ViewModel.SaveCommand.ExecuteAsync().ConfigureAwait(false)">
+                @if (ViewModel.CanExecuteSaveCommand.Value)
                 {
-                    @("更新中...")
+                    @("保存する")
                 }
                 else
                 {
-                    @("保存する")
+                    @("更新中...")
                 }
             </button>
         </div>
