@@ -41,6 +41,8 @@ internal static class DependencyInjections
         services.AddPWAUpdater();
         services.AddHttpClient();
         services.AddCascadingAuthenticationState();
+        services.AddOptions();
+        services.AddAuthorizationCore();
 
         return services;
     }

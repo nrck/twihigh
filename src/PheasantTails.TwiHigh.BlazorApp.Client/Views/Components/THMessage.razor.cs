@@ -63,7 +63,7 @@ public partial class THMessage : TwiHighComponentBase
         }
         IsClosed = true;
         AutoCloseTimer.Dispose();
-        StateHasChanged();
+        InvokeRender();
         _ = new Timer((_) => { Context.OnClickClose.Invoke(Context.MessageId); }, null, 500, 0);
         ;
     }

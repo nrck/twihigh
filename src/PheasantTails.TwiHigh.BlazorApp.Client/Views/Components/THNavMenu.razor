@@ -1,4 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
+@using System.Runtime.InteropServices
+@using System.Reflection
 @inherits TwiHighPageBase
 @inject IFeedWorkerService FeedService
 
@@ -61,7 +63,7 @@
                 </Authorized>
             </AuthorizeView>
             <span class="version">
-                Version @(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "undefined")
+                Version @(Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "undefined")-@RuntimeInformation.RuntimeIdentifier
             </span>
         </div>
     </nav>

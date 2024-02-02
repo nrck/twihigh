@@ -30,7 +30,6 @@ public class TwiHighAuthenticationStateProvider : AuthenticationStateProvider
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        AuthenticationState authState = new(new ClaimsPrincipal(new ClaimsIdentity()));
         try
         {
             string jwt = await GetTokenFromLocalStorageAsync();
@@ -45,7 +44,7 @@ public class TwiHighAuthenticationStateProvider : AuthenticationStateProvider
             }
 
             // Create AuthenticationState object.
-            authState = new(new ClaimsPrincipal(new ClaimsIdentity(ParseClaimsFromJwt(newjwt), "apiauth")));
+            AuthenticationState authState = new(new ClaimsPrincipal(new ClaimsIdentity(ParseClaimsFromJwt(newjwt), "apiauth")));
 
             // Update token.
             if (jwt != newjwt)
@@ -53,12 +52,15 @@ public class TwiHighAuthenticationStateProvider : AuthenticationStateProvider
                 await SetTokenToLocalStorageAsync(newjwt);
                 NotifyAuthenticationStateChanged(Task.FromResult(authState));
             }
+
+            return authState;
         }
         catch (InvalidOperationException)
         {
+            return _defaultAuthenticationState;
         }
 
-        return authState;
+        throw new NotImplementedException();
     }
 
     /// <summary>
