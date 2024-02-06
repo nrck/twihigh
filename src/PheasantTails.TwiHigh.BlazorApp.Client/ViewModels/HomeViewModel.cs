@@ -75,7 +75,7 @@ public class HomeViewModel : ViewModelBase, IHomeViewModel
 
     public ReactiveCommandSlim<IEnumerable<string>> MarkAsReadedTweetCommand { get; private set; } = default!;
 
-    public ReactivePropertySlim<bool> IsProcessingMarkAsReaded { get; private set; } = default!;
+    public ReactivePropertySlim<bool> CanMarkAsReadedTweetCommand { get; private set; } = default!;
 
     public HomeViewModel(AuthenticationStateProvider authenticationStateProvider, ITimelineWorkerService timelineWorkerService, NavigationManager navigation, IMessageService messageService)
         : base(navigation, messageService)
@@ -102,7 +102,8 @@ public class HomeViewModel : ViewModelBase, IHomeViewModel
         GetLoginUserIdCommand = new AsyncReactiveCommand().AddTo(_disposable);
         GetGapTweetCommand = new AsyncReactiveCommand<DisplayTweet>().AddTo(_disposable);
         GetMyAvatarUrlCommand = new AsyncReactiveCommand().AddTo(_disposable);
-        MarkAsReadedTweetCommand = new ReactiveCommandSlim<IEnumerable<string>>(IsProcessingMarkAsReaded).AddTo(_disposable);
+        CanMarkAsReadedTweetCommand = new ReactivePropertySlim<bool>(true).AddTo(_disposable);
+        MarkAsReadedTweetCommand = new ReactiveCommandSlim<IEnumerable<string>>(CanMarkAsReadedTweetCommand).AddTo(_disposable);
     }
 
     protected override void Subscribe()
