@@ -17,7 +17,6 @@ public class TimelineWorkerService : ITimelineWorkerService
 {
     public const string LOCAL_STORAGE_KEY_USER_TIMELINE = "UserTimelines_{0}_v3";
 
-    private readonly string _apiUrlBase;
     private readonly string _apiUrlTweet;
     private readonly string _apiUrlDeleteTweet;
     private readonly string _apiUrlGetTweet;
@@ -33,7 +32,7 @@ public class TimelineWorkerService : ITimelineWorkerService
     private CancellationTokenSource _cancellationTokenSource;
     private readonly IMessageService _messageService;
 
-    public ReadOnlyCollection<DisplayTweet> Timeline => _store.Timeline.AsReadOnly<DisplayTweet>();
+    public ReadOnlyCollection<DisplayTweet> Timeline => _store.Timeline.Where(t => t.IsDeleted == false).ToArray().AsReadOnly();
 
     public event Action? OnChangedTimeline;
 
@@ -54,12 +53,11 @@ public class TimelineWorkerService : ITimelineWorkerService
         _httpClient = httpClientFactory.CreateClient();
         _messageService = messageService;
 
-        _apiUrlBase = $"{configuration["TweetApiUrl"]}";
-        _apiUrlTweet = $"{_apiUrlBase}/";
-        _apiUrlDeleteTweet = $"{_apiUrlBase}/{{0}}";
-        _apiUrlGetTweet = $"{_apiUrlBase}/{{0}}";
-        _apiUrlGetUserTweets = $"{_apiUrlBase}/user/{{0}}";
-        _apiUrlTimeline = $"{_apiUrlBase}/?since={{0}}&until={{1}}";
+        _apiUrlTweet = $"{configuration["TweetApiUrl"]}/";
+        _apiUrlDeleteTweet = $"{configuration["TweetApiUrl"]}/{{0}}";
+        _apiUrlGetTweet = $"{configuration["TweetApiUrl"]}/{{0}}";
+        _apiUrlGetUserTweets = $"{configuration["TweetApiUrl"]}/user/{{0}}";
+        _apiUrlTimeline = $"{configuration["TimelineApiUrl"]}/?since={{0}}&until={{1}}";
 
         _authenticationStateProvider.AuthenticationStateChanged += OnChangedAuthenticationState;
     }
@@ -101,10 +99,14 @@ public class TimelineWorkerService : ITimelineWorkerService
 
     public async ValueTask PostAsync(PostTweetContext postTweet)
     {
+        await EnsureSetAuthenticationHeaderValue().ConfigureAwait(false);
         HttpResponseMessage res = await _httpClient.PostAsJsonAsync(_apiUrlTweet, postTweet, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
         res.EnsureSuccessStatusCode();
         DisplayTweet tweet = await res.Content.TwiHighReadFromJsonAsync<DisplayTweet>() ?? throw new TwiHighApiRequestException();
+        tweet.UpdateAt = _store.Latest.AddTicks(1);
+        tweet.CreateAt = _store.Latest.AddTicks(1);
         Add(tweet);
+        await ForceSaveAsync().ConfigureAwait(false);
         OnChangedTimeline?.Invoke();
         _messageService.SetSucessMessage("ツイートを送信しました！");
     }
@@ -113,7 +115,7 @@ public class TimelineWorkerService : ITimelineWorkerService
     {
         if (tweet.IsSystemTweet)
         {
-            return RemoveTweetAtLocal(tweet.Id);
+            return await RemoveTweetAtLocalAsync(tweet.Id);
         }
         return await RemoveAsync(tweet.Id);
     }
@@ -121,7 +123,7 @@ public class TimelineWorkerService : ITimelineWorkerService
     public async ValueTask<int> RemoveAsync(Guid tweetId)
     {
         await RemoveTweetAtServerAsync(tweetId);
-        return RemoveTweetAtLocal(tweetId);
+        return await RemoveTweetAtLocalAsync(tweetId);
     }
 
     public async ValueTask CacheClearAsync()
@@ -175,6 +177,7 @@ public class TimelineWorkerService : ITimelineWorkerService
             HttpUtility.UrlEncode(since.ToString("yyyy-MM-ddTHH:mm:ss.fffffffzzz")),
             HttpUtility.UrlEncode(until.ToString("yyyy-MM-ddTHH:mm:ss.fffffffzzz"))
         );
+        await EnsureSetAuthenticationHeaderValue().ConfigureAwait(false);
         HttpResponseMessage response = await _httpClient.GetAsync(url, cancellationToken);
         if (response.StatusCode != HttpStatusCode.OK)
         {
@@ -214,7 +217,15 @@ public class TimelineWorkerService : ITimelineWorkerService
             _isRunning = true;
 
             // Load timeline data from local storage.
-            await ForceLoadAsync(WorkerCancellationToken);
+            if (!await _localStorageService.ContainKeyAsync(GetLocalStorageKeyUserTimeline(), WorkerCancellationToken).ConfigureAwait(false))
+            {
+                await ForceSaveAsync(WorkerCancellationToken).ConfigureAwait(false);
+            }
+            await ForceLoadAsync(WorkerCancellationToken).ConfigureAwait(false);
+            if (0 < Timeline.Count)
+            {
+                OnChangedTimeline?.Invoke();
+            }
 
             // If cancellation requested or this instance disposed, break this loop.
             while (!WorkerCancellationToken.IsCancellationRequested && !_isDispose)
@@ -224,6 +235,10 @@ public class TimelineWorkerService : ITimelineWorkerService
 
                 // Do REST API.
                 DisplayTweet[] tweets = await FetchMyTimelineAsync(_store.Latest.AddTicks(1), DateTimeOffset.MaxValue, WorkerCancellationToken).ConfigureAwait(false);
+                if (tweets.Length == 0)
+                {
+                    continue;
+                }
                 AddRange(tweets);
                 OnChangedTimeline?.Invoke();
 
@@ -263,7 +278,12 @@ public class TimelineWorkerService : ITimelineWorkerService
         int oldTweetIndex = _store.Timeline.FindIndex(t => t.Id == tweet.Id && t.UpdateAt < tweet.UpdateAt);
         if (0 <= oldTweetIndex)
         {
+            tweet.IsReaded = _store.Timeline[oldTweetIndex].IsReaded;
             _store.Timeline[oldTweetIndex] = tweet;
+        }
+        else
+        {
+            _store.Timeline.Add(tweet);
         }
     }
 
@@ -280,12 +300,15 @@ public class TimelineWorkerService : ITimelineWorkerService
         return string.Format(LOCAL_STORAGE_KEY_USER_TIMELINE, _store.UserId);
     }
 
-    private int RemoveTweetAtLocal(Guid tweetId)
+    private async ValueTask<int> RemoveTweetAtLocalAsync(Guid tweetId)
     {
-        DisplayTweet? targetTweet = _store.Timeline.Find(t => t.Id == tweetId);
+        DisplayTweet? targetTweet = _store.Timeline.Find(t => t.Id == tweetId && t.IsDeleted == false);
         if (targetTweet != null)
         {
-            _store.Timeline.Remove(targetTweet);
+            targetTweet.IsDeleted = true;
+            Upsert(targetTweet);
+            OnChangedTimeline?.Invoke();
+            await ForceSaveAsync().ConfigureAwait(false);
         }
 
         return _store.Timeline.Count;
@@ -296,6 +319,7 @@ public class TimelineWorkerService : ITimelineWorkerService
         try
         {
             string url = string.Format(_apiUrlDeleteTweet, tweetId.ToString());
+            await EnsureSetAuthenticationHeaderValue().ConfigureAwait(false);
             await _httpClient.DeleteAsync(url);
         }
         catch (HttpRequestException ex)
@@ -315,6 +339,9 @@ public class TimelineWorkerService : ITimelineWorkerService
     }
 
     private async void OnChangedAuthenticationState(Task<AuthenticationState> authenticationState)
+        => await SetAuthenticationHeaderValue(authenticationState);
+
+    private async Task SetAuthenticationHeaderValue(Task<AuthenticationState> authenticationState)
     {
         AuthenticationState state = await authenticationState;
         if (!(state?.User?.Identity?.IsAuthenticated ?? false))
@@ -346,6 +373,14 @@ public class TimelineWorkerService : ITimelineWorkerService
         // Set new bearer token.
         string token = await _authenticationStateProvider.GetTokenFromLocalStorageAsync();
         _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+    }
+
+    private async Task EnsureSetAuthenticationHeaderValue()
+    {
+        if (_httpClient.DefaultRequestHeaders.Authorization == null)
+        {
+            await SetAuthenticationHeaderValue(_authenticationStateProvider.GetAuthenticationStateAsync()).ConfigureAwait(false);
+        }
     }
     #endregion
 }
