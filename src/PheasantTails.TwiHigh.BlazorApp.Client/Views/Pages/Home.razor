@@ -2,7 +2,7 @@
     Home page
 *@
 @page "/Home"
-@rendermode InteractiveWebAssembly
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
 @attribute [Authorize]
 @inherits TwiHighPageBase
 
