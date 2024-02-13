@@ -1,6 +1,7 @@
 ﻿@using System.Collections.ObjectModel
 @using PheasantTails.TwiHigh.Data.Model.Tweets
 @using Reactive.Bindings
+@using System.Runtime.InteropServices
 @inherits TwiHighComponentBase
 
 @* ツイート外枠 *@
@@ -12,6 +13,29 @@
     else if (!Tweets.Any())
     {
         <THNoContents />
+    }
+    else if (IsServerSideRendering)
+    {
+        for (int index = 0; index < 100 && index < Tweets.Count; index++)
+        {
+            @if (Tweets[index].IsSystemTweet)
+            {
+                <THGapTweetsFetchButton @key="Tweets[index].Id" Tweet="Tweets[index]" OnClick="OnClickGapTweetsLoadAsync" />
+            }
+            else
+            {
+                <THTweet @key="Tweets[index].Id"
+                         Tweet="Tweets[index]"
+                         IsMyTweet=@(MyTwiHithUserId == Tweets[index].UserId)
+                         DeleteTweetCommand="DeleteTweetCommand"
+                         OnClickDetail="OnClickDetailAsync"
+                         OnClickFavorite="OnClickFavoriteAsync"
+                         OnClickProfile="OnClickProfileAsync"
+                         OnClickRetweet="OnClickRetweetAsync"
+                         PostTweetCommand="PostTweetCommand"
+                         OnClickProfileEditor="OnClickProfileEditorAsync" />
+            }
+        }
     }
     else
     {

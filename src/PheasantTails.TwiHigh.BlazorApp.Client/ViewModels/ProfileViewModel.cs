@@ -89,43 +89,42 @@ public class ProfileViewModel : ViewModelBase, IProfileViewModel
         UserDisplayedOnScreen.Value = null;
         _tweets = null;
         IsMyTwiHighUser.Value = false;
-
-        // ID指定なしでログインユーザーのプロフィールページへ遷移
-        if (string.IsNullOrEmpty(id))
+        string myTwiHighUserId = id ?? await _authenticationStateProvider.GetLoggedInUserIdAsync().ConfigureAwait(false);
+        string urlGetTwihighUser = string.Format(_apiUrlGetTwihighUser, myTwiHighUserId);
+        try
         {
-            string myTwiHighUserId = await _authenticationStateProvider.GetLoggedInUserIdAsync().ConfigureAwait(false);
-            _navigationManager.NavigateToProfilePage(myTwiHighUserId, replace: true);
-            return;
+            UserDisplayedOnScreen.Value = await _httpClient.GetFromJsonAsync<ResponseTwiHighUserContext>(urlGetTwihighUser).ConfigureAwait(false);
         }
-
-        string urlGetTwihighUser = string.Format(_apiUrlGetTwihighUser, id);
-        UserDisplayedOnScreen.Value = await _httpClient.GetFromJsonAsync<ResponseTwiHighUserContext>(urlGetTwihighUser).ConfigureAwait(false);
+        catch (HttpRequestException)
+        {
+            UserDisplayedOnScreen.Value = null;
+        }
         if (UserDisplayedOnScreen.Value == null)
         {
             PageTitle.Value = "プロフィールを読み込めませんでした。";
-        }
-        else if (UserDisplayedOnScreen.Value.DisplayId != id)
-        {
-            // GuidからDisplayIdのページへ遷移
-            _navigationManager.NavigateToProfilePage(UserDisplayedOnScreen.Value.DisplayId, replace: true);
+            _tweets = [];
             return;
+        }
+
+        PageTitle.Value = $"{UserDisplayedOnScreen.Value.DisplayName}（@{UserDisplayedOnScreen.Value.DisplayId}）";
+        string urlGetUserTweets = string.Format(_apiUrlGetUserTweets, UserDisplayedOnScreen.Value.Id);
+        HttpResponseMessage? res = await _httpClient.GetAsync(urlGetUserTweets);
+        if (res != null && res.IsSuccessStatusCode && res.StatusCode == HttpStatusCode.OK)
+        {
+            ITweet[]? tweets = await res.Content.TwiHighReadFromJsonAsync<ITweet[]>();
+            _tweets = tweets!.Select(tweet => new DisplayTweet(tweet) { IsReaded = true })
+                .OrderByDescending(tweet => tweet.CreateAt)
+                .ToList();
         }
         else
         {
-            PageTitle.Value = $"{UserDisplayedOnScreen.Value.DisplayName}（@{UserDisplayedOnScreen.Value.DisplayId}）";
-            string urlGetUserTweets = string.Format(_apiUrlGetUserTweets, UserDisplayedOnScreen.Value.Id);
-            HttpResponseMessage? res = await _httpClient.GetAsync(urlGetUserTweets);
-            if (res != null && res.IsSuccessStatusCode && res.StatusCode == HttpStatusCode.OK)
-            {
-                ITweet[]? tweets = await res.Content.TwiHighReadFromJsonAsync<ITweet[]>();
-                _tweets = tweets!.Select(tweet => new DisplayTweet(tweet) { IsReaded = true })
-                    .OrderByDescending(tweet => tweet.CreateAt)
-                    .ToList();
-            }
-            else
-            {
-                _tweets = [];
-            }
+            _tweets = [];
+        }
+
+        if (UserDisplayedOnScreen.Value.DisplayId != id)
+        {
+            // GuidからDisplayIdのページへ遷移
+            _navigationManager.NavigateToProfilePage(UserDisplayedOnScreen.Value.DisplayId, replace: true);
         }
     }
 

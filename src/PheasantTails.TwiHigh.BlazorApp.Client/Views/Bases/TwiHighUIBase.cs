@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Http;
 using PheasantTails.TwiHigh.BlazorApp.Client.Services;
 using Reactive.Bindings;
 
@@ -18,9 +19,14 @@ public class TwiHighUIBase : ComponentBase, IDisposable, IAsyncDisposable
     [CascadingParameter]
     protected Task<AuthenticationState>? AuthenticationState { get; set; }
 
+    [CascadingParameter]
+    protected HttpContext? HttpContext { get; set; }
+
     protected async Task InvokeRenderAsync() => await InvokeAsync(StateHasChanged).ConfigureAwait(false);
 
     protected async void InvokeRender() => await InvokeAsync(StateHasChanged).ConfigureAwait(false);
+
+    protected bool IsServerSideRendering => HttpContext != null;
 
     public IDisposable SubscribeStateHasChanged<T>(IObservable<T> command) => command.Subscribe(async (_) => await InvokeRenderAsync());
 

@@ -29,11 +29,21 @@ public partial class Profile : TwiHighPageBase
         {
             MyTwiHithUserId = result;
         }
+        SubscribeStateHasChanged(ViewModel.GetUserTimelineCommand);
+        SubscribeStateHasChanged(ViewModel.FollowUserDisplayedOnScreenCommand);
+        SubscribeStateHasChanged(ViewModel.RemoveUserDisplayedOnScreenCommand);
+        SubscribeStateHasChanged(ViewModel.UserDisplayedOnScreen);
+        SubscribeStateHasChanged(ViewModel.PageTitle);
+        SubscribeStateHasChanged(ViewModel.DeleteMyTweetCommand);
+        SubscribeStateHasChanged(ViewModel.PostTweetCommand);
+        SubscribeStateHasChanged(ViewModel.CanExecuteFollowOrRemove);
+        SubscribeStateHasChanged(ViewModel.IsMyTwiHighUser);
     }
 
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
+        Console.WriteLine($"ID is {Id}!!");
         await ViewModel.GetUserTimelineCommand.ExecuteAsync(Id);
         await SetFollowButtonAsync();
     }
@@ -42,14 +52,12 @@ public partial class Profile : TwiHighPageBase
     {
         await ViewModel.FollowUserDisplayedOnScreenCommand.ExecuteAsync();
         await SetFollowButtonAsync();
-        StateHasChanged();
     }
 
     private async Task OnClickRemoveButton()
     {
         await ViewModel.RemoveUserDisplayedOnScreenCommand.ExecuteAsync();
         await SetFollowButtonAsync();
-        StateHasChanged();
     }
 
     private async Task SetFollowButtonAsync()

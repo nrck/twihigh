@@ -40,6 +40,7 @@ public class FollowsAndFollowersViewModel : ViewModelBase, IFollowersViewModel, 
         PageTitle = new ReactivePropertySlim<string>("プロフィール読み込み中").AddTo(_disposable);
         UserDisplayedOnScreen = new ReactivePropertySlim<ResponseTwiHighUserContext?>().AddTo(_disposable);
         UserFollowers = new ReactiveCollection<ResponseTwiHighUserContext>().AddTo(_disposable);
+        UserFollows = new ReactiveCollection<ResponseTwiHighUserContext>().AddTo(_disposable);
         CanExequteGetTwiHighUserFollowersCommand = new ReactivePropertySlim<bool>(true).AddTo(_disposable);
         CanExequteGetTwiHighUserFollowsCommand = new ReactivePropertySlim<bool>(true).AddTo(_disposable);
         GetTwiHighUserFollowersCommand = new AsyncReactiveCommand<string>(CanExequteGetTwiHighUserFollowersCommand).AddTo(_disposable);

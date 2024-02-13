@@ -6,6 +6,7 @@
 		<Nullable>enable</Nullable>
 		<NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
 		<StaticWebAssetProjectMode>Default</StaticWebAssetProjectMode>
+		<Version>0.9.7</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -13,6 +14,7 @@
 		<PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="8.0.1" />
+		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
 		<PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
 		<PackageReference Include="ReactiveProperty.Blazor" Version="9.4.0-pre8" />
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.3.1" />

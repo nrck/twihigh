@@ -63,7 +63,7 @@
                 </Authorized>
             </AuthorizeView>
             <span class="version">
-                Version @(Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "undefined")-@RuntimeInformation.RuntimeIdentifier
+                Version @(Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "undefined") [@(IsServerSideRendering ? "ServerSideRendering" : "WebAssembly")]
             </span>
         </div>
     </nav>

@@ -9,15 +9,22 @@ public partial class Login : TwiHighPageBase
     [Inject]
     public ILoginViewModel ViewModel { get; set; } = default!;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        base.OnInitialized();
+        await base.OnInitializedAsync();
         SubscribeStateHasChanged(ViewModel.CheckAuthenticationStateCommand);
+        if (IsServerSideRendering == false)
+        {
+            await ViewModel.CheckAuthenticationStateCommand.ExecuteAsync();
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnInitializedAsync();
-        await ViewModel.CheckAuthenticationStateCommand.ExecuteAsync();
+        if (firstRender && IsServerSideRendering)
+        {
+            await ViewModel.CheckAuthenticationStateCommand.ExecuteAsync();
+        }
     }
 }
