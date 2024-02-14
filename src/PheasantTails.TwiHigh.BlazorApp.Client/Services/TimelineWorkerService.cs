@@ -362,7 +362,10 @@ public class TimelineWorkerService : ITimelineWorkerService
         if (Guid.TryParse(userIdFromClaims, out Guid userId) && _store.UserId != userId)
         {
             // If logged in user was changed, Load new user's timeline to local timeline store. 
-            await ForceSaveAsync();
+            if (_store.UserId != default)
+            {
+                await ForceSaveAsync();
+            }
             _store = new()
             {
                 UserId = userId
