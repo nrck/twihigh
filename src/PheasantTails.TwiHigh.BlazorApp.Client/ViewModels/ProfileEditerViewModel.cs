@@ -52,7 +52,7 @@ public class ProfileEditerViewModel : ViewModelBase, IProfileEditerViewModel
         DisplayName = new ReactivePropertySlim<string>().AddTo(_disposable);
         Biography = new ReactivePropertySlim<string>().AddTo(_disposable);
         LocalRawAvatarContent = new ReactivePropertySlim<Base64EncodedFileContent?>().AddTo(_disposable);
-        CanExecuteSaveCommand = new ReactivePropertySlim<bool>().AddTo(_disposable);
+        CanExecuteSaveCommand = new ReactivePropertySlim<bool>(true).AddTo(_disposable);
 
         LoadLocalFileCommand = new AsyncReactiveCommand<InputFileChangeEventArgs>().AddTo(_disposable);
         SaveCommand = new AsyncReactiveCommand(CanExecuteSaveCommand).AddTo(_disposable);

@@ -21,7 +21,7 @@ else
             <div class="file-input-button">
                 <img src="@ViewModel.AvatarUrl.Value" loading="lazy" />
                 <InputFile id="avatar-data" style="display: none;" OnChange="async (e) => await ViewModel.LoadLocalFileCommand.ExecuteAsync(e).ConfigureAwait(false)" accept="image/png, image/jpeg" />
-                @if (ViewModel.LocalRawAvatarContent == null)
+                @if (ViewModel.LocalRawAvatarContent.Value == null)
                 {
                     <label for="avatar-data">
                         <span class="oi oi-camera-slr camera"></span>

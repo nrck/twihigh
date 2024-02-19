@@ -17,6 +17,9 @@ public partial class ProfileEditer : TwiHighPageBase
         SubscribeStateHasChanged(ViewModel.AvatarResetCommand);
         SubscribeStateHasChanged(ViewModel.GetUserCommand);
         SubscribeStateHasChanged(ViewModel.CanExecuteSaveCommand);
+        SubscribeStateHasChanged(ViewModel.CanExecuteSaveCommand);
+        SubscribeStateHasChanged(ViewModel.User);
+        SubscribeStateHasChanged(ViewModel.AvatarUrl);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
