@@ -100,6 +100,7 @@ public class ProfileEditerViewModel : ViewModelBase, IProfileEditerViewModel
 
         try
         {
+            await SetAuthenticationHeaderValue().ConfigureAwait(false);
             HttpResponseMessage res = await _httpClient.PatchAsJsonAsync(_apiUrlPatchTwihighUser, _patchContext);
             res.EnsureSuccessStatusCode();
             User.Value = await res.Content.ReadFromJsonAsync<ResponseTwiHighUserContext>();
@@ -175,5 +176,11 @@ public class ProfileEditerViewModel : ViewModelBase, IProfileEditerViewModel
         DisplayId.Value = User.Value?.DisplayId ?? string.Empty;
         DisplayName.Value = User.Value?.DisplayName ?? string.Empty;
         Biography.Value = User.Value?.Biography ?? string.Empty;
+    }
+
+    private async Task SetAuthenticationHeaderValue()
+    {
+        string token = await _authenticationStateProvider.GetTokenFromLocalStorageAsync();
+        _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
     }
 }

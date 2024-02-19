@@ -137,6 +137,7 @@ public class ProfileViewModel : ViewModelBase, IProfileViewModel
 
         try
         {
+            await SetAuthenticationHeaderValue().ConfigureAwait(false);
             string url = string.Format(_apiUrlAddFollow, UserDisplayedOnScreen.Value.Id);
             HttpResponseMessage res = await _httpClient.PutAsync(url, null);
             res.EnsureSuccessStatusCode();
@@ -159,6 +160,7 @@ public class ProfileViewModel : ViewModelBase, IProfileViewModel
 
         try
         {
+            await SetAuthenticationHeaderValue().ConfigureAwait(false);
             string url = string.Format(_apiUrlRemoveFollow, UserDisplayedOnScreen.Value.Id);
             HttpResponseMessage res = await _httpClient.DeleteAsync(url);
             res.EnsureSuccessStatusCode();
@@ -171,5 +173,11 @@ public class ProfileViewModel : ViewModelBase, IProfileViewModel
         {
             _messageService.SetErrorMessage("リムーブできませんでした。");
         }
+    }
+
+    private async Task SetAuthenticationHeaderValue()
+    {
+        string token = await _authenticationStateProvider.GetTokenFromLocalStorageAsync();
+        _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
     }
 }
