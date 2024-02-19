@@ -27,7 +27,7 @@ public class FeedWorkerService : IFeedWorkerService
     private bool _isRunning;
     private CancellationTokenSource _cancellationTokenSource;
 
-    public ReadOnlyCollection<FeedContext> FeedTimeline => _store.FeedTimeline.AsReadOnly<FeedContext>();
+    public ReadOnlyCollection<FeedContext> FeedTimeline => _store?.FeedTimeline?.AsReadOnly() ?? ReadOnlyCollection<FeedContext>.Empty;
 
     public event Action? OnChangedFeedTimeline;
 
@@ -72,7 +72,11 @@ public class FeedWorkerService : IFeedWorkerService
 
     public async ValueTask CacheClearAsync()
     {
-        _store = new LocalFeedsStore();
+        Guid userid = _store.UserId;
+        _store = new LocalFeedsStore
+        {
+            UserId = userid
+        };
         await ForceSaveAsync();
     }
 
@@ -104,6 +108,7 @@ public class FeedWorkerService : IFeedWorkerService
             {
                 Ids = feedIds.Skip(i).Take(100).ToArray()
             };
+            await EnsureSetAuthenticationHeaderValue().ConfigureAwait(false);
             HttpResponseMessage response = await _httpClient.PutAsJsonAsync(_apiUrlPutOpenedMyFeeds, context, cancellationToken: cancellationToken).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
         }
@@ -167,6 +172,7 @@ public class FeedWorkerService : IFeedWorkerService
             HttpUtility.UrlEncode(since.ToString("yyyy-MM-ddTHH:mm:ss.fffffffzzz")),
             HttpUtility.UrlEncode(until.ToString("yyyy-MM-ddTHH:mm:ss.fffffffzzz"))
         );
+        await EnsureSetAuthenticationHeaderValue().ConfigureAwait(false);
         HttpResponseMessage response = await _httpClient.GetAsync(url, cancellationToken);
         if (response.StatusCode != HttpStatusCode.OK)
         {
@@ -205,7 +211,15 @@ public class FeedWorkerService : IFeedWorkerService
             _isRunning = true;
 
             // Load timeline data from local storage.
-            await ForceLoadAsync(WorkerCancellationToken);
+            if (!await _localStorageService.ContainKeyAsync(GetLocalStorageKeyUserTimeline(), WorkerCancellationToken).ConfigureAwait(false))
+            {
+                await ForceSaveAsync(WorkerCancellationToken).ConfigureAwait(false);
+            }
+            await ForceLoadAsync(WorkerCancellationToken).ConfigureAwait(false);
+            if (0 < FeedTimeline.Count)
+            {
+                OnChangedFeedTimeline?.Invoke();
+            }
 
             // If cancellation requested or this instance disposed, break this loop.
             while (!WorkerCancellationToken.IsCancellationRequested && !_isDispose)
@@ -252,6 +266,9 @@ public class FeedWorkerService : IFeedWorkerService
     }
 
     private async void OnChangedAuthenticationState(Task<AuthenticationState> authenticationState)
+        => await SetAuthenticationHeaderValue(authenticationState);
+
+    private async Task SetAuthenticationHeaderValue(Task<AuthenticationState> authenticationState)
     {
         AuthenticationState state = await authenticationState;
         if (!(state?.User?.Identity?.IsAuthenticated ?? false))
@@ -272,7 +289,10 @@ public class FeedWorkerService : IFeedWorkerService
         if (Guid.TryParse(userIdFromClaims, out Guid userId) && _store.UserId != userId)
         {
             // If logged in user was changed, Load new user's timeline to local timeline store. 
-            await ForceSaveAsync();
+            if (_store.UserId != default)
+            {
+                await ForceSaveAsync();
+            }
             _store = new()
             {
                 UserId = userId
@@ -283,6 +303,14 @@ public class FeedWorkerService : IFeedWorkerService
         // Set new bearer token.
         string token = await _authenticationStateProvider.GetTokenFromLocalStorageAsync();
         _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+    }
+
+    private async Task EnsureSetAuthenticationHeaderValue()
+    {
+        if (_httpClient.DefaultRequestHeaders.Authorization == null)
+        {
+            await SetAuthenticationHeaderValue(_authenticationStateProvider.GetAuthenticationStateAsync()).ConfigureAwait(false);
+        }
     }
     #endregion
 }

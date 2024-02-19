@@ -11,7 +11,10 @@ public partial class Home : TwiHighPageBase
     public IHomeViewModel ViewModel { get; set; } = default!;
 
     [Inject]
-    public ITimelineWorkerService WorkerService { get; set; } = default!;
+    public ITimelineWorkerService TimelineWorkerService { get; set; } = default!;
+
+    [Inject]
+    public IFeedWorkerService FeedWorkerService { get; set; } = default!;
 
     [Inject]
     public IScrollInfoService ScrollInfoService { get; set; } = default!;
@@ -20,7 +23,7 @@ public partial class Home : TwiHighPageBase
     {
         await base.OnInitializedAsync().ConfigureAwait(false);
         ScrollInfoService.OnScroll += ViewModel.MarkAsReadedTweetCommand.Execute;
-        WorkerService.OnChangedTimeline += InvokeRender;
+        TimelineWorkerService.OnChangedTimeline += InvokeRender;
         await ViewModel.GetLoginUserIdCommand.ExecuteAsync().ConfigureAwait(false);
         await ViewModel.GetMyAvatarUrlCommand.ExecuteAsync().ConfigureAwait(false);
     }
@@ -31,15 +34,16 @@ public partial class Home : TwiHighPageBase
         if (firstRender)
         {
             await ScrollInfoService.EnableAsync();
-            WorkerService.Run();
+            TimelineWorkerService.Run();
+            FeedWorkerService.Run();
         }
     }
 
     public override async ValueTask DisposeAsync()
     {
         ScrollInfoService.OnScroll -= ViewModel.MarkAsReadedTweetCommand.Execute;
-        WorkerService.OnChangedTimeline -= InvokeRender;
-        WorkerService.Stop();
+        TimelineWorkerService.OnChangedTimeline -= InvokeRender;
+        TimelineWorkerService.Stop();
         await ScrollInfoService.DisableAsync();
         GC.SuppressFinalize(this);
     }

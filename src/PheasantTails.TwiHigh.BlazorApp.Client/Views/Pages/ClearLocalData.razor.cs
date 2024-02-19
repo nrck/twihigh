@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
+using PheasantTails.TwiHigh.BlazorApp.Client.Exceptions;
 using PheasantTails.TwiHigh.BlazorApp.Client.Extensions;
 using PheasantTails.TwiHigh.BlazorApp.Client.Services;
 using PheasantTails.TwiHigh.BlazorApp.Client.Views.Bases;
@@ -19,9 +20,15 @@ public partial class ClearLocalData : TwiHighPageBase
     {
         if (firstRender)
         {
-            // Clear local storage.
-            await TimelineWorkerService.CacheClearAsync();
-            await FeedWorkerService.CacheClearAsync();
+            try
+            {
+                // Clear local storage.
+                await TimelineWorkerService.CacheClearAsync();
+                await FeedWorkerService.CacheClearAsync();
+            }
+            catch (TwiHighException)
+            {
+            }
 
             // Navigate to home page.
             Navigation.NavigateToHomePage(replace: true);

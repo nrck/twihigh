@@ -19,14 +19,14 @@
 </section>
 
 @* Timeline *@
-@if (WorkerService.Timeline.Count == 0)
+@if (TimelineWorkerService.Timeline.Count == 0)
 {
     <THNoContents NoContentsText="@("まずは @twihigh をフォローしてみよう！")" />
 }
 else
 {
     <THTimeline @key="@ViewModel.MyTwiHighUserId.Value"
-                Tweets="@WorkerService.Timeline"
+                Tweets="@TimelineWorkerService.Timeline"
                 MyTwiHithUserId=@ViewModel.MyTwiHighUserId.Value
                 DeleteTweetCommand="ViewModel.DeleteMyTweetCommand"
                 PostTweetCommand="ViewModel.PostTweetCommand"

@@ -128,7 +128,11 @@ public class TimelineWorkerService : ITimelineWorkerService
 
     public async ValueTask CacheClearAsync()
     {
-        _store = new LocalTimelineStore();
+        Guid userid = _store.UserId;
+        _store = new LocalTimelineStore
+        {
+            UserId = userid
+        };
         await ForceSaveAsync();
     }
 
