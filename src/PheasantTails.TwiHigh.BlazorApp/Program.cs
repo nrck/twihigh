@@ -38,7 +38,7 @@ public class Program
         app.MapRazorComponents<App>()
             .AddInteractiveServerRenderMode()
             .AddInteractiveWebAssemblyRenderMode()
-            .AddAdditionalAssemblies(typeof(Home).Assembly);
+            .AddAdditionalAssemblies(typeof(Client.Views._Imports).Assembly);
 
         app.Run();
     }
