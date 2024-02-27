@@ -1,11 +1,11 @@
-﻿using PheasantTails.TwiHigh.Data.Model.Feeds;
+﻿using PheasantTails.TwiHigh.BlazorApp.Client.Models;
 using System.Collections.ObjectModel;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.Services;
 
 public interface IFeedWorkerService : IAsyncDisposable
 {
-    ReadOnlyCollection<FeedContext> FeedTimeline { get; }
+    ReadOnlyCollection<DisplayFeed> FeedTimeline { get; }
 
     event Action? OnChangedFeedTimeline;
 

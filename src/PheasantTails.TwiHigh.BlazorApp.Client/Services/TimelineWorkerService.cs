@@ -75,6 +75,7 @@ public class TimelineWorkerService : ITimelineWorkerService
         {
             await Task.Delay(1000);
         }
+        _authenticationStateProvider.AuthenticationStateChanged -= OnChangedAuthenticationState;
         GC.SuppressFinalize(this);
     }
 
@@ -209,6 +210,9 @@ public class TimelineWorkerService : ITimelineWorkerService
                 return;
             }
 
+            // Toggle the flag.
+            _isRunning = true;
+
             // Check user id.
             string userId = await _authenticationStateProvider.GetLoggedInUserIdAsync().ConfigureAwait(false);
             if (string.IsNullOrEmpty(userId))
@@ -216,9 +220,6 @@ public class TimelineWorkerService : ITimelineWorkerService
                 throw new InvalidOperationException($"未ログインで{nameof(TimelineWorkerService)}.{nameof(RunAsync)}()を実行することはできません。");
             }
             _store.UserId = Guid.Parse(userId);
-
-            // Toggle the flag.
-            _isRunning = true;
 
             // Load timeline data from local storage.
             if (!await _localStorageService.ContainKeyAsync(GetLocalStorageKeyUserTimeline(), WorkerCancellationToken).ConfigureAwait(false))
@@ -234,20 +235,20 @@ public class TimelineWorkerService : ITimelineWorkerService
             // If cancellation requested or this instance disposed, break this loop.
             while (!WorkerCancellationToken.IsCancellationRequested && !_isDispose)
             {
-                // Interval.
-                await Task.Delay(5000, WorkerCancellationToken);
-
                 // Do REST API.
                 DisplayTweet[] tweets = await FetchMyTimelineAsync(_store.Latest.AddTicks(1), DateTimeOffset.MaxValue, WorkerCancellationToken).ConfigureAwait(false);
-                if (tweets.Length == 0)
+                
+                if (0 < tweets.Length)
                 {
-                    continue;
-                }
-                AddRange(tweets);
-                OnChangedTimeline?.Invoke();
+                    AddRange(tweets);
+                    OnChangedTimeline?.Invoke();
 
-                // Save timeline data to local storage.
-                await ForceSaveAsync(WorkerCancellationToken);
+                    // Save timeline data to local storage.
+                    await ForceSaveAsync(WorkerCancellationToken);
+                }
+
+                // Interval.
+                await Task.Delay(5000, WorkerCancellationToken);
             }
         }
         catch (Exception ex)

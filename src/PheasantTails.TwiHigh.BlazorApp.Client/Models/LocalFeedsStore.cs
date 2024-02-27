@@ -15,17 +15,37 @@ public class LocalFeedsStore
     /// <summary>
     /// Latest feed datetime in local storage.
     /// </summary>
-    public DateTimeOffset Latest { get; set; }
+    public DateTimeOffset Latest
+    {
+        get
+        {
+            if (0 < FeedTimeline.Count)
+            {
+                return FeedTimeline.Max(t => t.UpdateAt);
+            }
+            return DateTimeOffset.MinValue;
+        }
+    }
 
     /// <summary>
     /// Oldest feed datetime in local storage.
     /// </summary>
-    public DateTimeOffset Oldest { get; set; }
+    public DateTimeOffset Oldest
+    {
+        get
+        {
+            if (0 < FeedTimeline.Count)
+            {
+                return FeedTimeline.Min(t => t.UpdateAt);
+            }
+            return DateTimeOffset.MinValue;
+        }
+    }
 
     /// <summary>
     /// Feeds timeline.
     /// </summary>
-    public List<FeedContext> FeedTimeline { get; set; } = [];
+    public List<DisplayFeed> FeedTimeline { get; set; } = [];
 
     /// <summary>
     /// Owner user id.
@@ -38,8 +58,6 @@ public class LocalFeedsStore
     public LocalFeedsStore GetSaveData() => new()
     {
         UserId = UserId,
-        Latest = Latest,
-        Oldest = Oldest,
         FeedTimeline = 0 < FeedTimeline.Count ? FeedTimeline.OrderByDescending(t => t.CreateAt)
             .Take(MaximumFeeds)
             .ToList()

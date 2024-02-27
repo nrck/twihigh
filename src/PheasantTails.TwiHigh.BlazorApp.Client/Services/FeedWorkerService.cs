@@ -27,7 +27,7 @@ public class FeedWorkerService : IFeedWorkerService
     private bool _isRunning;
     private CancellationTokenSource _cancellationTokenSource;
 
-    public ReadOnlyCollection<FeedContext> FeedTimeline => _store?.FeedTimeline?.AsReadOnly() ?? ReadOnlyCollection<FeedContext>.Empty;
+    public ReadOnlyCollection<DisplayFeed> FeedTimeline => _store?.FeedTimeline?.AsReadOnly() ?? ReadOnlyCollection<DisplayFeed>.Empty;
 
     public event Action? OnChangedFeedTimeline;
 
@@ -61,7 +61,7 @@ public class FeedWorkerService : IFeedWorkerService
             return;
         }
         _isDispose = true;
-        //await StopAsync();
+        await StopAsync();
         while (_isRunning)
         {
             await Task.Delay(1000);
@@ -88,7 +88,7 @@ public class FeedWorkerService : IFeedWorkerService
 
     public async ValueTask ForceFetchMyFeedTimelineAsync(DateTimeOffset since, DateTimeOffset until, CancellationToken cancellationToken = default)
     {
-        FeedContext[] feeds = await FetchMyFeedTimelineAsync(since, until, cancellationToken).ConfigureAwait(false);
+        DisplayFeed[] feeds = await FetchMyFeedTimelineAsync(since, until, cancellationToken).ConfigureAwait(false);
         AddRange(feeds);
         OnChangedFeedTimeline?.Invoke();
     }
@@ -111,6 +111,7 @@ public class FeedWorkerService : IFeedWorkerService
             await EnsureSetAuthenticationHeaderValue().ConfigureAwait(false);
             HttpResponseMessage response = await _httpClient.PutAsJsonAsync(_apiUrlPutOpenedMyFeeds, context, cancellationToken: cancellationToken).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
+            OnChangedFeedTimeline?.Invoke();
         }
     }
 
@@ -120,17 +121,9 @@ public class FeedWorkerService : IFeedWorkerService
     #endregion
 
     #region private
-    private int Add(FeedContext feed)
+    private int AddRange(IEnumerable<DisplayFeed> feeds)
     {
-        Upsert(feed);
-        TimelineOrderByDescending();
-
-        return _store.FeedTimeline.Count;
-    }
-
-    private int AddRange(IEnumerable<FeedContext> feeds)
-    {
-        foreach (FeedContext feed in feeds)
+        foreach (DisplayFeed feed in feeds)
         {
             Upsert(feed);
         }
@@ -139,12 +132,17 @@ public class FeedWorkerService : IFeedWorkerService
         return _store.FeedTimeline.Count;
     }
 
-    private void Upsert(FeedContext feed)
+    private void Upsert(DisplayFeed feed)
     {
         int oldFeedIndex = _store.FeedTimeline.FindIndex(f => f.Id == feed.Id && f.UpdateAt < feed.UpdateAt);
         if (0 <= oldFeedIndex)
         {
+            feed.IsOpened = _store.FeedTimeline[oldFeedIndex].IsOpened;
             _store.FeedTimeline[oldFeedIndex] = feed;
+        }
+        else
+        {
+            _store.FeedTimeline.Add(feed);
         }
     }
 
@@ -161,7 +159,7 @@ public class FeedWorkerService : IFeedWorkerService
         return string.Format(LOCAL_STORAGE_KEY_USER_FEEDS_TIMELINE, _store.UserId);
     }
 
-    private async ValueTask<FeedContext[]> FetchMyFeedTimelineAsync(DateTimeOffset since, DateTimeOffset until, CancellationToken cancellationToken = default)
+    private async ValueTask<DisplayFeed[]> FetchMyFeedTimelineAsync(DateTimeOffset since, DateTimeOffset until, CancellationToken cancellationToken = default)
     {
         if (until < since)
         {
@@ -180,7 +178,7 @@ public class FeedWorkerService : IFeedWorkerService
         }
         ResponseFeedsContext context = await response.Content.TwiHighReadFromJsonAsync<ResponseFeedsContext>(cancellationToken: cancellationToken)
             ?? throw new TwiHighApiRequestException("通知の取得でエラーが発生しました。");
-        FeedContext[] feeds = context.Feeds;
+        DisplayFeed[] feeds = DisplayFeed.ConvertFrom(context.Feeds);
         if (feeds.Length == 1000)
         {
             // TODO: add sysytem item.
@@ -199,6 +197,9 @@ public class FeedWorkerService : IFeedWorkerService
                 return;
             }
 
+            // Toggle the flag.
+            _isRunning = true;
+
             // Check user id.
             string userId = await _authenticationStateProvider.GetLoggedInUserIdAsync().ConfigureAwait(false);
             if (string.IsNullOrEmpty(userId))
@@ -206,9 +207,6 @@ public class FeedWorkerService : IFeedWorkerService
                 throw new InvalidOperationException($"未ログインで{nameof(TimelineWorkerService)}.{nameof(RunAsync)}()を実行することはできません。");
             }
             _store.UserId = Guid.Parse(userId);
-
-            // Toggle the flag.
-            _isRunning = true;
 
             // Load timeline data from local storage.
             if (!await _localStorageService.ContainKeyAsync(GetLocalStorageKeyUserTimeline(), WorkerCancellationToken).ConfigureAwait(false))
@@ -225,17 +223,19 @@ public class FeedWorkerService : IFeedWorkerService
             while (!WorkerCancellationToken.IsCancellationRequested && !_isDispose)
             {
                 // Do REST API.
-                FeedContext[] feeds = await FetchMyFeedTimelineAsync(_store.Latest.AddTicks(1), DateTimeOffset.MaxValue, WorkerCancellationToken).ConfigureAwait(false);
-                AddRange(feeds);
-                OnChangedFeedTimeline?.Invoke();
+                DisplayFeed[] feeds = await FetchMyFeedTimelineAsync(_store.Latest.AddTicks(1), DateTimeOffset.MaxValue, WorkerCancellationToken).ConfigureAwait(false);
 
-                // Save timeline data to local storage.
-                await ForceSaveAsync(WorkerCancellationToken);
+                if (0 < feeds.Length)
+                {
+                    AddRange(feeds);
+                    OnChangedFeedTimeline?.Invoke();
+
+                    // Save timeline data to local storage.
+                    await ForceSaveAsync(WorkerCancellationToken);
+                }
 
                 // Interval.
                 await Task.Delay(10000, WorkerCancellationToken);
-
-                WorkerCancellationToken.ThrowIfCancellationRequested();
             }
         }
         catch (Exception ex)
