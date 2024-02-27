@@ -137,7 +137,6 @@ public class FeedWorkerService : IFeedWorkerService
         int oldFeedIndex = _store.FeedTimeline.FindIndex(f => f.Id == feed.Id && f.UpdateAt < feed.UpdateAt);
         if (0 <= oldFeedIndex)
         {
-            feed.IsOpened = _store.FeedTimeline[oldFeedIndex].IsOpened;
             _store.FeedTimeline[oldFeedIndex] = feed;
         }
         else
