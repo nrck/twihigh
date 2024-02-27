@@ -84,7 +84,7 @@ public class FeedWorkerService : IFeedWorkerService
         => await _localStorageService.SetItemAsync(GetLocalStorageKeyUserTimeline(), _store.GetSaveData(), cancellationToken);
 
     public async ValueTask ForceLoadAsync(CancellationToken cancellationToken = default)
-        => _store = await _localStorageService.GetItemAsync<LocalFeedsStore>(GetLocalStorageKeyUserTimeline(), cancellationToken);
+        => _store = await _localStorageService.GetItemAsync<LocalFeedsStore>(GetLocalStorageKeyUserTimeline(), cancellationToken) ?? _store;
 
     public async ValueTask ForceFetchMyFeedTimelineAsync(DateTimeOffset since, DateTimeOffset until, CancellationToken cancellationToken = default)
     {
