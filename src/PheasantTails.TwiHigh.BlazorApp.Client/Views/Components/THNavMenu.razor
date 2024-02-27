@@ -78,4 +78,16 @@
     {
         collapseNavMenu = !collapseNavMenu;
     }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        FeedService.OnChangedFeedTimeline += InvokeRender;
+    }
+
+    public override void Dispose()
+    {
+        FeedService.OnChangedFeedTimeline -= InvokeRender;
+        GC.SuppressFinalize(this);
+    }
 }

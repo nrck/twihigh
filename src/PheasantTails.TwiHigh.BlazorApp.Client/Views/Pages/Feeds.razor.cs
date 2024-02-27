@@ -22,9 +22,9 @@ public partial class Feeds : TwiHighPageBase
         GC.SuppressFinalize(this);
     }
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        await base.OnInitializedAsync();
+        base.OnInitialized();
         FeedService.OnChangedFeedTimeline += InvokeRender;
     }
 }
