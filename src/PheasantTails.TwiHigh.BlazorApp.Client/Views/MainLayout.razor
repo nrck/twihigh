@@ -1,5 +1,6 @@
 ﻿@using Toolbelt.Blazor.PWA.Updater
 @inherits LayoutComponentBase
+@implements IDisposable
 @inject IMessageService MessageService
 
 <div class="page">
@@ -34,6 +35,14 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        MessageService.OnChangedMessage = StateHasChanged;
+        MessageService.OnChangedMessage += InvokeRender;
     }
+
+    public void Dispose()
+    {
+        MessageService.OnChangedMessage -= InvokeRender;
+        GC.SuppressFinalize(this);
+    }
+
+    private async void InvokeRender() => await InvokeAsync(StateHasChanged).ConfigureAwait(false);
 }

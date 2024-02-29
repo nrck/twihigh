@@ -1,6 +1,6 @@
 #---------------------------------------------------------------------------------------
-#   deploy-dev.yml
-#       refer to https://github.com/Azure/actions-workflow-samples
+#   deploy-client-application.yml
+#       refer to https://learn.microsoft.com/ja-jp/azure/app-service/deploy-github-actions
 #---------------------------------------------------------------------------------------
 name: Deploy Client application
 on:
@@ -10,9 +10,21 @@ on:
       - dev
     paths:
       - '.github/workflows/deploy-client-application.yml'
-      - 'src/PheasantTails.TwiHigh.Client/**'
+      - 'src/PheasantTails.TwiHigh.BlazorApp/**'
+      - 'src/PheasantTails.TwiHigh.BlazorApp.Client/**'
       - 'src/PheasantTails.TwiHigh.Data.Model/**'
       - 'src/PheasantTails.TwiHigh.Interface/**'
+
+env:
+  # Set web apps name.
+  AZURE_WEBAPP_NAME_PRO: twihigh-pro-client
+  AZURE_WEBAPP_NAME_DEV: twihigh-dev-client
+
+  # Set this to the path to your web app project, defaults to the repository root.
+  AZURE_WEBAPP_PACKAGE_PATH: '.'
+
+  # Set this to the dot net version to use
+  DOTNET_VERSION: '8.0.2'
 
 jobs:
   pro-build-and-deploy-client:
@@ -48,15 +60,24 @@ jobs:
           skip_api_build: true
           production_branch: "main"
           
+  # Build and deploy to dev env.
   dev-build-and-deploy-client:
     if: github.ref != 'refs/heads/main'
     runs-on: ubuntu-latest
     environment: dev-client
     name: DEV:Build and Deploy Client
     steps:
+      # Checkout the repo
       - uses: actions/checkout@v2
         with:
           submodules: true
+
+      # Setup dotnet SDK
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }} 
+
       - name: Install .NET WebAssembly Tools
         run: dotnet workload install wasm-tools
       - name: 'Create licence list json'
