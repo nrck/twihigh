@@ -24,7 +24,7 @@ env:
   AZURE_WEBAPP_PACKAGE_PATH: '.'
 
   # Set this to the dot net version to use
-  DOTNET_VERSION: '8.0.2'
+  DOTNET_VERSION: '8.0.201'
 
 jobs:
   pro-build-and-deploy-client:
@@ -103,5 +103,5 @@ jobs:
         uses: azure/webapps-deploy@v3
         with: 
           app-name: ${{ env.AZURE_WEBAPP_NAME_DEV }}
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_DEV_CLIENT }}
           package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp'
