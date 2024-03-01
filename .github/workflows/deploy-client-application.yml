@@ -26,6 +26,8 @@ env:
   # Set this to the dot net version to use
   DOTNET_VERSION: '8.0.201'
 
+  PROJECT_FILE_PATH: 'src/PheasantTails.TwiHigh.BlazorApp.Client/PheasantTails.TwiHigh.BlazorApp.Client.csproj'
+
 jobs:
   pro-build-and-deploy-client:
     if: github.ref == 'refs/heads/main'
@@ -94,9 +96,9 @@ jobs:
       # Run dotnet build and publish
       - name: dotnet build and publish
         run: |
-          dotnet restore
-          dotnet build --configuration Release
-          dotnet publish -c Release --property:PublishDir='${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp' 
+          dotnet restore ${{ env.PROJECT_FILE_PATH }}
+          dotnet build ${{ env.PROJECT_FILE_PATH }} --configuration Release
+          dotnet publish ${{ env.PROJECT_FILE_PATH }} --configuration Release --property:PublishDir='${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp'
 
       # Deploy to Azure Web apps
       - name: 'Run Azure webapp deploy action using publish profile credentials'
