@@ -98,7 +98,7 @@ jobs:
         run: |
           dotnet restore ${{ env.PROJECT_FILE_PATH }}
           dotnet build ${{ env.PROJECT_FILE_PATH }} --configuration Release
-          dotnet publish ${{ env.PROJECT_FILE_PATH }} --configuration Release --property:PublishDir='${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp'
+          dotnet publish ${{ env.PROJECT_FILE_PATH }} --configuration Release --property:PublishDir='${{ github.workspace }}/BlazorApp'
 
       # Deploy to Azure Web apps
       - name: 'Run Azure webapp deploy action using publish profile credentials'
@@ -106,4 +106,4 @@ jobs:
         with: 
           app-name: ${{ env.AZURE_WEBAPP_NAME_DEV }}
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_DEV_CLIENT }}
-          package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp'
+          package: '${{ github.workspace }}/BlazorApp'
