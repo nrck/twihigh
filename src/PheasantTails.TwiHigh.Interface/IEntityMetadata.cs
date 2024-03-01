@@ -1,12 +1,7 @@
 ﻿namespace PheasantTails.TwiHigh.Interface;
 
-public interface IEntityMetadata
+public interface IEntityMetadata : ICosmosDbItemId
 {
-    /// <summary>
-    /// Cosmos DB item id.
-    /// </summary>
-    public Guid Id { get; set; }
-
     /// <summary>
     /// Updated time for this item.
     /// </summary>

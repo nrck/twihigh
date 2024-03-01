@@ -1,0 +1,72 @@
+﻿.package-licence {
+    padding-top: 24px;
+    padding-right: 12px;
+    padding-bottom: 24px;
+    padding-left: 12px;
+    width: 100%;
+    border-bottom-width: 0.8px;
+    border-bottom-style: solid;
+    border-bottom-color: rgb(239, 243, 244);
+    color: rgb(15,20,25);
+    font-size: 15px;
+}
+
+.package-header {
+    margin-bottom: 6px;
+}
+
+.package-name {
+    max-width: 100%;
+    font-size: 1.3em;
+    font-weight: 700;
+    word-wrap: break-word;
+}
+
+.package-version {
+    display: inline-block;
+    color: rgb(83, 100, 113);
+    font-size: 0.8em;
+    font-weight: 400;
+}
+
+.package-url, .licence-url {
+    padding-left: 8px;
+    display: block;
+    font-size: 0.9em;
+    font-weight: 400;
+    max-width: 100%;
+    word-wrap: break-word;
+}
+
+.package-author {
+    display: inline-block;
+    margin-right: 12px;
+    font-style: italic;
+}
+
+.package-copyright {
+    display: block;
+    color: rgb(83, 100, 113);
+    font-size: 0.8em;
+    font-weight: 400;
+    font-style: italic;
+}
+
+.package-description {
+    font-size: 0.7em;
+    color: rgb(83, 100, 113);
+    padding-top: 0.5em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    padding-bottom: 1em;
+    font-weight: 400;
+}
+
+    .package-description > span {
+        max-width: 100%;
+        word-wrap: break-word;
+    }
+
+.licence-type {
+    font-weight: 700;
+}

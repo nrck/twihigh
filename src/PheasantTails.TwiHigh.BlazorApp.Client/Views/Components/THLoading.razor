@@ -1,0 +1,15 @@
+﻿<div class="loader-wrapper @(isDisplay ? "show" : "none" )">
+    <div class="loader-content">
+        <div class="loader">Loading...</div>
+    </div>
+</div>
+
+@code {
+    private bool isDisplay { get; set; } = false;
+    protected async override Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync().ConfigureAwait(false);
+        await Task.Delay(500).ConfigureAwait(false);
+        isDisplay = true;
+    }
+}

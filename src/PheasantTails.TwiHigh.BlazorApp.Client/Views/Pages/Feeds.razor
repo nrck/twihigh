@@ -1,0 +1,107 @@
+﻿@*
+    Feed page
+*@
+@page "/Feeds"
+@using PheasantTails.TwiHigh.Data.Model.Feeds
+@attribute [Authorize]
+@rendermode InteractiveWebAssembly
+@inherits TwiHighPageBase
+
+<PageTitle>通知 - @(BRAND_NAME)</PageTitle>
+<THPageHeaderTitle Title="通知" />
+
+<section>
+    @if (0 < FeedService.FeedTimeline.Count)
+    {
+        @foreach (var feed in FeedService.FeedTimeline)
+        {
+            var action = feed.FeedType switch
+            {
+                FeedContext.FEED_TYPE_FAVORED => "あなたのツイートをお気に入りに入れました。",
+                FeedContext.FEED_TYPE_FOLLOWED => "あなたをフォローしました。",
+                FeedContext.FEED_TYPE_INFORMATION => "",
+                FeedContext.FEED_TYPE_MENTIONED => "あなたのツイートに返信しました。",
+                FeedContext.FEED_TYPE_RETWEETED => "あなたのツイートをリツイートしました。",
+                _ => ""
+            };
+
+            @if (feed.FeedType == FeedContext.FEED_TYPE_MENTIONED)
+            {
+                @if (feed.FeedByTweet == null)
+                {
+
+                }
+                else
+                {
+                    var tweet = new DisplayTweet(feed.FeedByTweet);
+                    tweet.IsReaded = feed.IsOpened;
+                    <THTweet @key="tweet.Id"
+                             Tweet="tweet"
+                             OnClickDetail="async (t) => await ViewModel.NavigateStatePageCommand.ExecuteAsync(tweet)"
+                             OnClickProfile="(t) => ViewModel.NavigateUserPageCommand.Execute(t.UserDisplayId)" />
+                }
+            }
+            else
+            {
+                <article class="feed-item">
+                    @* 左 *@
+                    <div class="feed-item-left">
+                        @* アイコン *@
+                        @if (feed.FeedByUser == null)
+                        {
+
+                        }
+                        else
+                        {
+                            <THAvatar UserAvatarUrl="@(feed.FeedByUser.AvatarUrl)"
+                                      OnClick="() => ViewModel.NavigateUserPageCommand.Execute(feed.FeedByUser.DisplayId)" />
+                        }
+                    </div>
+                    @* 右 *@
+                    <div class="feed-item-right">
+                        @* ヘッダー *@
+                        @if (feed.FeedByUser == null)
+                        {
+
+                        }
+                        else
+                        {
+                            <div class="feed-item-right-header">
+                                @* ユーザー名 *@
+                                <div class="user-display-name">
+                                    <span @onclick="() => ViewModel.NavigateUserPageCommand.Execute(feed.FeedByUser.DisplayId)">@feed.FeedByUser.DisplayName</span>
+                                </div>
+                                @* ユーザーID *@
+                                <div class="user-display-id">
+                                    <span @onclick="() => ViewModel.NavigateUserPageCommand.Execute(feed.FeedByUser.DisplayId)">@@@feed.FeedByUser.DisplayId</span>
+                                </div>
+                            </div>
+                        }
+                        @* ボディ*@
+                        <div class="feed-item-right-body">
+                            @if (feed.ReferenceTweet == null)
+                            {
+
+                            }
+                            else
+                            {
+                                @* テキスト本文 *@
+                                <div class="user-tweet-text">
+                                    <span>
+                                        @(feed.FeedByUser!.DisplayName)さんが@(action)
+                                    </span>
+                                </div>
+                            }
+                        </div>
+                        <div class="feed-item-right-footer">
+                        </div>
+                    </div>
+                </article>
+            }
+        }
+    }
+    else
+    {
+        <THNoContents NoContentsText="通知はありません。" />
+    }
+</section>

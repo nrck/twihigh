@@ -1,0 +1,36 @@
+﻿@*
+    Home page
+*@
+@page "/Home"
+@attribute [Authorize]
+@inherits TwiHighPageBase
+
+@* Title *@
+<PageTitle>ホーム - @(BRAND_NAME)</PageTitle>
+<THPageHeaderTitle Title="ホーム" />
+
+@* Tweet post form *@
+<section>
+    <THPostForm UserAvatarUrl="@ViewModel.AvatarUrl.Value"
+                OnClickAvatarCommand="@ViewModel.NavigateProfileEditorPageCommand"
+                PostTweetCommand="@ViewModel.PostTweetCommand"
+                IsForceForcus=true />
+</section>
+
+@* Timeline *@
+@if (TimelineWorkerService.Timeline.Count == 0)
+{
+    <THNoContents NoContentsText="@("まずは @twihigh をフォローしてみよう！")" />
+}
+else
+{
+    <THTimeline @key="@ViewModel.MyTwiHighUserId.Value"
+                Tweets="@TimelineWorkerService.Timeline"
+                MyTwiHithUserId=@ViewModel.MyTwiHighUserId.Value
+                DeleteTweetCommand="ViewModel.DeleteMyTweetCommand"
+                PostTweetCommand="ViewModel.PostTweetCommand"
+                OnClickProfileEditor="() => ViewModel.NavigateProfileEditorPageCommand.Execute()"
+                OnClickProfile="(t) => ViewModel.NavigateUserPageCommand.Execute(t)"
+                OnClickGapTweetsLoad="async (t) => await ViewModel.GetGapTweetCommand.ExecuteAsync(t)"
+                OnClickDetail="(t) => ViewModel.NavigateStatePageCommand.Execute(t)" />
+}

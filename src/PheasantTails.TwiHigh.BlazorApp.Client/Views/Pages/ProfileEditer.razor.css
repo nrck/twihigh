@@ -1,0 +1,106 @@
+﻿input, textarea {
+    width: 100%;
+    border-top: none;
+    border-right: none;
+    border-bottom: solid;
+    border-left: none;
+    border-bottom-width: 0.8px;
+    border-bottom-color: rgb(189, 192, 195);
+}
+
+input {
+    font-size: 18px;
+    margin-top: 8px;
+    margin-bottom: 24px;
+}
+
+textarea {
+    font-size: 14px;
+    line-height: 16px;
+    height: 120px;
+    margin-top: 8px;
+    margin-bottom: 24px;
+}
+
+span {
+    display: block;
+    width: 100%;
+    color: rgb(83, 100, 113);
+    font-size: 15px;
+}
+
+.help {
+    font-size: 12px;
+    padding-left: 8px;
+}
+
+.profile-header {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+    .profile-header input {
+        color: rgb(83, 100, 113);
+    }
+
+
+.file-input-button {
+    aspect-ratio: 1;
+    height: 80%;
+    width: 80%;
+    max-width: 200px;
+    max-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+    .file-input-button img {
+        aspect-ratio: 1;
+        max-height: 100%;
+        max-width: 100%;
+        border-radius: 100%;
+        object-fit: cover;
+    }
+
+    .file-input-button label {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        margin-top: 70%;
+        margin-left: 70%;
+        width: 30%;
+        height: 30%;
+        border-radius: 100%;
+        background-color: rgb(0, 0, 0, 0.4);
+        cursor: pointer;
+    }
+
+        .file-input-button label > .camera {
+            display: contents;
+            font-size: 200%;
+            color: rgb(255, 255, 255, 0.85);
+        }
+
+.profile-save {
+    display: flex;
+}
+
+.profile-save-button {
+    color: rgb(255, 255, 255);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 20px;
+    margin-left: auto;
+    height: 36px;
+    padding-left: 32px;
+    padding-right: 32px;
+    border-radius: 18px;
+    border: 0;
+    background-color: rgb(29, 155, 240);
+}

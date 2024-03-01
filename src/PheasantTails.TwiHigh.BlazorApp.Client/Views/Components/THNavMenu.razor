@@ -1,0 +1,93 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using System.Runtime.InteropServices
+@using System.Reflection
+@inherits TwiHighPageBase
+@inject IFeedWorkerService FeedService
+
+<div class="top-row ps-3 navbar navbar-light">
+    <div class="container-fluid">
+        <a class="twihigh-brand" href="/">@(BRAND_NAME) <span class="ea">(Early Access)</span></a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <div class="nav-link-notification">
+                <span class="navbar-toggler-icon"></span>
+                @if (FeedService.FeedTimeline.Any(f => f.IsOpened == false))
+                {
+                    <span class="navbar-toggler-icon-notification-badge"></span>
+                }
+            </div>
+        </button>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <AuthorizeView>
+                <NotAuthorized>
+                    <NavLink class="nav-link" href="/signup">
+                        <span class="oi oi-check" aria-hidden="true"></span> 参加する
+                    </NavLink>
+                    <NavLink class="nav-link" href="/login">
+                        <span class="oi oi-account-login" aria-hidden="true"></span> ログイン
+                    </NavLink>
+                    <NavLink class="nav-link" href="/licence">
+                        <span class="oi oi-badge" aria-hidden="true" style="padding-left: 6px; padding-top: 4px;"></span> ライセンス
+                    </NavLink>
+                </NotAuthorized>
+                <Authorized>
+                    <NavLink class="nav-link" href="/home">
+                        <span class="oi oi-home" aria-hidden="true"></span> ホーム
+                    </NavLink>
+                    <NavLink class="nav-link" href="/feeds">
+                        <div class="nav-link-notification">
+                            <span class="oi oi-bell" aria-hidden="true" style="padding-top: 6px;"></span>
+                            @if (FeedService.FeedTimeline.Any(f => f.IsOpened == false))
+                            {
+                                <span class="nav-link-notification-badge">@(FeedService.FeedTimeline.Count(f => f.IsOpened == false))</span>
+                            }
+                        </div>
+                        通知
+                    </NavLink>
+                    <NavLink class="nav-link" href="/profile">
+                        <span class="oi oi-image" aria-hidden="true" style="padding-top: 6px;"></span> プロフィール
+                    </NavLink>
+                    <NavLink class="nav-link" href="/clear">
+                        <span class="oi oi-delete" aria-hidden="true" style="padding-top: 7px;"></span> キャッシュクリア
+                    </NavLink>
+                    <NavLink class="nav-link" href="/licence">
+                        <span class="oi oi-badge" aria-hidden="true" style="padding-left: 6px; padding-top: 7px;"></span> ライセンス
+                    </NavLink>
+                    <NavLink class="nav-link" href="/logout">
+                        <span class="oi oi-account-logout" aria-hidden="true" style="padding-top: 6px;"></span> ログアウト
+                    </NavLink>
+                </Authorized>
+            </AuthorizeView>
+            <span class="version">
+                Version @(Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "undefined") [@(IsServerSideRendering ? "ServerSideRendering" : "WebAssembly")]
+            </span>
+        </div>
+    </nav>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        FeedService.OnChangedFeedTimeline += InvokeRender;
+    }
+
+    public override void Dispose()
+    {
+        FeedService.OnChangedFeedTimeline -= InvokeRender;
+        GC.SuppressFinalize(this);
+    }
+}

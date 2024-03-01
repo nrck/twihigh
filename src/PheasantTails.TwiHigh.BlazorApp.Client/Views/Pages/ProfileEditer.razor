@@ -1,0 +1,69 @@
+﻿@page "/Profile/Editor"
+@inherits TwiHighPageBase
+@attribute [Authorize]
+@rendermode InteractiveWebAssembly
+@*
+    プロフィール編集
+*@
+
+<PageTitle>@(ViewModel.HeaderTitle.Value) - @(BRAND_NAME)</PageTitle>
+<THPageHeaderTitle Title="@ViewModel.HeaderTitle.Value" />
+
+@if (ViewModel.User.Value == null)
+{
+    <THLoading />
+}
+else
+{
+    <section class="px-3">
+        <div class="profile-header">
+            @* アイコン *@
+            <div class="file-input-button">
+                <img src="@ViewModel.AvatarUrl.Value" loading="lazy" />
+                <InputFile id="avatar-data" style="display: none;" OnChange="async (e) => await ViewModel.LoadLocalFileCommand.ExecuteAsync(e).ConfigureAwait(false)" accept="image/png, image/jpeg" />
+                @if (ViewModel.LocalRawAvatarContent.Value == null)
+                {
+                    <label for="avatar-data">
+                        <span class="oi oi-camera-slr camera"></span>
+                    </label>
+                }
+                else
+                {
+                    <label @onclick="_ => ViewModel.AvatarResetCommand.Execute()">
+                        <span class="oi oi-action-undo camera"></span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        @* プロフィール *@
+        <div class="profile-display-name">
+            <span>アカウント名</span>
+            <span class="help">画面上に表示されるアカウントの名前です。</span>
+            <input type="text" @bind-value=@ViewModel.DisplayName.Value />
+        </div>
+        <div>
+            <span>アカウントID</span>
+            <span class="help">ログイン時やプロフィールページのアドレスに使われます。</span>
+            <input type="text" @bind-value=@ViewModel.DisplayId.Value />
+        </div>
+        @* Bio *@
+        <div class="profile-biography">
+            <span>自己紹介</span>
+            <span class="help">プロフィールページに表示される自己紹介文です。</span>
+            <textarea @bind=@ViewModel.Biography.Value />
+        </div>
+        <div class="profile-save">
+            <button class="profile-save-button" @onclick="async () => await ViewModel.SaveCommand.ExecuteAsync().ConfigureAwait(false)">
+                @if (ViewModel.CanExecuteSaveCommand.Value)
+                {
+                    @("保存する")
+                }
+                else
+                {
+                    @("更新中...")
+                }
+            </button>
+        </div>
+    </section>
+}

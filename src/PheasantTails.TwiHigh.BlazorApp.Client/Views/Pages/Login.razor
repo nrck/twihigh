@@ -1,0 +1,32 @@
+﻿@*
+    Login page
+*@
+@page "/Login"
+@inherits TwiHighPageBase
+
+<PageTitle>ログイン - @(BRAND_NAME)</PageTitle>
+<section>
+    <div class="login-form">
+        <h2>ツイハイにログイン</h2>
+        <div class="login-form-group">
+            <label for="user-display-id" class="login-form-user-display-id-label">アカウントID</label>
+            <input type="text" name="user-display-id" class="login-form-user-display-id-input" @bind-value=ViewModel.DisplayId.Value />
+        </div>
+        <div class="login-form-group">
+            <label for="user-password" class="login-form-user-password-label">パスワード</label>
+            <input type="password" name="user-password" class="login-form-user-password-input" @bind-value=ViewModel.PlainPassword.Value />
+        </div>
+        <div class="login-form-group">
+            <button type="submit" class="login-form-submit-button" @onclick="async () => await ViewModel.LoginCommand.ExecuteAsync()" disabled="@(!ViewModel.CanExecute.Value)">
+                @if (ViewModel.CanExecute.Value)
+                {
+                    <span>ログインする</span>
+                }
+                else
+                {
+                    <span>少しお待ち下さい...</span>
+                }
+            </button>
+        </div>
+    </div>
+</section>

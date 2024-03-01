@@ -7,6 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.Funct
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Properties", "Properties", "{6C7BCBC6-EA06-4604-BF1F-340EAEFAD917}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		.gitignore = .gitignore
 		LICENSE = LICENSE
 		NOTICE = NOTICE
@@ -43,6 +44,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.Functions.Feeds", "src\PheasantTails.TwiHigh.Functions.Feeds\PheasantTails.TwiHigh.Functions.Feeds.csproj", "{83DAC235-338B-4D9F-9FAB-A89509E51F5C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.Interface", "src\PheasantTails.TwiHigh.Interface\PheasantTails.TwiHigh.Interface.csproj", "{492ED9E5-7336-434F-A7EF-05C8E19B89F5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.BlazorApp", "src\PheasantTails.TwiHigh.BlazorApp\PheasantTails.TwiHigh.BlazorApp.csproj", "{EA1A07A4-48A2-494D-92D3-A303377DCC6F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PheasantTails.TwiHigh.BlazorApp.Client", "src\PheasantTails.TwiHigh.BlazorApp.Client\PheasantTails.TwiHigh.BlazorApp.Client.csproj", "{4866B885-F186-470A-BD9A-E60EA20D882F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -90,6 +95,14 @@ Global
 		{492ED9E5-7336-434F-A7EF-05C8E19B89F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{492ED9E5-7336-434F-A7EF-05C8E19B89F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{492ED9E5-7336-434F-A7EF-05C8E19B89F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA1A07A4-48A2-494D-92D3-A303377DCC6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA1A07A4-48A2-494D-92D3-A303377DCC6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA1A07A4-48A2-494D-92D3-A303377DCC6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA1A07A4-48A2-494D-92D3-A303377DCC6F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4866B885-F186-470A-BD9A-E60EA20D882F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4866B885-F186-470A-BD9A-E60EA20D882F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4866B885-F186-470A-BD9A-E60EA20D882F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4866B885-F186-470A-BD9A-E60EA20D882F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

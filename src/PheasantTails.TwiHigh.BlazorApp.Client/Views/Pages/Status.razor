@@ -1,0 +1,20 @@
+﻿@*
+    Tweet page
+*@
+@page "/{UserDisplayId}/Status/{TweetId}"
+@page "/{UserDisplayId}/Status/{TweetId}/reply"
+@inherits TwiHighPageBase
+
+@* タイトル *@
+<PageTitle>@(ViewModel.PageTitle) - @(BRAND_NAME)</PageTitle>
+<THPageHeaderTitle Title="ツイート" />
+
+@* タイムライン *@
+<THTimeline @key="TweetId"
+            Tweets="ViewModel.Tweets"
+            MyTwiHithUserId=MyTwiHithUserId
+            DeleteTweetCommand="ViewModel.DeleteMyTweetCommand"
+            PostTweetCommand="ViewModel.PostTweetCommand"
+            OnClickProfileEditor="() => ViewModel.NavigateProfileEditorPageCommand.Execute()"
+            OnClickProfile="ViewModel.NavigateUserPageCommand.Execute"
+            OnClickDetail="ViewModel.NavigateStatePageCommand.Execute" />

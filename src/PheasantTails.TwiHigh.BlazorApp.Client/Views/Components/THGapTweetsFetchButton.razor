@@ -1,0 +1,15 @@
+﻿@inherits TwiHighComponentBase
+<article class="gap-twi-high-article">
+    <button @onclick=OnClickGapButton>
+        ツイートを更に表示
+    </button>
+</article>
+@code{
+    [Parameter, EditorRequired]
+    public DisplayTweet Tweet { get; set; } = default!;
+
+    [Parameter]
+    public EventCallback<DisplayTweet> OnClick { get; set; }
+
+    private Task OnClickGapButton(MouseEventArgs _) => OnClick.InvokeAsync(Tweet);
+}

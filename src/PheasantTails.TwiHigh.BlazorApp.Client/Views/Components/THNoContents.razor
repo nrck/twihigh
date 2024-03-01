@@ -1,0 +1,16 @@
+﻿@*
+
+*@
+@inherits TwiHighComponentBase
+
+<article class="no-content-article">
+    <span>
+        <THAutoLink Text="@NoContentsText" />
+    </span>
+</article>
+
+@code
+{
+    [Parameter]
+    public string NoContentsText { get; set; } = "まだ何もありません。";
+}

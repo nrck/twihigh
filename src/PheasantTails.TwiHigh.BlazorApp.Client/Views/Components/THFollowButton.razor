@@ -1,0 +1,19 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@inherits TwiHighComponentBase
+<AuthorizeView>
+    <Authorized>
+        @if (IsFollowing)
+        {
+            <button class="button-following"
+                @onmouseover=OnMouseOverRemoveButton
+                @onmouseout=OnMouseOutRemoveButton
+                @onclick=OnClickRemoveButton>
+                @FollowedButtonText
+            </button>
+        }
+        else
+        {
+            <button class="button-follow" @onclick=OnClickFollowButton>フォローする</button>
+        }
+    </Authorized>
+</AuthorizeView>

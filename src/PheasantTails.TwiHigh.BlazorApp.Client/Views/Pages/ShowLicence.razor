@@ -1,0 +1,24 @@
+﻿@*
+    Licence Page.
+*@
+@page "/Licence"
+@inherits TwiHighPageBase
+
+<PageTitle>ライセンス - @(BRAND_NAME)</PageTitle>
+<THPageHeaderTitle Title="ライセンス" />
+
+@if (Licences == null)
+{
+    <THLoading />
+}
+else if (0 < Licences.Length)
+{
+    foreach (Licence licence in Licences)
+    {
+        <THLicence Licence="licence" />
+    }
+}
+else
+{
+    <THNoContents NoContentsText="表示するライセンスはありません。" />
+}

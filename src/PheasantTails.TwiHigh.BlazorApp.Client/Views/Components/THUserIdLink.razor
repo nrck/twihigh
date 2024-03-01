@@ -1,0 +1,10 @@
+﻿@inherits TwiHighComponentBase
+<a href="@($"/profile/{UserDisplayId}")" @onclick:preventDefault @onclick=OnClickLink>@@@(UserDisplayId)</a>
+
+@code{
+    [Parameter, EditorRequired]
+    public string UserDisplayId { get; set; } = string.Empty;
+
+    private void OnClickLink()
+        => Navigation.NavigateToProfilePage(UserDisplayId);
+}

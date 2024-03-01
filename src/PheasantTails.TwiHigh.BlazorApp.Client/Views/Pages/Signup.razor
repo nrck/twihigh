@@ -1,0 +1,40 @@
+﻿@*
+    Sifnup page.
+*@
+@page "/SignUp"
+@inherits TwiHighPageBase
+
+<PageTitle>参加する - @(BRAND_NAME)</PageTitle>
+<section>
+    <div class="login-form">
+        <h2>ツイハイに参加する</h2>
+        <div class="login-form-group">
+            <label for="user-display-id" class="login-form-user-display-id-label">E-mail</label>
+            <input type="text" name="user-display-id" class="login-form-user-display-id-input" @bind-value=ViewModel.Email.Value />
+        </div>
+        <div class="login-form-group">
+            <label for="user-display-id" class="login-form-user-display-id-label">アカウントID</label>
+            <input type="text" name="user-display-id" class="login-form-user-display-id-input" @bind-value=ViewModel.DisplayId.Value />
+        </div>
+        <div class="login-form-group">
+            <label for="user-password" class="login-form-user-password-label">パスワード</label>
+            <input type="password" name="user-password" class="login-form-user-password-input" @bind-value=ViewModel.Password.Value />
+        </div>
+        <div class="login-form-group">
+            <button type="submit" class="login-form-submit-button" @onclick="async () => await ViewModel.SignupCommand.ExecuteAsync()" disabled="@(!ViewModel.CanSignupCommand.Value)">
+                @if (ViewModel.CanSignupCommand.Value)
+                {
+                    <span>
+                        アカウントを作成する
+                    </span>
+                }
+                else
+                {
+                    <span>
+                        少しお待ち下さい...
+                    </span>
+                }
+            </button>
+        </div>
+    </div>
+</section>

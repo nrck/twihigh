@@ -1,0 +1,33 @@
+﻿@inherits TwiHighComponentBase
+@if (Licence != null)
+{
+    <section class="package-licence">
+        <div class="package-header">
+            <span class="package-name">@Licence.PackageName</span>
+            <span class="package-version">( @Licence.PackageVersion )</span>
+            <span class="package-url"><THAutoLink Text="@Licence.PackageUrl" /></span>
+        </div>
+        <div>
+            @if (0 < Licence.Authors.Length)
+            {
+                @foreach (string author in Licence.Authors)
+                {
+                    <span class="package-author">@author</span>
+                }
+            }
+            <span class="package-copyright">@Licence.Copyright</span>
+        </div>
+        <div class="package-description">
+            <span><THAutoLink Text="@Licence.Description.GetTextWithNewline()" /></span>
+        </div>
+        <div>
+            <span class="licence-type">@Licence.LicenseType</span>
+            <span class="licence-url"><THAutoLink Text="@Licence.LicenseUrl" /></span>
+        </div>
+    </section>
+}
+
+@code{
+    [Parameter, EditorRequired]
+    public Licence Licence { get; set; } = default!;
+}
