@@ -95,7 +95,7 @@ jobs:
       - name: 'Create licence list json'
         shell: bash
         run: |
-          pushd './src/PheasantTails.TwiHigh.Client/'
+          pushd './src/PheasantTails.TwiHigh.BlazorApp.Client/'
           dotnet tool install --global dotnet-project-licenses
           dotnet-project-licenses -i . -j true -f ${{ github.workspace }}/BlazorApp/wwwroot
           popd
