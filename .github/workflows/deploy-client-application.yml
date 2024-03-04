@@ -97,7 +97,7 @@ jobs:
         run: |
           pushd './src/PheasantTails.TwiHigh.Client/'
           dotnet tool install --global dotnet-project-licenses
-          dotnet-project-licenses -i . -j true -f ${{ github.workspace }}/BlazorApp
+          dotnet-project-licenses -i . -j true -f ${{ github.workspace }}/BlazorApp/wwwroot
           popd
 
       - name: 'Show Blazor app folder'
