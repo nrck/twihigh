@@ -9,6 +9,7 @@
 		<Version>0.9.9.0</Version>
 		<PublishTrimmed>true</PublishTrimmed>
 		<RunAOTCompilation>true</RunAOTCompilation>
+		<WasmStripILAfterAOT>true</WasmStripILAfterAOT>
 	</PropertyGroup>
 
 	<ItemGroup>

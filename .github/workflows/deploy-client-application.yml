@@ -83,22 +83,22 @@ jobs:
       # Install .NET WebAssembly Tools
       - name: Install .NET WebAssembly Tools
         run: dotnet workload install wasm-tools
-      
+
+      # Run dotnet build and publish
+      - name: dotnet build and publish
+        run: |
+          dotnet restore ${{ env.PROJECT_FILE_PATH }}
+          dotnet build ${{ env.PROJECT_FILE_PATH }} --configuration Release --runtime linux-x64
+          dotnet publish ${{ env.PROJECT_FILE_PATH }} --configuration Release --runtime linux-x64 --property:PublishDir='${{ github.workspace }}/BlazorApp'
+
       # Create licence list json
       - name: 'Create licence list json'
         shell: bash
         run: |
           pushd './src/PheasantTails.TwiHigh.Client/'
           dotnet tool install --global dotnet-project-licenses
-          dotnet-project-licenses -i . -j true -f wwwroot
+          dotnet-project-licenses -i . -j true -f ${{ github.workspace }}/BlazorApp
           popd
-
-      # Run dotnet build and publish
-      - name: dotnet build and publish
-        run: |
-          dotnet restore ${{ env.PROJECT_FILE_PATH }}
-          dotnet build ${{ env.PROJECT_FILE_PATH }} --configuration Release
-          dotnet publish ${{ env.PROJECT_FILE_PATH }} --configuration Release --property:PublishDir='${{ github.workspace }}/BlazorApp'
 
       - name: 'Show Blazor app folder'
         shell: bash
