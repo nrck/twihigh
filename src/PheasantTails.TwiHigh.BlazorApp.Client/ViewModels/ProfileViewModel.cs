@@ -86,9 +86,6 @@ public class ProfileViewModel : ViewModelBase, IProfileViewModel
 
     private async Task GetUserTimelineAsync(string? id)
     {
-        UserDisplayedOnScreen.Value = null;
-        _tweets = null;
-        IsMyTwiHighUser.Value = false;
         string myTwiHighUserId = id ?? await _authenticationStateProvider.GetLoggedInUserIdAsync().ConfigureAwait(false);
         string urlGetTwihighUser = string.Format(_apiUrlGetTwihighUser, myTwiHighUserId);
         try
