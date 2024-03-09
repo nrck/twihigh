@@ -7,7 +7,7 @@ using System.Collections.ObjectModel;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.ViewModels;
 
-public interface IProfileViewModel
+public interface IProfileViewModel : IViewModelBase
 {
     ReactivePropertySlim<bool> CanExecuteFollowOrRemove { get; }
     AsyncReactiveCommand<DisplayTweet> DeleteMyTweetCommand { get; }
