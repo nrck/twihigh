@@ -6,7 +6,10 @@
 @inherits TwiHighPageBase
 
 @* タイトル *@
-<PageTitle>@(ViewModel.PageTitle) - @(BRAND_NAME)</PageTitle>
+<PageTitle>@(ViewModel.PageTitle.Value) - @(BRAND_NAME)</PageTitle>
+<THOpenGraphProtocol Title="@($"{ViewModel.PageTitle.Value} - {BRAND_NAME}")"
+                     Description="@($"{ViewModel.Tweets?.FirstOrDefault(t => t.IsEmphasized)?.Text}")"
+                     Image="@ViewModel.Tweets?.FirstOrDefault(t => t.IsEmphasized)?.UserAvatarUrl" />
 <THPageHeaderTitle Title="ツイート" />
 
 @* タイムライン *@

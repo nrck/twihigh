@@ -1,0 +1,26 @@
+﻿@inherits TwiHighComponentBase
+<HeadContent>
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@@nr_ck" />
+    <meta name="twitter:title" content="@Title" />
+    <meta name="twitter:description" content="@Description" />
+    <meta name="twitter:image" content="@Image" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="@Title" />
+    <meta property="og:description" content="@Description" />
+    <meta property="og:url" content="@Navigation.Uri" />
+    <meta property="og:site_name" content="ツイハイ！ (Early Access)" />
+    <meta property="og:image" content="@Image" />
+</HeadContent>
+
+@code {
+    [Parameter]
+    public string Title { get; set; } = "ツイハイ！ (Early Access)";
+
+    [Parameter]
+    public string Description { get; set; } = "ツイ廃が作った第２のTwitter。Twitterの代わりはツイハイ！で";
+
+    [Parameter]
+    public string Image { get; set; } = "https://twihighprostoragepublic.blob.core.windows.net/twihigh-images/512x512.png";
+}

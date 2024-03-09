@@ -3,6 +3,9 @@
 @inherits TwiHighPageBase
 
 <PageTitle>@(ViewModel.PageTitle.Value) - @(BRAND_NAME)</PageTitle>
+<THOpenGraphProtocol Title="@($"{ViewModel.PageTitle.Value} - {BRAND_NAME}")"
+                     Description="@($"{ViewModel.PageTitle.Value} は {ViewModel.UserFollows.Count} 人です。")"
+                     Image="@ViewModel.UserDisplayedOnScreen.Value?.AvatarUrl" />
 <THPageHeaderTitle Title="@ViewModel.PageTitle.Value" />
 
 <section>

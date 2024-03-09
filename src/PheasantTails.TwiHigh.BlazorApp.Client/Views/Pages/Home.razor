@@ -4,9 +4,12 @@
 @page "/Home"
 @attribute [Authorize]
 @inherits TwiHighPageBase
+@rendermode InteractiveWebAssembly
 
 @* Title *@
 <PageTitle>ホーム - @(BRAND_NAME)</PageTitle>
+<THOpenGraphProtocol Title="@($"ホーム - {BRAND_NAME}")"
+                     Image="@ViewModel.AvatarUrl.Value" />
 <THPageHeaderTitle Title="ホーム" />
 
 @* Tweet post form *@
