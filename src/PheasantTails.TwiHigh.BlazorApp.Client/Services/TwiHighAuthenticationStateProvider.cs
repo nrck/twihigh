@@ -1,5 +1,7 @@
 ﻿using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using PheasantTails.TwiHigh.BlazorApp.Client.Models;
 using PheasantTails.TwiHigh.Data.Model.TwiHighUsers;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
@@ -16,23 +18,33 @@ public class TwiHighAuthenticationStateProvider : AuthenticationStateProvider
     private readonly HttpClient _httpClient;
     private readonly ILocalStorageService _localStorage;
     private readonly AuthenticationState _defaultAuthenticationState;
+    private readonly AuthenticationState _authenticationState;
     private readonly JwtSecurityTokenHandler _defaultJwtSecurityTokenHandler;
     private readonly string _apiUrlRefreshToken;
 
-    public TwiHighAuthenticationStateProvider(HttpClient httpClient, ILocalStorageService localStorage, IConfiguration configuration)
+    public TwiHighAuthenticationStateProvider(PersistentComponentState state, HttpClient httpClient, ILocalStorageService localStorage, IConfiguration configuration)
     {
         _httpClient = httpClient;
         _localStorage = localStorage;
         _apiUrlRefreshToken = $"{configuration["AppUserApiUrl"]}/Refresh";
         _defaultAuthenticationState = new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
         _defaultJwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+        if (state.TryTakeFromJson(nameof(PersistentJsonWebToken), out PersistentJsonWebToken? token) && token != null)
+        {
+            Claim claim = new(nameof(JwtSecurityToken), token.Token);
+            _authenticationState = new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity([claim], nameof(TwiHighAuthenticationStateProvider))));
+        }
+        else
+        {
+            _authenticationState = _defaultAuthenticationState;
+        }
     }
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
         try
         {
-            string jwt = await GetTokenFromLocalStorageAsync();
+            string jwt = _authenticationState.User.FindFirst(nameof(JwtSecurityToken))?.Value ?? string.Empty;
 
             // Check Expiry.
             string newjwt = await EnsureWithinExpirationAsync(jwt, TimeSpan.FromDays(1));

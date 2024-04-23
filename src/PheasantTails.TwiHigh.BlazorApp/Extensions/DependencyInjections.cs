@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using PheasantTails.TwiHigh.BlazorApp.Client.Services;
 using PheasantTails.TwiHigh.BlazorApp.Client.ViewModels;
+using PheasantTails.TwiHigh.BlazorApp.Services;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Extensions;
@@ -43,12 +44,8 @@ public static class DependencyInjections
         services.AddBlazoredLocalStorage();
         services.AddPWAUpdater();
         services.AddHttpClient();
-        services.AddAuthentication()
-            .AddCookie(option =>
-            {
-                option.LoginPath = new PathString("/");
-                option.ReturnUrlParameter = "";
-            });
+        services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie();
         services.AddCascadingAuthenticationState();
 
         return services;

@@ -1,0 +1,32 @@
+﻿@*
+    Login page
+*@
+@page "/Login2"
+@inherits TwiHighPageBase
+@*
+    ref: https://zenn.dev/microsoft/articles/aspnetcore-blazor-dotnet8-tryaddauth
+*@
+<PageTitle>ログイン - @(BRAND_NAME)</PageTitle>
+<THOpenGraphProtocol Title="@($"ログイン - {BRAND_NAME}")" />
+<section>
+    <EditForm FormName="login-form" EditContext="EditContext" OnValidSubmit="HandleValidSubmitAsync" >
+        <DataAnnotationsValidator />
+        <ValidationSummary Model="Model" />
+        <h2>ツイハイにログイン</h2>
+        <div class="login-form-group">
+            <label for="user-display-id" class="login-form-user-display-id-label">アカウントID</label>
+            <InputText class="login-form-user-display-id-input" @bind-Value="Model.DisplayId" />
+            <ValidationMessage For="() => Model.DisplayId" />
+        </div>
+        <div class="login-form-group">
+            <label for="user-password" class="login-form-user-password-label">パスワード</label>
+            <InputText type="password" class="login-form-user-password-input" @bind-Value="Model.PlainPassword" />
+            <ValidationMessage For="() => Model.PlainPassword" />
+        </div>
+        <div class="login-form-group">
+            <button type="submit" class="login-form-submit-button">
+                <span>ログインする</span>
+            </button>
+        </div>
+    </EditForm>
+</section>
