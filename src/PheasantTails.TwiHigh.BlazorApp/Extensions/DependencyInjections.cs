@@ -30,7 +30,7 @@ public static class DependencyInjections
 
     internal static IServiceCollection AddTwiHighservices(this IServiceCollection services)
     {
-        services.AddScoped<AuthenticationStateProvider, TwiHighAuthenticationStateProvider>();
+        services.AddScoped<AuthenticationStateProvider, TwiHighServerAuthenticationStateProvider>();
         services.AddScoped<IFeedWorkerService, FeedWorkerService>();
         services.AddScoped<IMessageService, MessageService>();
         services.AddScoped<IScrollInfoService, ScrollInfoService>();

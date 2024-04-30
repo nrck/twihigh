@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using PheasantTails.TwiHigh.BlazorApp.Client.Models;
 using PheasantTails.TwiHigh.BlazorApp.Client.Views.Bases;
 using PheasantTails.TwiHigh.Data.Model.TwiHighUsers;
 using System.ComponentModel.DataAnnotations;
@@ -66,9 +67,9 @@ public partial class Login : TwiHighPageBase
         {
             throw new InvalidOperationException("Failed to login. Please check your username and password.");
         }
-        //JwtSecurityToken jwtSecurityToken = new JwtSecurityTokenHandler().ReadJwtToken(jwt.Token);
-        Claim jwtClaim = new(nameof(JwtSecurityToken), jwt.Token);
-        ClaimsIdentity identity = new([jwtClaim], CookieAuthenticationDefaults.AuthenticationScheme);
+        JwtSecurityToken jwtSecurityToken = new JwtSecurityTokenHandler().ReadJwtToken(jwt.Token);
+        IEnumerable<Claim> claims = jwtSecurityToken.Claims.Append(new(nameof(PersistentAuthenticationState.Token), jwt.Token));
+        ClaimsIdentity identity = new(claims, CookieAuthenticationDefaults.AuthenticationScheme);
         // ログイン成功！
         await HttpContext!.SignInAsync(
             CookieAuthenticationDefaults.AuthenticationScheme,

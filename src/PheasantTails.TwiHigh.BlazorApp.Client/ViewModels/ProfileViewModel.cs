@@ -17,7 +17,7 @@ namespace PheasantTails.TwiHigh.BlazorApp.Client.ViewModels;
 public class ProfileViewModel : ViewModelBase, IProfileViewModel
 {
     private readonly ITimelineWorkerService _timelineWorkerService;
-    private readonly TwiHighAuthenticationStateProvider _authenticationStateProvider;
+    private readonly AuthenticationStateProvider _authenticationStateProvider;
     private readonly string _apiUrlGetTwihighUser;
     private readonly string _apiUrlGetUserTweets;
     private readonly string _apiUrlAddFollow;
@@ -49,8 +49,7 @@ public class ProfileViewModel : ViewModelBase, IProfileViewModel
         _apiUrlAddFollow = $"{configuration["FollowApiUrl"]}/{{0}}";
         _apiUrlRemoveFollow = $"{configuration["FollowApiUrl"]}/{{0}}";
         _timelineWorkerService = timelineWorkerService;
-        _authenticationStateProvider = authenticationStateProvider as TwiHighAuthenticationStateProvider
-            ?? throw new ArgumentException($"{nameof(authenticationStateProvider)} is not {nameof(TwiHighAuthenticationStateProvider)}", nameof(authenticationStateProvider));
+        _authenticationStateProvider = authenticationStateProvider;
     }
 
     protected override void Initialize()
@@ -86,7 +85,7 @@ public class ProfileViewModel : ViewModelBase, IProfileViewModel
 
     private async Task GetUserTimelineAsync(string? id)
     {
-        string myTwiHighUserId = id ?? await _authenticationStateProvider.GetLoggedInUserIdAsync().ConfigureAwait(false);
+        string myTwiHighUserId = id ?? await ((IAuthenticationStateAccesser)_authenticationStateProvider).GetLoggedInUserIdAsync().ConfigureAwait(false);
         string urlGetTwihighUser = string.Format(_apiUrlGetTwihighUser, myTwiHighUserId);
         try
         {
@@ -174,7 +173,7 @@ public class ProfileViewModel : ViewModelBase, IProfileViewModel
 
     private async Task SetAuthenticationHeaderValue()
     {
-        string token = await _authenticationStateProvider.GetTokenFromLocalStorageAsync();
+        string token = await ((IAuthenticationStateAccesser)_authenticationStateProvider).GetLoggedInUserTokenAsync();
         _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
     }
 }

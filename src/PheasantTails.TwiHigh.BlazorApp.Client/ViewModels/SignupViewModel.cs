@@ -20,7 +20,7 @@ public class SignupViewModel : ViewModelBase, ISignupViewModel
     /// <summary>
     /// The authentication state provider for TwiHigh.
     /// </summary>
-    private readonly TwiHighAuthenticationStateProvider _authenticationStateProvider;
+    private readonly AuthenticationStateProvider _authenticationStateProvider;
 
     /// <summary>
     /// The HTTP client for making API requests.
@@ -69,8 +69,7 @@ public class SignupViewModel : ViewModelBase, ISignupViewModel
 
     public SignupViewModel(IConfiguration configuration, HttpClient httpClient, AuthenticationStateProvider authenticationStateProvider, NavigationManager navigationManager, IMessageService messageService) : base(navigationManager, messageService)
     {
-        _authenticationStateProvider = authenticationStateProvider as TwiHighAuthenticationStateProvider
-            ?? throw new ArgumentException($"{nameof(authenticationStateProvider)} is not {nameof(TwiHighAuthenticationStateProvider)}", nameof(authenticationStateProvider));
+        _authenticationStateProvider = authenticationStateProvider;
         _httpClient = httpClient;
         _apiUrlBase = $"{configuration["AppUserApiUrl"]}";
         _apiUrlSignin = $"{_apiUrlBase}/SignUp";
@@ -144,7 +143,7 @@ public class SignupViewModel : ViewModelBase, ISignupViewModel
             return;
         }
 
-        await _authenticationStateProvider.MarkUserAsAuthenticatedAsync(jwt.Token);
+        //await _authenticationStateProvider.MarkUserAsAuthenticatedAsync(jwt.Token);
         _navigationManager.NavigateToHomePage(replace: true);
     }
 }

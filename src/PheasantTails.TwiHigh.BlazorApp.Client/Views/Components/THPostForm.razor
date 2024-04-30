@@ -63,7 +63,7 @@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
-        UserAvatarUrl = await((TwiHighAuthenticationStateProvider)AuthenticationStateProvider).GetLoggedInUserAvatarUrlAsync().ConfigureAwait(false);
+        UserAvatarUrl = await((IAuthenticationStateAccesser)AuthenticationStateProvider).GetLoggedInUserAvatarUrlAsync().ConfigureAwait(false);
     }
 
     private async Task OnSubmitAsync()

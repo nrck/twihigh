@@ -2,18 +2,12 @@
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.Services;
 
-public class ScrollInfoService : IScrollInfoService
+public class ScrollInfoService(IJSRuntime jsRuntime) : IScrollInfoService
 {
-    private readonly IJSRuntime _jsRuntime;
+    private readonly IJSRuntime _jsRuntime = jsRuntime ?? throw new ArgumentNullException(nameof(jsRuntime));
 
     /// <inheritdoc/>
     public event Action<string[]>? OnScroll;
-
-    public ScrollInfoService(IJSRuntime jsRuntime)
-    {
-        _jsRuntime = jsRuntime ?? throw new ArgumentNullException(nameof(jsRuntime));
-        RegisterServiceViaJsRuntime();
-    }
 
     /// <summary>
     /// Invokable method from JS.
@@ -22,13 +16,17 @@ public class ScrollInfoService : IScrollInfoService
     public void JsOnScroll(string[] articleIds) => OnScroll?.Invoke(articleIds);
 
     /// <inheritdoc/>
-    public async ValueTask EnableAsync() => await _jsRuntime.InvokeVoidAsync("EnableScrollEventHandling");
+    public async ValueTask EnableAsync()
+    {
+        await RegisterServiceViaJsRuntime().ConfigureAwait(false);
+        await _jsRuntime.InvokeVoidAsync("EnableScrollEventHandling").ConfigureAwait(false);
+    }
 
     /// <inheritdoc/>
-    public async ValueTask DisableAsync() => await _jsRuntime.InvokeVoidAsync("DisableScrollEventHandling");
+    public ValueTask DisableAsync() => _jsRuntime.InvokeVoidAsync("DisableScrollEventHandling");
 
     /// <summary>
     /// Register service via JS.
     /// </summary>
-    private async void RegisterServiceViaJsRuntime() => await _jsRuntime.InvokeVoidAsync("RegisterScrollInfoService", DotNetObjectReference.Create(this)).ConfigureAwait(false);
+    private ValueTask RegisterServiceViaJsRuntime() => _jsRuntime.InvokeVoidAsync("RegisterScrollInfoService", DotNetObjectReference.Create(this));
 }

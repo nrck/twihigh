@@ -17,7 +17,7 @@ namespace PheasantTails.TwiHigh.BlazorApp.Client.ViewModels;
 public class HomeViewModel : ViewModelBase, IHomeViewModel
 {
     private readonly ITimelineWorkerService _timelineWorkerService;
-    private readonly TwiHighAuthenticationStateProvider _authenticationStateProvider;
+    private readonly AuthenticationStateProvider _authenticationStateProvider;
 
     public ReactivePropertySlim<string> AvatarUrl { get; private set; } = default!;
 
@@ -82,7 +82,7 @@ public class HomeViewModel : ViewModelBase, IHomeViewModel
     {
         // Inject
         _timelineWorkerService = timelineWorkerService;
-        _authenticationStateProvider = (TwiHighAuthenticationStateProvider)authenticationStateProvider;
+        _authenticationStateProvider = authenticationStateProvider;
     }
 
     protected override void Initialize()
@@ -122,7 +122,7 @@ public class HomeViewModel : ViewModelBase, IHomeViewModel
 
     private async Task SetMyTwiHighUserIdAsync()
     {
-        string id = await _authenticationStateProvider.GetLoggedInUserIdAsync().ConfigureAwait(false);
+        string id = await ((IAuthenticationStateAccesser)_authenticationStateProvider).GetLoggedInUserIdAsync().ConfigureAwait(false);
         if (string.IsNullOrEmpty(id))
         {
             MyTwiHighUserId.Value = new Guid();
@@ -145,7 +145,7 @@ public class HomeViewModel : ViewModelBase, IHomeViewModel
     }
 
     private async Task SetMyTwiHighUserAvatarUrlAsync()
-        => AvatarUrl.Value = await _authenticationStateProvider.GetLoggedInUserAvatarUrlAsync().ConfigureAwait(false);
+        => AvatarUrl.Value = await ((IAuthenticationStateAccesser)_authenticationStateProvider).GetLoggedInUserAvatarUrlAsync().ConfigureAwait(false);
 
     private void MarkAsReadedTweets(IEnumerable<string> ids)
         => _timelineWorkerService.MarkAsReadedTweets(ids.ToArray().Select(id => Guid.Parse(id[6..])).ToArray());

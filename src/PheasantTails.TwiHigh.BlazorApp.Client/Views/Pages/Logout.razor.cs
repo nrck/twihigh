@@ -15,7 +15,7 @@ public partial class Logout : TwiHighPageBase
         await base.OnInitializedAsync();
         if (firstRender)
         {
-            await ((TwiHighAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsLoggedOutAsync();
+            //((TwiHighAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsLoggedOut();
             MessageService.SetInfoMessage("ログアウトしました。");
             Navigation.NavigateToLoginPage(replace: true);
         }

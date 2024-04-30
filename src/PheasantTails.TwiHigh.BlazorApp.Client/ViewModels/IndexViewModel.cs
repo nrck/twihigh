@@ -35,7 +35,7 @@ public class IndexViewModel : ViewModelBase, IIndexViewModel
 
     protected async Task LoginCheck()
     {
-        var state = await ((TwiHighAuthenticationStateProvider)_authenticationStateProvider).GetAuthenticationStateAsync().ConfigureAwait(false);
+        var state = await _authenticationStateProvider.GetAuthenticationStateAsync().ConfigureAwait(false);
         var isAuthenticated = state.User.Identity?.IsAuthenticated ?? false;
         if (isAuthenticated)
         {

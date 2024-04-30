@@ -25,7 +25,7 @@ public class TimelineWorkerService : ITimelineWorkerService
 
     private LocalTimelineStore _store;
     private readonly ILocalStorageService _localStorageService;
-    private readonly TwiHighAuthenticationStateProvider _authenticationStateProvider;
+    private readonly AuthenticationStateProvider _authenticationStateProvider;
     private readonly HttpClient _httpClient;
     private bool _isDispose;
     private bool _isRunning;
@@ -48,7 +48,7 @@ public class TimelineWorkerService : ITimelineWorkerService
     {
         _store = new LocalTimelineStore();
         _localStorageService = localStorageService;
-        _authenticationStateProvider = authenticationStateProvider as TwiHighAuthenticationStateProvider ?? throw new ArgumentNullException(nameof(authenticationStateProvider));
+        _authenticationStateProvider = authenticationStateProvider;
         _cancellationTokenSource = new CancellationTokenSource();
         _httpClient = httpClientFactory.CreateClient();
         _messageService = messageService;
@@ -214,7 +214,7 @@ public class TimelineWorkerService : ITimelineWorkerService
             _isRunning = true;
 
             // Check user id.
-            string userId = await _authenticationStateProvider.GetLoggedInUserIdAsync().ConfigureAwait(false);
+            string userId = await ((IAuthenticationStateAccesser)_authenticationStateProvider).GetLoggedInUserIdAsync().ConfigureAwait(false);
             if (string.IsNullOrEmpty(userId))
             {
                 throw new InvalidOperationException($"未ログインで{nameof(TimelineWorkerService)}.{nameof(RunAsync)}()を実行することはできません。");
@@ -379,7 +379,7 @@ public class TimelineWorkerService : ITimelineWorkerService
         }
 
         // Set new bearer token.
-        string token = await _authenticationStateProvider.GetTokenFromLocalStorageAsync();
+        string token = await ((IAuthenticationStateAccesser)_authenticationStateProvider).GetLoggedInUserTokenAsync();
         _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
     }
 

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using PheasantTails.TwiHigh.BlazorApp.Client.Extensions;
 using PheasantTails.TwiHigh.BlazorApp.Client.Models;
-using PheasantTails.TwiHigh.BlazorApp.Client.Services;
 using PheasantTails.TwiHigh.BlazorApp.Client.Views.Bases;
 using PheasantTails.TwiHigh.Data.Model.Tweets;
 using Reactive.Bindings;
@@ -98,7 +97,7 @@ namespace PheasantTails.TwiHigh.BlazorApp.Client.Views.Components
         {
             return Task.Run(async () =>
             {
-                AuthenticationState state = await ((TwiHighAuthenticationStateProvider)AuthenticationStateProvider).GetAuthenticationStateAsync();
+                AuthenticationState state = await AuthenticationStateProvider.GetAuthenticationStateAsync();
                 IsAuthenticated = state.User.Identity?.IsAuthenticated ?? false;
                 await base.OnInitializedAsync();
             });

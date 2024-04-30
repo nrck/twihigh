@@ -13,7 +13,7 @@ namespace PheasantTails.TwiHigh.BlazorApp.Client.ViewModels;
 
 public class ProfileEditerViewModel : ViewModelBase, IProfileEditerViewModel
 {
-    private readonly TwiHighAuthenticationStateProvider _authenticationStateProvider;
+    private readonly AuthenticationStateProvider _authenticationStateProvider;
     private PatchTwiHighUserContext _patchContext;
     private readonly string _apiUrlPatchTwihighUser;
     private readonly string _apiUrlGetTwihighUser;
@@ -37,7 +37,7 @@ public class ProfileEditerViewModel : ViewModelBase, IProfileEditerViewModel
         : base(navigationManager, messageService)
     {
         _patchContext = new();
-        _authenticationStateProvider = (TwiHighAuthenticationStateProvider)authenticationStateProvider;
+        _authenticationStateProvider = authenticationStateProvider;
         _httpClient = httpClient;
         _apiUrlPatchTwihighUser = $"{configuration["AppUserApiUrl"]}/TwiHighUser/";
         _apiUrlGetTwihighUser = $"{configuration["AppUserApiUrl"]}/TwiHighUser/{{0}}";
@@ -105,7 +105,7 @@ public class ProfileEditerViewModel : ViewModelBase, IProfileEditerViewModel
             res.EnsureSuccessStatusCode();
             User.Value = await res.Content.ReadFromJsonAsync<ResponseTwiHighUserContext>();
             _messageService.SetSucessMessage("プロフィールを更新しました！");
-            await _authenticationStateProvider.RefreshAuthenticationStateAsync();
+            //await _authenticationStateProvider.RefreshAuthenticationStateAsync();
             SetDisplayVariables();
         }
         catch (Exception)
@@ -122,10 +122,10 @@ public class ProfileEditerViewModel : ViewModelBase, IProfileEditerViewModel
 
     private async Task GetTwiHighUserAsync()
     {
-        string id = await _authenticationStateProvider.GetLoggedInUserIdAsync().ConfigureAwait(false);
+        string id = await ((IAuthenticationStateAccesser)_authenticationStateProvider).GetLoggedInUserIdAsync().ConfigureAwait(false);
         if (string.IsNullOrEmpty(id))
         {
-            await _authenticationStateProvider.MarkUserAsLoggedOutAsync();
+            //_authenticationStateProvider.MarkUserAsLoggedOut();
             _navigationManager.NavigateToLoginPage();
         }
         string url = string.Format(_apiUrlGetTwihighUser, id);
@@ -136,7 +136,7 @@ public class ProfileEditerViewModel : ViewModelBase, IProfileEditerViewModel
         }
         catch (Exception)
         {
-            await _authenticationStateProvider.MarkUserAsLoggedOutAsync();
+            //_authenticationStateProvider.MarkUserAsLoggedOut();
             _navigationManager.NavigateToLoginPage();
         }
     }
@@ -180,7 +180,7 @@ public class ProfileEditerViewModel : ViewModelBase, IProfileEditerViewModel
 
     private async Task SetAuthenticationHeaderValue()
     {
-        string token = await _authenticationStateProvider.GetTokenFromLocalStorageAsync();
+        string token = await ((IAuthenticationStateAccesser)_authenticationStateProvider).GetLoggedInUserTokenAsync();
         _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
     }
 }

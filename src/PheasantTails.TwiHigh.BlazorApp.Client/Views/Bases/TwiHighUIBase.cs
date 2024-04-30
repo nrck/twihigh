@@ -36,7 +36,7 @@ public class TwiHighUIBase : ComponentBase, IDisposable, IAsyncDisposable
 
     public async ValueTask<Guid> GetLoginUserIdAsync()
     {
-        string userId = await ((TwiHighAuthenticationStateProvider)AuthenticationStateProvider).GetLoggedInUserIdAsync();
+        string userId = await ((IAuthenticationStateAccesser)AuthenticationStateProvider).GetLoggedInUserIdAsync();
         return Guid.Parse(userId);
     }
 

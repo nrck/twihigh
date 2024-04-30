@@ -17,7 +17,6 @@ public partial class Followers : TwiHighPageBase
         base.OnInitialized();
         SubscribeStateHasChanged(ViewModel.GetTwiHighUserFollowersCommand);
         SubscribeStateHasChanged(ViewModel.UserDisplayedOnScreen);
-        SubscribeStateHasChanged(ViewModel.UserFollowers);
         SubscribeStateHasChanged(ViewModel.PageTitle);
         SubscribeStateHasChanged(ViewModel.CanExequteGetTwiHighUserFollowersCommand);
     }

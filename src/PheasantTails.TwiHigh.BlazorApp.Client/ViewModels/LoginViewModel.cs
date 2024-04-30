@@ -28,7 +28,6 @@ public class LoginViewModel : ViewModelBase, ILoginViewModel
         _httpClient = httpClient;
         _apiUrlLogin = $"{configuration["AppUserApiUrl"]}/Login";
         _authenticationStateProvider = authenticationStateProvider;
-
     }
 
     protected override void Initialize()
@@ -88,7 +87,7 @@ public class LoginViewModel : ViewModelBase, ILoginViewModel
                 return;
             }
 
-            await ((TwiHighAuthenticationStateProvider)_authenticationStateProvider).MarkUserAsAuthenticatedAsync(jwt.Token, cancellationToken: cancellationToken);
+            //await ((TwiHighAuthenticationStateProvider)_authenticationStateProvider).MarkUserAsAuthenticatedAsync(jwt.Token, cancellationToken: cancellationToken);
             _messageService.SetInfoMessage("ログインしました。");
             _navigationManager.NavigateToHomePage(false, true);
             return;
@@ -103,7 +102,7 @@ public class LoginViewModel : ViewModelBase, ILoginViewModel
     {
         try
         {
-            AuthenticationState state = await ((TwiHighAuthenticationStateProvider)_authenticationStateProvider).GetAuthenticationStateAsync().ConfigureAwait(false);
+            AuthenticationState state = await _authenticationStateProvider.GetAuthenticationStateAsync().ConfigureAwait(false);
             bool isAuthenticated = state.User.Identity?.IsAuthenticated ?? false;
             if (isAuthenticated)
             {

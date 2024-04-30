@@ -24,7 +24,7 @@ public partial class Profile : TwiHighPageBase
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        string id = await ((TwiHighAuthenticationStateProvider)AuthenticationStateProvider).GetLoggedInUserIdAsync().ConfigureAwait(false);
+        string id = await ((IAuthenticationStateAccesser)AuthenticationStateProvider).GetLoggedInUserIdAsync().ConfigureAwait(false);
         if (Guid.TryParse(id, out Guid result))
         {
             MyTwiHithUserId = result;
@@ -71,7 +71,7 @@ public partial class Profile : TwiHighPageBase
         {
             return;
         }
-        string? id = state.User.Claims.FirstOrDefault(c => c.Type == nameof(ResponseTwiHighUserContext.Id))?.Value;
+        string id = await ((IAuthenticationStateAccesser)AuthenticationStateProvider).GetLoggedInUserIdAsync().ConfigureAwait(false);
         if (Guid.TryParse(id, out Guid myGuid))
         {
             IsFollowing = ViewModel.UserDisplayedOnScreen.Value.Followers.Any(guid => guid == myGuid);

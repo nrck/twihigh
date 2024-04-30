@@ -28,7 +28,7 @@ public partial class Status : TwiHighPageBase
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        string id = await ((TwiHighAuthenticationStateProvider)AuthenticationStateProvider).GetLoggedInUserIdAsync().ConfigureAwait(false);
+        string id = await ((IAuthenticationStateAccesser)AuthenticationStateProvider).GetLoggedInUserIdAsync().ConfigureAwait(false);
         if (Guid.TryParse(id, out Guid result))
         {
             MyTwiHithUserId = result;
