@@ -4,7 +4,7 @@
 @page "/Home"
 @attribute [Authorize]
 @inherits TwiHighPageBase
-@rendermode InteractiveWebAssembly
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
 
 @* Title *@
 <PageTitle>ホーム - @(BRAND_NAME)</PageTitle>
