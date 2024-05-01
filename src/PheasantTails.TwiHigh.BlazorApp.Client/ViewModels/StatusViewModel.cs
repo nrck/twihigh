@@ -113,11 +113,6 @@ public class StatusViewModel : ViewModelBase, IStatusViewModel
         }).OrderBy(t => t.CreateAt)
         .ToList();
 #pragma warning restore IDE0305 // コレクションの初期化を簡略化します
-
-        if (_navigationManager.Uri.ToLower().EndsWith("reply"))
-        {
-            _navigationManager.NavigateToStatePage(main, replace: true, isReply: true);
-        }
     }
 
     private async Task ScrollToTargetTweetAsync(string tweetId)
