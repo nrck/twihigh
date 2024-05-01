@@ -1,9 +1,20 @@
 ﻿@*
     Entrypoint page
 *@
+@using Microsoft.AspNetCore.Components.Authorization
 @page "/"
 @inherits TwiHighPageBase
 
 <PageTitle>@(BRAND_NAME)</PageTitle>
 <THOpenGraphProtocol  />
-<THLoading />
+<AuthorizeView>
+    <Authorizing>
+        <THLoading />
+    </Authorizing>
+    <Authorized>
+        <THRedirectToHome />
+    </Authorized>
+    <NotAuthorized>
+        <THRedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>

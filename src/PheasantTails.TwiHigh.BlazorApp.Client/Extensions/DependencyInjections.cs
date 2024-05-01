@@ -14,7 +14,6 @@ internal static class DependencyInjections
         services.AddTransient<IFollowersViewModel, FollowsAndFollowersViewModel>();
         services.AddTransient<IFollowsViewModel, FollowsAndFollowersViewModel>();
         services.AddTransient<IHomeViewModel, HomeViewModel>();
-        services.AddTransient<IIndexViewModel, IndexViewModel>();
         services.AddTransient<ILoginViewModel, LoginViewModel>();
         services.AddTransient<IProfileEditerViewModel, ProfileEditerViewModel>();
         services.AddTransient<IProfileViewModel, ProfileViewModel>();

@@ -1,8 +1,6 @@
 ﻿using Blazored.LocalStorage;
-using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Identity;
 using PheasantTails.TwiHigh.BlazorApp.Client.Services;
 using PheasantTails.TwiHigh.BlazorApp.Client.ViewModels;
 using PheasantTails.TwiHigh.BlazorApp.Services;
@@ -18,7 +16,6 @@ public static class DependencyInjections
         services.AddScoped<IFollowersViewModel, FollowsAndFollowersViewModel>();
         services.AddScoped<IFollowsViewModel, FollowsAndFollowersViewModel>();
         services.AddScoped<IHomeViewModel, HomeViewModel>();
-        services.AddScoped<IIndexViewModel, ViewModels.IndexViewModel>();
         services.AddScoped<ILoginViewModel, LoginViewModel>();
         services.AddScoped<IProfileEditerViewModel, ProfileEditerViewModel>();
         services.AddScoped<IProfileViewModel, ProfileViewModel>();
