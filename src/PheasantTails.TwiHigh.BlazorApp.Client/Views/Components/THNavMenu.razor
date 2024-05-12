@@ -4,22 +4,19 @@
 @inherits TwiHighPageBase
 @inject IFeedWorkerService FeedService
 
+@* Brand name link. *@
 <div class="top-row ps-3 navbar navbar-light">
     <div class="container-fluid">
         <a class="twihigh-brand" href="/">@(BRAND_NAME) <span class="ea">(Early Access)</span></a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-            <div class="nav-link-notification">
-                <span class="navbar-toggler-icon"></span>
-                @if (FeedService.FeedTimeline.Any(f => f.IsOpened == false))
-                {
-                    <span class="navbar-toggler-icon-notification-badge"></span>
-                }
-            </div>
-        </button>
     </div>
 </div>
 
-<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+@* Navigation menu button for mobile. *@
+<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+
+@* Navigation menu *@
+@* TODO: Localize *@
+<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
     <nav class="flex-column">
         <div class="nav-item px-3">
             <AuthorizeView>
@@ -70,15 +67,6 @@
 </div>
 
 @code {
-    private bool collapseNavMenu = true;
-
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
-
     protected override void OnInitialized()
     {
         base.OnInitialized();
