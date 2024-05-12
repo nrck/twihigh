@@ -3,6 +3,7 @@
 *@
 @page "/profile/{Id?}"
 @inherits TwiHighPageBase
+@rendermode InteractiveAuto
 
 <PageTitle>@(ViewModel.PageTitle.Value) - @(BRAND_NAME)</PageTitle>
 <THOpenGraphProtocol Title="@($"{ViewModel.PageTitle.Value} - {BRAND_NAME}")"
