@@ -1,6 +1,7 @@
 ﻿@page "/Profile/{Id}/Follows"
 @using PheasantTails.TwiHigh.Data.Model.TwiHighUsers
 @inherits TwiHighPageBase
+@rendermode InteractiveAuto
 
 <PageTitle>@(ViewModel.PageTitle.Value) - @(BRAND_NAME)</PageTitle>
 <THOpenGraphProtocol Title="@($"{ViewModel.PageTitle.Value} - {BRAND_NAME}")"

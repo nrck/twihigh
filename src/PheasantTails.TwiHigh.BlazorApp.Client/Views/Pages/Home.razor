@@ -21,7 +21,11 @@
 </section>
 
 @* Timeline *@
-@if (TimelineWorkerService.Timeline.Count == 0)
+@if (TimelineWorkerService.Timeline == null)
+{
+    <THLoading />
+}
+else if (TimelineWorkerService.Timeline.Count == 0)
 {
     <THNoContents NoContentsText="@("まずは @twihigh をフォローしてみよう！")" />
 }
