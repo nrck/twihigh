@@ -125,11 +125,6 @@
 
 .navbar-toggler:checked ~ .nav-scrollable {
     display: block;
-    animation-name: fadeinAnime;
-    animation-duration: 0.3s;
-    animation-fill-mode: forwards;
-    opacity: 0;
-    scale: 0.90;
 }
 
 @media (min-width: 641px) {
@@ -143,6 +138,16 @@
         /* Allow sidebar to scroll for tall menus */
         height: calc(100vh - 3.5rem);
         overflow-y: auto;
+    }
+}
+
+@media (max-width: 640px) {
+    .nav-scrollable {
+        animation-name: fadeinAnime;
+        animation-duration: 0.3s;
+        animation-fill-mode: forwards;
+        opacity: 0;
+        scale: 0.90;
     }
 }
 
