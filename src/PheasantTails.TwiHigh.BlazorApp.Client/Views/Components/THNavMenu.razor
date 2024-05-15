@@ -3,12 +3,18 @@
 @using System.Reflection
 @inherits TwiHighPageBase
 @inject IFeedWorkerService FeedService
-@rendermode InteractiveAuto
 
 @* Brand name link. *@
 <div class="top-row ps-3 navbar navbar-light">
     <div class="container-fluid">
-        <a class="twihigh-brand" href="/">@(BRAND_NAME) <span class="ea">(Early Access)</span></a>
+        <AuthorizeView>
+            <NotAuthorized>
+                <a class="twihigh-brand" href="@NavigationManagerExtension.PAGE_PATH_INDEX">@(BRAND_NAME) <span class="ea">(Early Access)</span></a>
+            </NotAuthorized>
+            <Authorized>
+                <a class="twihigh-brand" href="@NavigationManagerExtension.PAGE_PATH_HOME">@(BRAND_NAME) <span class="ea">(Early Access)</span></a>
+            </Authorized>
+        </AuthorizeView>
     </div>
 </div>
 
@@ -22,21 +28,21 @@
         <div class="nav-item px-3">
             <AuthorizeView>
                 <NotAuthorized>
-                    <NavLink class="nav-link" href="/signup">
+                    <NavLink class="nav-link" href="@NavigationManagerExtension.PAGE_PATH_SIGNUP">
                         <span class="oi oi-check" aria-hidden="true"></span> 参加する
                     </NavLink>
-                    <NavLink class="nav-link" href="/login">
+                    <NavLink class="nav-link" href="@NavigationManagerExtension.PAGE_PATH_LOGIN">
                         <span class="oi oi-account-login" aria-hidden="true"></span> ログイン
                     </NavLink>
-                    <NavLink class="nav-link" href="/licence">
+                    <NavLink class="nav-link" href="@NavigationManagerExtension.PAGE_PATH_LICENCE">
                         <span class="oi oi-badge" aria-hidden="true" style="padding-left: 6px; padding-top: 4px;"></span> ライセンス
                     </NavLink>
                 </NotAuthorized>
                 <Authorized>
-                    <NavLink class="nav-link" href="/home">
+                    <NavLink class="nav-link" href="@NavigationManagerExtension.PAGE_PATH_HOME">
                         <span class="oi oi-home" aria-hidden="true"></span> ホーム
                     </NavLink>
-                    <NavLink class="nav-link" href="/feeds">
+                    <NavLink class="nav-link" href="@NavigationManagerExtension.PAGE_PATH_FEED">
                         <div class="nav-link-notification">
                             <span class="oi oi-bell" aria-hidden="true" style="padding-top: 6px;"></span>
                             @if (FeedService.FeedTimeline.Any(f => f.IsOpened == false))
@@ -46,16 +52,16 @@
                         </div>
                         通知
                     </NavLink>
-                    <NavLink class="nav-link" href="/profile">
+                    <NavLink class="nav-link" href="@string.Format(NavigationManagerExtension.PAGE_PATH_PROFILE, string.Empty)">
                         <span class="oi oi-image" aria-hidden="true" style="padding-top: 6px;"></span> プロフィール
                     </NavLink>
-                    <NavLink class="nav-link" href="/clear">
+                    <NavLink class="nav-link" href="@NavigationManagerExtension.PAGE_PATH_CLEAR_LOCALDATA">
                         <span class="oi oi-delete" aria-hidden="true" style="padding-top: 7px;"></span> キャッシュクリア
                     </NavLink>
-                    <NavLink class="nav-link" href="/licence">
+                    <NavLink class="nav-link" href="@NavigationManagerExtension.PAGE_PATH_LICENCE">
                         <span class="oi oi-badge" aria-hidden="true" style="padding-left: 6px; padding-top: 7px;"></span> ライセンス
                     </NavLink>
-                    <NavLink class="nav-link" href="/logout">
+                    <NavLink class="nav-link" href="@NavigationManagerExtension.PAGE_PATH_LOGOUT">
                         <span class="oi oi-account-logout" aria-hidden="true" style="padding-top: 6px;"></span> ログアウト
                     </NavLink>
                 </Authorized>

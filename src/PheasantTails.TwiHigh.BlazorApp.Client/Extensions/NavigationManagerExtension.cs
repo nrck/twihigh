@@ -62,4 +62,7 @@ internal static class NavigationManagerExtension
 
     internal static void NavigateToProfileEditorPage(this NavigationManager navigationManager, bool forceLoad = false, bool replace = false)
         => navigationManager.NavigateTo(PAGE_PATH_PROFILE_EDITOR, forceLoad, replace);
+
+    internal static void NavigateToIndexPage(this NavigationManager navigationManager, bool forceLoad = false, bool replace = false)
+        => navigationManager.NavigateTo(PAGE_PATH_INDEX, forceLoad, replace);
 }
