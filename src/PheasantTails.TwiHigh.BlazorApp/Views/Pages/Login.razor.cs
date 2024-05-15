@@ -37,7 +37,7 @@ public partial class Login : TwiHighPageBase
         ValidationMessageStore = new ValidationMessageStore(EditContext);
         if (HttpContext != null && HttpContext.User.Identity != null && HttpContext.User.Identity.IsAuthenticated)
         {
-            Navigation.NavigateTo("/home");
+            Navigation.NavigateTo("/home", forceLoad: false, replace: true);
             return;
         }
         if (Navigation.Uri.Contains('?'))
