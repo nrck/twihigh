@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using PheasantTails.TwiHigh.BlazorApp.Client.Extensions;
 using PheasantTails.TwiHigh.BlazorApp.Client.Services;
 using PheasantTails.TwiHigh.BlazorApp.Client.ViewModels;
 using PheasantTails.TwiHigh.BlazorApp.Client.Views.Bases;
-using PheasantTails.TwiHigh.Data.Model.TwiHighUsers;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Client.Views.Pages;
 
@@ -44,6 +44,11 @@ public partial class Profile : TwiHighPageBase
     {
         await base.OnParametersSetAsync();
         Console.WriteLine($"ID is {Id}!!");
+        if (string.IsNullOrEmpty(Id) && (AuthenticationState == null || (await AuthenticationState).User.Identity?.IsAuthenticated != true))
+        {
+            Navigation.NavigateToIndexPage(forceLoad: true, replace: true);
+            return;
+        }
         await ViewModel.GetUserTimelineCommand.ExecuteAsync(Id);
         await SetFollowButtonAsync();
     }
