@@ -42,7 +42,11 @@ public static class DependencyInjections
         services.AddPWAUpdater();
         services.AddHttpClient();
         services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-            .AddCookie();
+            .AddCookie(option =>
+            {
+                option.LoginPath = "/login";
+                option.SlidingExpiration = true;
+            });
         services.AddCascadingAuthenticationState();
 
         return services;

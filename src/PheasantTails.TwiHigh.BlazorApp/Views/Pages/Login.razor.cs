@@ -38,6 +38,11 @@ public partial class Login : TwiHighPageBase
         if (HttpContext != null && HttpContext.User.Identity != null && HttpContext.User.Identity.IsAuthenticated)
         {
             Navigation.NavigateTo("/home");
+            return;
+        }
+        if (Navigation.Uri.Contains('?'))
+        {
+            Navigation.NavigateTo("/login", forceLoad: false, replace: true);
         }
     }
 
@@ -70,10 +75,15 @@ public partial class Login : TwiHighPageBase
         JwtSecurityToken jwtSecurityToken = new JwtSecurityTokenHandler().ReadJwtToken(jwt.Token);
         IEnumerable<Claim> claims = jwtSecurityToken.Claims.Append(new(nameof(PersistentAuthenticationState.Token), jwt.Token));
         ClaimsIdentity identity = new(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        AuthenticationProperties authenticationProperties = new()
+        {
+            IsPersistent = true
+        };
         // ログイン成功！
         await HttpContext!.SignInAsync(
             CookieAuthenticationDefaults.AuthenticationScheme,
-            new ClaimsPrincipal(identity)
+            new ClaimsPrincipal(identity),
+            authenticationProperties
         );
 
         Navigation.NavigateTo("/home");
