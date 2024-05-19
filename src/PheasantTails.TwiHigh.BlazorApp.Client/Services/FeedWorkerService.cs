@@ -198,6 +198,7 @@ public class FeedWorkerService : IFeedWorkerService
 
             // Toggle the flag.
             _isRunning = true;
+            Console.WriteLine("フィードサービスを開始しました。");
 
             // Check user id.
             string userId = await ((IAuthenticationStateAccesser)_authenticationStateProvider).GetLoggedInUserIdAsync().ConfigureAwait(false);
@@ -236,6 +237,10 @@ public class FeedWorkerService : IFeedWorkerService
                 // Interval.
                 await Task.Delay(10000, WorkerCancellationToken);
             }
+        }
+        catch (TaskCanceledException)
+        {
+            Console.WriteLine("フィードサービスを停止しました。");
         }
         catch (Exception ex)
         {

@@ -16,6 +16,9 @@ public class TwiHighUIBase : ComponentBase, IDisposable, IAsyncDisposable
     [Inject]
     protected AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
 
+    [Inject]
+    protected IFeedWorkerService FeedWorkerService { get; set; } = default!;
+
     [CascadingParameter]
     protected Task<AuthenticationState>? AuthenticationState { get; set; }
 
@@ -48,6 +51,24 @@ public class TwiHighUIBase : ComponentBase, IDisposable, IAsyncDisposable
     public virtual ValueTask DisposeAsync()
     {
         GC.SuppressFinalize(this);
+        return ValueTask.CompletedTask;
+    }
+
+    protected async ValueTask FeedStartAsync()
+    {
+        string userId = await ((IAuthenticationStateAccesser)AuthenticationStateProvider).GetLoggedInUserIdAsync().ConfigureAwait(false);
+        if (string.IsNullOrEmpty(userId))
+        {
+            return;
+        }
+        FeedWorkerService.OnChangedFeedTimeline += InvokeRender;
+        FeedWorkerService.Run();
+    }
+
+    protected ValueTask FeedStopAsync()
+    {
+        FeedWorkerService.Stop();
+        FeedWorkerService.OnChangedFeedTimeline -= InvokeRender;
         return ValueTask.CompletedTask;
     }
 }

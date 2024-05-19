@@ -11,20 +11,5 @@ public partial class Feeds : TwiHighPageBase
     public IFeedsViewModel ViewModel { get; set; } = default!;
 
     [Inject]
-    public IFeedWorkerService FeedService { get; set; } = default!;
-
-    [Inject]
     public IScrollInfoService ScrollInfoService { get; set; } = default!;
-
-    public override void Dispose()
-    {
-        FeedService.OnChangedFeedTimeline -= InvokeRender;
-        GC.SuppressFinalize(this);
-    }
-
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        FeedService.OnChangedFeedTimeline += InvokeRender;
-    }
 }

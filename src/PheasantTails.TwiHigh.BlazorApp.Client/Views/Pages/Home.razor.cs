@@ -14,16 +14,22 @@ public partial class Home : TwiHighPageBase
     public ITimelineWorkerService TimelineWorkerService { get; set; } = default!;
 
     [Inject]
-    public IFeedWorkerService FeedWorkerService { get; set; } = default!;
-
-    [Inject]
     public IScrollInfoService ScrollInfoService { get; set; } = default!;
+
+    public override async ValueTask DisposeAsync()
+    {
+        TimelineStop();
+        ScrollInfoService.OnScroll -= ViewModel.MarkAsReadedTweetCommand.Execute;
+        await ScrollInfoService.DisableAsync().ConfigureAwait(false);
+        await base.DisposeAsync().ConfigureAwait(false);
+        GC.SuppressFinalize(this);
+    }
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync().ConfigureAwait(false);
+        TimelineStart();
         ScrollInfoService.OnScroll += ViewModel.MarkAsReadedTweetCommand.Execute;
-        TimelineWorkerService.OnChangedTimeline += InvokeRender;
         await ViewModel.GetLoginUserIdCommand.ExecuteAsync().ConfigureAwait(false);
         await ViewModel.GetMyAvatarUrlCommand.ExecuteAsync().ConfigureAwait(false);
     }
@@ -33,18 +39,19 @@ public partial class Home : TwiHighPageBase
         await base.OnAfterRenderAsync(firstRender).ConfigureAwait(false);
         if (firstRender)
         {
-            await ScrollInfoService.EnableAsync();
-            TimelineWorkerService.Run();
-            FeedWorkerService.Run();
+            await ScrollInfoService.EnableAsync().ConfigureAwait(false);
         }
     }
 
-    public override async ValueTask DisposeAsync()
+    private void TimelineStart()
     {
-        ScrollInfoService.OnScroll -= ViewModel.MarkAsReadedTweetCommand.Execute;
+        TimelineWorkerService.OnChangedTimeline += InvokeRender;
+        TimelineWorkerService.Run();
+    }
+
+    private void TimelineStop()
+    {
         TimelineWorkerService.OnChangedTimeline -= InvokeRender;
         TimelineWorkerService.Stop();
-        await ScrollInfoService.DisableAsync();
-        GC.SuppressFinalize(this);
     }
 }

@@ -212,6 +212,7 @@ public class TimelineWorkerService : ITimelineWorkerService
 
             // Toggle the flag.
             _isRunning = true;
+            Console.WriteLine("タイムラインサービスを開始しました。");
 
             // Check user id.
             string userId = await ((IAuthenticationStateAccesser)_authenticationStateProvider).GetLoggedInUserIdAsync().ConfigureAwait(false);
@@ -250,6 +251,10 @@ public class TimelineWorkerService : ITimelineWorkerService
                 // Interval.
                 await Task.Delay(5000, WorkerCancellationToken);
             }
+        }
+        catch (TaskCanceledException)
+        {
+            Console.WriteLine("タイムラインサービスを停止しました。");
         }
         catch (Exception ex)
         {

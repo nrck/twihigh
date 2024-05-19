@@ -11,7 +11,7 @@ public partial class ProfileEditer : TwiHighPageBase
 
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
+        await base.OnInitializedAsync().ConfigureAwait(false);
         SubscribeStateHasChanged(ViewModel.LoadLocalFileCommand);
         SubscribeStateHasChanged(ViewModel.SaveCommand);
         SubscribeStateHasChanged(ViewModel.AvatarResetCommand);
@@ -27,7 +27,7 @@ public partial class ProfileEditer : TwiHighPageBase
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await base.OnAfterRenderAsync(firstRender);
+        await base.OnAfterRenderAsync(firstRender).ConfigureAwait(false);
         if (firstRender)
         {
             await ViewModel.GetUserCommand.ExecuteAsync().ConfigureAwait(false);

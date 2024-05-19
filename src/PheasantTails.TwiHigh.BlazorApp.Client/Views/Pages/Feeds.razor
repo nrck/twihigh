@@ -12,9 +12,9 @@
 <THPageHeaderTitle Title="通知" />
 
 <section>
-    @if (0 < FeedService.FeedTimeline.Count)
+    @if (0 < FeedWorkerService.FeedTimeline.Count)
     {
-        @foreach (var feed in FeedService.FeedTimeline)
+        @foreach (var feed in FeedWorkerService.FeedTimeline)
         {
             var action = feed.FeedType switch
             {

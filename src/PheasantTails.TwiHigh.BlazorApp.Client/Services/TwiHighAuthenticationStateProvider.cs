@@ -39,7 +39,7 @@ public class TwiHighAuthenticationStateProvider : AuthenticationStateProvider, I
     public void MarkUserAsLoggedOut()
     {
         AuthenticationState = Task.FromResult(_defaultAuthenticationState);
-        NotifyAuthenticationStateChanged(Task.FromResult(_defaultAuthenticationState));
+        NotifyAuthenticationStateChanged(AuthenticationState);
     }
 
     /// <summary>

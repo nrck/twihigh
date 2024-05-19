@@ -1,15 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Components;
-using PheasantTails.TwiHigh.BlazorApp.Client.Services;
 using PheasantTails.TwiHigh.BlazorApp.Client.Views.Bases;
 
 namespace PheasantTails.TwiHigh.BlazorApp.Views.Pages;
 
-public partial class Logout : TwiHighPageBase
+public partial class ServerLogout : TwiHighPageBase
 {
-    [Inject]
-    public IMessageService MessageService { get; set; } = default!;
-
     protected override async Task OnInitializedAsync()
     {
         await SignOutAsync().ConfigureAwait(false);

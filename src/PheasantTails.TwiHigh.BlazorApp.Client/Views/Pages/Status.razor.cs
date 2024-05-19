@@ -22,12 +22,13 @@ public partial class Status : TwiHighPageBase
     public override void Dispose()
     {
         Navigation.LocationChanged -= OnLocationChanged;
+        base.Dispose();
         GC.SuppressFinalize(this);
     }
 
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
+        await base.OnInitializedAsync().ConfigureAwait(false);
         string id = await ((IAuthenticationStateAccesser)AuthenticationStateProvider).GetLoggedInUserIdAsync().ConfigureAwait(false);
         if (Guid.TryParse(id, out Guid result))
         {
@@ -48,10 +49,10 @@ public partial class Status : TwiHighPageBase
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await base.OnAfterRenderAsync(firstRender);
-        await ViewModel.ScrollToTargetTweetCommand.ExecuteAsync(TweetId);
+        await base.OnAfterRenderAsync(firstRender).ConfigureAwait(false);
+        await ViewModel.ScrollToTargetTweetCommand.ExecuteAsync(TweetId).ConfigureAwait(false);
     }
 
     private async void OnLocationChanged(object? sender, LocationChangedEventArgs e)
-        => await ViewModel.ScrollToTargetTweetCommand.ExecuteAsync(TweetId);
+        => await ViewModel.ScrollToTargetTweetCommand.ExecuteAsync(TweetId).ConfigureAwait(false);
 }

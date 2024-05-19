@@ -11,20 +11,20 @@ public partial class Login : TwiHighPageBase
 
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
+        await base.OnInitializedAsync().ConfigureAwait(false);
         SubscribeStateHasChanged(ViewModel.CheckAuthenticationStateCommand);
         if (IsServerSideRendering == false)
         {
-            await ViewModel.CheckAuthenticationStateCommand.ExecuteAsync();
+            await ViewModel.CheckAuthenticationStateCommand.ExecuteAsync().ConfigureAwait(false);
         }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await base.OnInitializedAsync();
+        await base.OnAfterRenderAsync(firstRender).ConfigureAwait(false);
         if (firstRender && IsServerSideRendering)
         {
-            await ViewModel.CheckAuthenticationStateCommand.ExecuteAsync();
+            await ViewModel.CheckAuthenticationStateCommand.ExecuteAsync().ConfigureAwait(false);
         }
     }
 }

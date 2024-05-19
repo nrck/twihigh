@@ -9,6 +9,7 @@ internal static class NavigationManagerExtension
     internal const string PAGE_PATH_INDEX = "/";
     internal const string PAGE_PATH_LOGIN = "/login";
     internal const string PAGE_PATH_LOGOUT = "/logout";
+    internal const string PAGE_PATH_SERVER_LOGOUT = "/serverlogout";
     internal const string PAGE_PATH_PROFILE = "/profile/{0}";
     internal const string PAGE_PATH_PROFILE_EDITOR = "/profile/editor";
     internal const string PAGE_PATH_SIGNUP = "/signup";
@@ -65,4 +66,7 @@ internal static class NavigationManagerExtension
 
     internal static void NavigateToIndexPage(this NavigationManager navigationManager, bool forceLoad = false, bool replace = false)
         => navigationManager.NavigateTo(PAGE_PATH_INDEX, forceLoad, replace);
+
+    internal static void NavigateToServerLogoutPage(this NavigationManager navigationManager, bool forceLoad = false, bool replace = false)
+        => navigationManager.NavigateTo(PAGE_PATH_SERVER_LOGOUT, forceLoad, replace);
 }

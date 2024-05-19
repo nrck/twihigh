@@ -14,7 +14,7 @@ public partial class ShowLicence:TwiHighPageBase
 
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
+        await base.OnInitializedAsync().ConfigureAwait(false);
         try
         {
             Licences = await Client.GetFromJsonAsync<Licence[]>($"{Navigation.BaseUri}licenses.json") ?? [];

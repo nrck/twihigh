@@ -13,9 +13,6 @@ public partial class ClearLocalData : TwiHighPageBase
     [Inject]
     public ITimelineWorkerService TimelineWorkerService { get; set; } = default!;
 
-    [Inject]
-    public IFeedWorkerService FeedWorkerService { get; set; } = default!;
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -23,8 +20,8 @@ public partial class ClearLocalData : TwiHighPageBase
             try
             {
                 // Clear local storage.
-                await TimelineWorkerService.CacheClearAsync();
-                await FeedWorkerService.CacheClearAsync();
+                await TimelineWorkerService.CacheClearAsync().ConfigureAwait(false);
+                await FeedWorkerService.CacheClearAsync().ConfigureAwait(false);
             }
             catch (TwiHighException)
             {
