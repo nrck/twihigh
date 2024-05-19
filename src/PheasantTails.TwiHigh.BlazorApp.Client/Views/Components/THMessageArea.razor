@@ -1,5 +1,6 @@
-﻿@inherits TwiHighComponentBase
-@rendermode InteractiveWebAssembly
+﻿@namespace PheasantTails.TwiHigh.BlazorApp.Client.Views.Components
+@inherits TwiHighComponentBase
+@rendermode InteractiveAuto
 <section style="position: fixed; bottom: 0; z-index: 100; width: 100%; max-width: 640px;">
     @foreach (var item in MessageService.Messages)
     {

@@ -1,8 +1,9 @@
 ﻿@*
-    Sifnup page.
+    Signup page.
 *@
 @page "/SignUp"
 @inherits TwiHighPageBase
+@rendermode InteractiveServer
 
 <PageTitle>参加する - @(BRAND_NAME)</PageTitle>
 <THOpenGraphProtocol Title="@($"参加する - {BRAND_NAME}")"
@@ -23,7 +24,7 @@
             <input type="password" name="user-password" class="login-form-user-password-input" @bind-value=ViewModel.Password.Value />
         </div>
         <div class="login-form-group">
-            <button type="submit" class="login-form-submit-button" @onclick="async () => await ViewModel.SignupCommand.ExecuteAsync()" disabled="@(!ViewModel.CanSignupCommand.Value)">
+            <button type="button" class="login-form-submit-button" @onclick="async () => await ViewModel.SignupCommand.ExecuteAsync()" disabled="@(!ViewModel.CanSignupCommand.Value)">
                 @if (ViewModel.CanSignupCommand.Value)
                 {
                     <span>
@@ -40,3 +41,4 @@
         </div>
     </div>
 </section>
+<THMessageArea />
