@@ -1,8 +1,5 @@
 ﻿@using Toolbelt.Blazor.PWA.Updater
 @inherits LayoutComponentBase
-@implements IDisposable
-@inject IMessageService MessageService
-
 <div class="page">
     <div class="sidebar">
         <THNavMenu />
@@ -13,12 +10,7 @@
             @Body
         </article>
 
-        <section style="position: fixed; bottom: 0; z-index: 100; width: 100%; max-width: 640px;">
-            @foreach (var item in MessageService.Messages)
-            {
-                <THMessage Context="item" />
-            }
-        </section>
+        <THMessageArea />
     </main>
 </div>
 
@@ -29,20 +21,3 @@
 </div>
 
 <PWAUpdater Text="TwiHighの新しいバージョンがあります！" ButtonCaption="アップデートする" Align="PWAUpdater.Aligns.Buttom" />
-
-@code
-{
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        MessageService.OnChangedMessage += InvokeRender;
-    }
-
-    public void Dispose()
-    {
-        MessageService.OnChangedMessage -= InvokeRender;
-        GC.SuppressFinalize(this);
-    }
-
-    private async void InvokeRender() => await InvokeAsync(StateHasChanged).ConfigureAwait(false);
-}

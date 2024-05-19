@@ -2,6 +2,7 @@
     メッセージコンポーネント
 *@
 @inherits TwiHighComponentBase
+@rendermode InteractiveWebAssembly
 <div class="message-box @(IsClosed ? "fadeout" : "fadein")">
     <div class="message-text @MessageAreaCssClass">
         <span>

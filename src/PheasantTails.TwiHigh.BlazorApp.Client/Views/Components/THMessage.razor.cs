@@ -14,20 +14,12 @@ public partial class THMessage : TwiHighComponentBase
         Error
     }
 
-    public class MessageContext
+    public class MessageContext(MessageLevel level, string message, Action<Guid> onClickClose)
     {
-        public Guid MessageId { get; set; }
-        public string Message { get; set; }
-        public MessageLevel Level { get; set; }
-        public Action<Guid> OnClickClose { get; set; }
-
-        public MessageContext(MessageLevel level, string message, Action<Guid> onClickClose)
-        {
-            MessageId = Guid.NewGuid();
-            Message = message;
-            Level = level;
-            OnClickClose = onClickClose;
-        }
+        public Guid MessageId { get; set; } = Guid.NewGuid();
+        public string Message { get; set; } = message;
+        public MessageLevel Level { get; set; } = level;
+        public Action<Guid> OnClickClose { get; set; } = onClickClose;
     }
 
     [Parameter]

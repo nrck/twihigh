@@ -19,6 +19,9 @@ public class TwiHighUIBase : ComponentBase, IDisposable, IAsyncDisposable
     [Inject]
     protected IFeedWorkerService FeedWorkerService { get; set; } = default!;
 
+    [Inject]
+    protected IMessageService MessageService { get; set; } = default!;
+
     [CascadingParameter]
     protected Task<AuthenticationState>? AuthenticationState { get; set; }
 
@@ -70,5 +73,15 @@ public class TwiHighUIBase : ComponentBase, IDisposable, IAsyncDisposable
         FeedWorkerService.Stop();
         FeedWorkerService.OnChangedFeedTimeline -= InvokeRender;
         return ValueTask.CompletedTask;
+    }
+
+    protected void MessageServiceStart()
+    {
+        MessageService.OnChangedMessage += InvokeRender;
+    }
+
+    protected void MessageServiceStop()
+    {
+        MessageService.OnChangedMessage -= InvokeRender;
     }
 }
