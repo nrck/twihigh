@@ -9,18 +9,20 @@
 <PageTitle>ログイン - @(BRAND_NAME)</PageTitle>
 <THOpenGraphProtocol Title="@($"ログイン - {BRAND_NAME}")" />
 <section>
-    <EditForm FormName="login-form" EditContext="EditContext" OnValidSubmit="HandleValidSubmitAsync" >
+    <EditForm FormName="login-form" EditContext="EditContext" OnValidSubmit="HandleValidSubmitAsync" class="login-form">
         <DataAnnotationsValidator />
         <ValidationSummary Model="Model" />
         <h2>ツイハイにログイン</h2>
         <div class="login-form-group">
-            <label for="user-display-id" class="login-form-user-display-id-label">アカウントID</label>
-            <InputText class="login-form-user-display-id-input" @bind-Value="Model.DisplayId" />
-            <ValidationMessage For="() => Model.DisplayId" />
+            <label for="user-display-id">アカウントID</label>
+            <InputText type="text" @bind-Value="Model.DisplayId" />
         </div>
         <div class="login-form-group">
-            <label for="user-password" class="login-form-user-password-label">パスワード</label>
-            <InputText type="password" class="login-form-user-password-input" @bind-Value="Model.PlainPassword" />
+            <label for="user-password">パスワード</label>
+            <InputText type="password" @bind-Value="Model.PlainPassword" />
+        </div>
+        <div>
+            <ValidationMessage For="() => Model.DisplayId" />
             <ValidationMessage For="() => Model.PlainPassword" />
         </div>
         <div class="login-form-group">
