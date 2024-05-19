@@ -144,6 +144,6 @@ public class SignupViewModel : ViewModelBase, ISignupViewModel
         }
 
         //await _authenticationStateProvider.MarkUserAsAuthenticatedAsync(jwt.Token);
-        _navigationManager.NavigateToHomePage(replace: true);
+        _navigationManager.NavigateTo($"/cookiewriter/{jwt.Token}", replace: true);
     }
 }

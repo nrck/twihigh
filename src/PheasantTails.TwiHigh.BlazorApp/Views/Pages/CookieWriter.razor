@@ -1,0 +1,27 @@
+﻿@page "/CookieWriter/{Token}"
+@using System.IdentityModel.Tokens.Jwt
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
+@inherits TwiHighPageBase
+
+@code {
+    [Parameter]
+    public string? Token { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync().ConfigureAwait(false);
+        if (string.IsNullOrEmpty(Token))
+        {
+            throw new InvalidOperationException("Failed to login. Please check your username and password.");
+        }
+        JwtSecurityToken jwtSecurityToken = new JwtSecurityTokenHandler().ReadJwtToken(Token);
+        IEnumerable<Claim> claims = jwtSecurityToken.Claims.Append(new(nameof(PersistentAuthenticationState.Token), Token));
+        ClaimsIdentity identity = new(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        AuthenticationProperties authenticationProperties = new() { IsPersistent = true };
+        await HttpContext!.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity), authenticationProperties)
+            .ConfigureAwait(false);
+        Navigation.NavigateTo("/home", replace: true);
+    }
+}

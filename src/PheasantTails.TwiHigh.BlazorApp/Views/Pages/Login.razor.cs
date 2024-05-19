@@ -72,20 +72,7 @@ public partial class Login : TwiHighPageBase
         {
             throw new InvalidOperationException("Failed to login. Please check your username and password.");
         }
-        JwtSecurityToken jwtSecurityToken = new JwtSecurityTokenHandler().ReadJwtToken(jwt.Token);
-        IEnumerable<Claim> claims = jwtSecurityToken.Claims.Append(new(nameof(PersistentAuthenticationState.Token), jwt.Token));
-        ClaimsIdentity identity = new(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-        AuthenticationProperties authenticationProperties = new()
-        {
-            IsPersistent = true
-        };
-        // ログイン成功！
-        await HttpContext!.SignInAsync(
-            CookieAuthenticationDefaults.AuthenticationScheme,
-            new ClaimsPrincipal(identity),
-            authenticationProperties
-        );
 
-        Navigation.NavigateTo("/home");
+        Navigation.NavigateTo($"/cookiewriter/{jwt.Token}", replace: true);
     }
 }
