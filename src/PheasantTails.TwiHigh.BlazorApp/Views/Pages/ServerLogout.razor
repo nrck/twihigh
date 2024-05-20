@@ -1,9 +1,11 @@
 ﻿@*
     Logout page.
+    This page is static server side rendering(Static SSR).
 *@
 @page "/ServerLogout"
 @inherits TwiHighPageBase
 
+@* Html header *@
 <PageTitle>ログアウト中 - @(BRAND_NAME)</PageTitle>
 <THOpenGraphProtocol Title="@($"ログアウト - {BRAND_NAME}")" />
 <THLoading />

@@ -1,4 +1,7 @@
-﻿@page "/CookieWriter/{Token}"
+﻿@*
+    Cookie writer page
+*@
+@page "/CookieWriter/{Token}"
 @using System.IdentityModel.Tokens.Jwt
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Authentication
@@ -6,22 +9,33 @@
 @inherits TwiHighPageBase
 
 @code {
+    /// <summary>
+    /// Json web token for access to the Twi-High API.
+    /// </summary>
     [Parameter]
     public string? Token { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
+        // Run the base class(PheasantTails.TwiHigh.BlazorApp.Client.Views.Bases.TwiHighPageBase) method.
         await base.OnInitializedAsync().ConfigureAwait(false);
         if (string.IsNullOrEmpty(Token))
         {
+            // Required Token parameter.
             throw new InvalidOperationException("Failed to login. Please check your username and password.");
         }
+
+        // Read token.
         JwtSecurityToken jwtSecurityToken = new JwtSecurityTokenHandler().ReadJwtToken(Token);
+        // Get claims from token, And add token to Claims.
         IEnumerable<Claim> claims = jwtSecurityToken.Claims.Append(new(nameof(PersistentAuthenticationState.Token), Token));
+        // Create ClaimsIdentity.
         ClaimsIdentity identity = new(claims, CookieAuthenticationDefaults.AuthenticationScheme);
         AuthenticationProperties authenticationProperties = new() { IsPersistent = true };
+        // Sign in by Cookie authentication.
         await HttpContext!.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity), authenticationProperties)
             .ConfigureAwait(false);
+        // If sign in succeed then navigation to home page.
         Navigation.NavigateTo("/home", replace: true);
     }
 }
