@@ -3,42 +3,52 @@
 *@
 @page "/SignUp"
 @inherits TwiHighPageBase
-@rendermode InteractiveServer
 
+@* Html headdaer *@
 <PageTitle>参加する - @(BRAND_NAME)</PageTitle>
 <THOpenGraphProtocol Title="@($"参加する - {BRAND_NAME}")"
                      Description="@($"{BRAND_NAME}にアカウントを作ろう！　Twitterの代わりは{BRAND_NAME}で！")" />
+@* Signup form *@
 <section>
-    <div class="login-form">
+    <EditForm FormName="login-form" EditContext="EditContext" class="login-form" OnValidSubmit="HandleValidSubmitAsync">
+        <DataAnnotationsValidator />
+        <ValidationSummary Model="Model" />
+
+        @* Form title *@
         <h2>ツイハイに参加する</h2>
+
+        @* Email *@
         <div class="login-form-group">
-            <label for="user-display-id" class="login-form-user-display-id-label">E-mail</label>
-            <input type="text" name="user-display-id" class="login-form-user-display-id-input" @bind-value=ViewModel.Email.Value />
+            <label for="user-display-id">E-mail</label>
+            <InputText type="text" @bind-Value=Model.Email />
         </div>
+
+        @* Display Id*@
         <div class="login-form-group">
-            <label for="user-display-id" class="login-form-user-display-id-label">アカウントID</label>
-            <input type="text" name="user-display-id" class="login-form-user-display-id-input" @bind-value=ViewModel.DisplayId.Value />
+            <label for="user-display-id">アカウントID</label>
+            <InputText type="text" @bind-Value=Model.DisplayId />
         </div>
+
+        @* password *@
         <div class="login-form-group">
-            <label for="user-password" class="login-form-user-password-label">パスワード</label>
-            <input type="password" name="user-password" class="login-form-user-password-input" @bind-value=ViewModel.Password.Value />
+            <label for="user-password">パスワード</label>
+            <InputText type="password" @bind-Value=Model.PlainPassword />
         </div>
+
+        @* Validation messages *@
+        <div>
+            <ValidationMessage For="() => Model.Email" />
+            <ValidationMessage For="() => Model.DisplayId" />
+            <ValidationMessage For="() => Model.PlainPassword" />
+        </div>
+
+        @* Submit button*@
         <div class="login-form-group">
-            <button type="button" class="login-form-submit-button" @onclick="async () => await ViewModel.SignupCommand.ExecuteAsync()" disabled="@(!ViewModel.CanSignupCommand.Value)">
-                @if (ViewModel.CanSignupCommand.Value)
-                {
-                    <span>
-                        アカウントを作成する
-                    </span>
-                }
-                else
-                {
-                    <span>
-                        少しお待ち下さい...
-                    </span>
-                }
+            <button type="submit" class="login-form-submit-button">
+                <span>
+                    アカウントを作成する
+                </span>
             </button>
         </div>
-    </div>
+    </EditForm>
 </section>
-<THMessageArea />

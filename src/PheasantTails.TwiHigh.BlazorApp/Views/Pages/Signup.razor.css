@@ -43,7 +43,7 @@
         margin: 0;
     }
 
-    .login-form-group input {
+    .login-form-group ::deep input {
         width: 240px;
         line-height: 24px;
         font-size: 16px;
@@ -56,7 +56,7 @@
         border-color: rgb(29, 155, 240);
     }
 
-    .login-form-group button {
+    .login-form-group ::deep button {
         width: 240px;
         margin-top: 24px;
         margin-left: auto;
