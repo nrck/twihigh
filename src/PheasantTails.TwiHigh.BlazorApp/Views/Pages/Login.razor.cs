@@ -65,13 +65,8 @@ public partial class Login : TwiHighPageBase
     /// <summary>
     /// On submit handler method.
     /// </summary>
-    /// <exception cref="InvalidOperationException"></exception>
     private async Task HandleValidSubmitAsync(EditContext editContext)
     {
-        // If HttpContext is null then throw exception. But on Static SSR, this exception is not throw because HttpContext is set by FW.
-        // TODO: use ArgumentNullException.
-        _ = HttpContext ?? throw new InvalidOperationException("HttpContent is null.");
-
         HttpResponseMessage res;
         try
         {
