@@ -7,7 +7,7 @@ public class LocalTimelineStore
     {
         get
         {
-            if (0 < Timeline.Count)
+            if (0 < Timeline?.Count)
             {
                 return Timeline.Max(t => t.UpdateAt);
             }
@@ -19,7 +19,7 @@ public class LocalTimelineStore
     {
         get
         {
-            if (0 < Timeline.Count)
+            if (0 < Timeline?.Count)
             {
                 return Timeline.Min(t => t.UpdateAt);
             }
@@ -27,12 +27,12 @@ public class LocalTimelineStore
         }
     }
 
-    public List<DisplayTweet> Timeline { get; set; } = [];
+    public List<DisplayTweet>? Timeline { get; set; }
     public Guid UserId { get; set; }
     public LocalTimelineStore GetSaveData() => new()
     {
         UserId = UserId,
-        Timeline = 0 < Timeline.Count ? Timeline.OrderByDescending(t => t.CreateAt)
+        Timeline = 0 < Timeline?.Count ? Timeline.OrderByDescending(t => t.CreateAt)
             .Take(MaximumTweets)
             .ToList()
             : []

@@ -32,7 +32,7 @@ public class TimelineWorkerService : ITimelineWorkerService
     private CancellationTokenSource _cancellationTokenSource;
     private readonly IMessageService _messageService;
 
-    public ReadOnlyCollection<DisplayTweet> Timeline => _store.Timeline.Where(t => t.IsDeleted == false).ToArray().AsReadOnly();
+    public ReadOnlyCollection<DisplayTweet>? Timeline => _store.Timeline?.Where(t => t.IsDeleted == false).ToArray().AsReadOnly();
 
     public event Action? OnChangedTimeline;
 
@@ -84,7 +84,7 @@ public class TimelineWorkerService : ITimelineWorkerService
         Upsert(tweet);
         TimelineOrderByDescending();
 
-        return _store.Timeline.Count;
+        return _store.Timeline!.Count;
     }
 
     public int AddRange(IEnumerable<DisplayTweet> tweets)
@@ -95,7 +95,7 @@ public class TimelineWorkerService : ITimelineWorkerService
         }
         TimelineOrderByDescending();
 
-        return _store.Timeline.Count;
+        return _store.Timeline!.Count;
     }
 
     public async ValueTask PostAsync(PostTweetContext postTweet)
@@ -155,7 +155,7 @@ public class TimelineWorkerService : ITimelineWorkerService
         Guid[] tweetIds = ids.ToArray();
         foreach (Guid tweetId in tweetIds)
         {
-            DisplayTweet? tweet = _store.Timeline.FirstOrDefault(t => t.Id == tweetId);
+            DisplayTweet? tweet = _store.Timeline?.FirstOrDefault(t => t.Id == tweetId);
             if (tweet == null)
             {
                 continue;
@@ -228,7 +228,7 @@ public class TimelineWorkerService : ITimelineWorkerService
                 await ForceSaveAsync(WorkerCancellationToken).ConfigureAwait(false);
             }
             await ForceLoadAsync(WorkerCancellationToken).ConfigureAwait(false);
-            if (0 < Timeline.Count)
+            if (0 < Timeline!.Count)
             {
                 OnChangedTimeline?.Invoke();
             }
@@ -285,6 +285,11 @@ public class TimelineWorkerService : ITimelineWorkerService
 
     private void Upsert(DisplayTweet tweet)
     {
+        if(_store.Timeline == null)
+        {
+            throw new InvalidOperationException();
+        }
+
         int oldTweetIndex = _store.Timeline.FindIndex(t => t.Id == tweet.Id && t.UpdateAt < tweet.UpdateAt);
         if (0 <= oldTweetIndex)
         {
@@ -298,7 +303,13 @@ public class TimelineWorkerService : ITimelineWorkerService
     }
 
     private void TimelineOrderByDescending()
-        => _store.Timeline = [.. _store.Timeline.OrderByDescending(x => x.CreateAt)];
+    {
+        if (_store.Timeline == null)
+        {
+            throw new InvalidOperationException();
+        }
+        _store.Timeline = [.. _store.Timeline.OrderByDescending(x => x.CreateAt)];
+    }
 
     private string GetLocalStorageKeyUserTimeline()
     {
@@ -312,6 +323,11 @@ public class TimelineWorkerService : ITimelineWorkerService
 
     private async ValueTask<int> RemoveTweetAtLocalAsync(Guid tweetId)
     {
+        if (_store.Timeline == null)
+        {
+            throw new InvalidOperationException();
+        }
+
         DisplayTweet? targetTweet = _store.Timeline.Find(t => t.Id == tweetId && t.IsDeleted == false);
         if (targetTweet != null)
         {

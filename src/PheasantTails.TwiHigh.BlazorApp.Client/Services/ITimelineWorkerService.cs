@@ -9,7 +9,7 @@ public interface ITimelineWorkerService : IAsyncDisposable
     /// <summary>
     /// Loged in user's timeline.
     /// </summary>
-    public ReadOnlyCollection<DisplayTweet> Timeline { get; }
+    public ReadOnlyCollection<DisplayTweet>? Timeline { get; }
 
     event Action? OnChangedTimeline;
 
