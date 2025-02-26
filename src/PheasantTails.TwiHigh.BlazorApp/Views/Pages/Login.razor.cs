@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -25,6 +27,9 @@ public partial class Login : TwiHighPageBase
     [SupplyParameterFromForm]
     private LoginFormModel Model { get; set; } = default!;
 
+    [Inject]
+    protected ILocalStorageService LocalStorageService { get; set; } = default!;
+
     private EditContext EditContext { get; set; } = default!;
 
     private ValidationMessageStore ValidationMessageStore { get; set; } = default!;
@@ -37,6 +42,15 @@ public partial class Login : TwiHighPageBase
         if (HttpContext != null && HttpContext.User.Identity != null && HttpContext.User.Identity.IsAuthenticated)
         {
             Navigation.NavigateTo("/home");
+        }
+    }
+
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var i = await LocalStorageService.LengthAsync();
+            Console.WriteLine(i);
         }
     }
 
@@ -68,13 +82,13 @@ public partial class Login : TwiHighPageBase
         }
         //JwtSecurityToken jwtSecurityToken = new JwtSecurityTokenHandler().ReadJwtToken(jwt.Token);
         Claim jwtClaim = new(nameof(JwtSecurityToken), jwt.Token);
-        ClaimsIdentity identity = new([jwtClaim], CookieAuthenticationDefaults.AuthenticationScheme);
+        ClaimsIdentity identity = new([jwtClaim], BearerTokenDefaults.AuthenticationScheme);
         // ログイン成功！
         await HttpContext!.SignInAsync(
-            CookieAuthenticationDefaults.AuthenticationScheme,
+            BearerTokenDefaults.AuthenticationScheme,
             new ClaimsPrincipal(identity)
         );
 
-        Navigation.NavigateTo("/home");
+        //Navigation.NavigateTo("/Licence");
     }
 }

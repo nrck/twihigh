@@ -44,8 +44,9 @@ public static class DependencyInjections
         services.AddBlazoredLocalStorage();
         services.AddPWAUpdater();
         services.AddHttpClient();
-        services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-            .AddCookie();
+        services.AddAuthentication()
+            //.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddBearerToken(BearerTokenDefaults.AuthenticationScheme);
         services.AddCascadingAuthenticationState();
 
         return services;
