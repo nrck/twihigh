@@ -2,7 +2,7 @@
   "IsEncrypted": false,
   "Values": {
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
     "COSMOS_DB_END_POINT_URL": "your cosmos db end point url",
     "COSMOS_DB_AUTHORIZATION_KEY": "your cosmos db key",
     "StorageConnectionString": "your storage connection string",

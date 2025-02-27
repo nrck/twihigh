@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using PheasantTails.TwiHigh.Data.Model.Feeds;
@@ -13,98 +12,101 @@ using System.Net;
 using System.Threading.Tasks;
 using static PheasantTails.TwiHigh.Functions.Core.StaticStrings;
 
-namespace PheasantTails.TwiHigh.Functions.Feeds.HttpTriggers
+namespace PheasantTails.TwiHigh.Functions.Feeds.HttpTriggers;
+
+public class PutOpenedMyFeeds
 {
-    public class PutOpenedMyFeeds
+    private const string FUNCTION_NAME = "PutOpenedMyFeeds";
+    private readonly CosmosClient _client;
+    private readonly TokenValidationParameters _tokenValidationParameters;
+    private readonly ILogger<PutOpenedMyFeeds> _logger;
+
+    public PutOpenedMyFeeds(
+        CosmosClient client,
+        TokenValidationParameters tokenValidationParameters,
+        ILogger<PutOpenedMyFeeds> logger)
     {
-        private const string FUNCTION_NAME = "PutOpenedMyFeeds";
-        private readonly CosmosClient _client;
-        private readonly TokenValidationParameters _tokenValidationParameters;
+        _client = client;
+        _tokenValidationParameters = tokenValidationParameters;
+        _logger = logger;
+    }
 
-        public PutOpenedMyFeeds(CosmosClient client, TokenValidationParameters tokenValidationParameters)
+    [Function(FUNCTION_NAME)]
+    public async Task<IActionResult> PutOpenedMyFeedsAsync(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "feeds")] HttpRequest req)
+    {
+        try
         {
-            _client = client;
-            _tokenValidationParameters = tokenValidationParameters;
-        }
+            _logger.TwiHighLogStart(FUNCTION_NAME);
 
-        [FunctionName(FUNCTION_NAME)]
-        public async Task<IActionResult> PutOpenedMyFeedsAsync(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "feeds")] HttpRequest req,
-            ILogger logger)
-        {
+            // Check authroized.
+            if (!req.TryGetUserId(_tokenValidationParameters, out var userId))
+            {
+                _logger.TwiHighLogWarning(FUNCTION_NAME, "Cannot get a user id from JWT.");
+                return new UnauthorizedResult();
+            }
+
+            // Get the user from cosmos db.
+            ItemResponse<TwiHighUser> userReadResponse;
             try
             {
-                logger.TwiHighLogStart(FUNCTION_NAME);
-
-                // Check authroized.
-                if (!req.TryGetUserId(_tokenValidationParameters, out var userId))
+                userReadResponse = await _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_USER_CONTAINER_NAME)
+                    .ReadItemAsync<TwiHighUser>(userId, new PartitionKey(userId));
+            }
+            catch (CosmosException ex)
+            {
+                if (ex.StatusCode == HttpStatusCode.NotFound)
                 {
-                    logger.TwiHighLogWarning(FUNCTION_NAME, "Cannot get a user id from JWT.");
+                    _logger.TwiHighLogWarning(FUNCTION_NAME, "Authroized user is NOT found. ID: {0}", userId);
                     return new UnauthorizedResult();
                 }
-
-                // Get the user from cosmos db.
-                ItemResponse<TwiHighUser> userReadResponse;
-                try
-                {
-                    userReadResponse = await _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_USER_CONTAINER_NAME)
-                        .ReadItemAsync<TwiHighUser>(userId, new PartitionKey(userId));
-                }
-                catch (CosmosException ex)
-                {
-                    if (ex.StatusCode == HttpStatusCode.NotFound)
-                    {
-                        logger.TwiHighLogWarning(FUNCTION_NAME, "Authroized user is NOT found. ID: {0}", userId);
-                        return new UnauthorizedResult();
-                    }
-                    throw new FeedException($"An error occurred while retrieving the user. UserId: {userId}", ex);
-                }
-                logger.TwiHighLogInformation(FUNCTION_NAME, "Authroized user is found. ID: {0}", userReadResponse.Resource.Id);
-
-                // Get request body
-                var context = await req.JsonDeserializeAsync<PutUpdateMyFeedsContext>();
-                if (100 < context.Ids.Length)
-                {
-                    logger.TwiHighLogWarning(FUNCTION_NAME, "The request contains more than 100 IDs. The processing limit for this function is 100 IDs.");
-                    return new BadRequestObjectResult(context);
-                }
-
-                // Create patch operation
-                var patch = new PatchOperation[]
-                {
-                    PatchOperation.Set("/isOpened", true),
-                    PatchOperation.Set("/updateAt", DateTimeOffset.UtcNow)
-                };
-
-                // Execute batch
-                TransactionalBatchResponse batchResult;
-                try
-                {
-                    var feedContainer = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_FEED_CONTAINER_NAME);
-                    var transactionalBatch = feedContainer.CreateTransactionalBatch(new PartitionKey(userId));
-                    foreach (var feedId in context.Ids)
-                    {
-                        transactionalBatch.PatchItem(feedId.ToString(), patch);
-                    }
-                    batchResult = await transactionalBatch.ExecuteAsync();
-                }
-                catch (CosmosException ex)
-                {
-                    throw new FeedException($"An error occurred while execute batch at feed container.", ex);
-                }
-                logger.TwiHighLogInformation(FUNCTION_NAME, "Execute {0} feeds. RU: {1}", batchResult.Count, batchResult.RequestCharge);
-
-                return new OkResult();
+                throw new FeedException($"An error occurred while retrieving the user. UserId: {userId}", ex);
             }
-            catch (Exception ex)
+            _logger.TwiHighLogInformation(FUNCTION_NAME, "Authroized user is found. ID: {0}", userReadResponse.Resource.Id);
+
+            // Get request body
+            var context = await req.JsonDeserializeAsync<PutUpdateMyFeedsContext>();
+            if (100 < context.Ids.Length)
             {
-                logger.TwiHighLogError(FUNCTION_NAME, ex);
-                throw;
+                _logger.TwiHighLogWarning(FUNCTION_NAME, "The request contains more than 100 IDs. The processing limit for this function is 100 IDs.");
+                return new BadRequestObjectResult(context);
             }
-            finally
+
+            // Create patch operation
+            var patch = new PatchOperation[]
             {
-                logger.TwiHighLogEnd(FUNCTION_NAME);
+                PatchOperation.Set("/isOpened", true),
+                PatchOperation.Set("/updateAt", DateTimeOffset.UtcNow)
+            };
+
+            // Execute batch
+            TransactionalBatchResponse batchResult;
+            try
+            {
+                var feedContainer = _client.GetContainer(TWIHIGH_COSMOSDB_NAME, TWIHIGH_FEED_CONTAINER_NAME);
+                var transactionalBatch = feedContainer.CreateTransactionalBatch(new PartitionKey(userId));
+                foreach (var feedId in context.Ids)
+                {
+                    transactionalBatch.PatchItem(feedId.ToString(), patch);
+                }
+                batchResult = await transactionalBatch.ExecuteAsync();
             }
+            catch (CosmosException ex)
+            {
+                throw new FeedException($"An error occurred while execute batch at feed container.", ex);
+            }
+            _logger.TwiHighLogInformation(FUNCTION_NAME, "Execute {0} feeds. RU: {1}", batchResult.Count, batchResult.RequestCharge);
+
+            return new OkResult();
+        }
+        catch (Exception ex)
+        {
+            _logger.TwiHighLogError(FUNCTION_NAME, ex);
+            throw;
+        }
+        finally
+        {
+            _logger.TwiHighLogEnd(FUNCTION_NAME);
         }
     }
 }
